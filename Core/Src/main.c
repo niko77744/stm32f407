@@ -18,40 +18,12 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "dma.h"
-#include "spi.h"
-#include "usart.h"
-#include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#define LOG_TAG "main"
 #include <stdio.h>
-#include <stdarg.h>
-
-int fputc(int ch, FILE *file)
-{
-    HAL_UART_Transmit(&huart5, (uint8_t *)&ch, 1, HAL_MAX_DELAY);
-    return ch;
-}
-
-uint8_t _dbg_Buff[150];
-void printf_DMA(const char *format, ...)
-{
-    uint32_t length;
-    va_list args;
-    uint8_t temp = 0;
-
-    va_start(args, format);
-    length = vsnprintf((char *)_dbg_Buff, sizeof(_dbg_Buff) + 1, (char *)format, args);
-    va_end(args);
-
-    HAL_UART_Transmit_DMA(&huart5, _dbg_Buff, length);
-    // 等待串口发送完成，注意是串口发送完成，不是DMA传输完成
-    while (!__HAL_UART_GET_FLAG(&huart5, UART_FLAG_TC))
-        ;
-    // 如果没有上面这条语句，连续调用printf_DMA时可能输出错误。
-}
-
+#include "elog.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -118,6 +90,19 @@ int main(void)
     MX_UART5_Init();
     MX_SPI1_Init();
     /* USER CODE BEGIN 2 */
+
+    elog_init();
+    /* set EasyLogger log format */
+    elog_set_fmt(ELOG_LVL_ASSERT, ELOG_FMT_ALL);
+    elog_set_fmt(ELOG_LVL_ERROR, ELOG_FMT_LVL | ELOG_FMT_TAG | ELOG_FMT_TIME);
+    elog_set_fmt(ELOG_LVL_WARN, ELOG_FMT_LVL | ELOG_FMT_TAG | ELOG_FMT_TIME);
+    elog_set_fmt(ELOG_LVL_INFO, ELOG_FMT_LVL | ELOG_FMT_TAG | ELOG_FMT_TIME);
+    elog_set_fmt(ELOG_LVL_DEBUG, ELOG_FMT_ALL & ~(ELOG_FMT_FUNC | ELOG_FMT_T_INFO | ELOG_FMT_P_INFO));
+    elog_set_fmt(ELOG_LVL_VERBOSE, ELOG_FMT_ALL & ~(ELOG_FMT_FUNC | ELOG_FMT_T_INFO | ELOG_FMT_P_INFO));
+    /* start EasyLogger */
+    elog_start();
+    elog_set_text_color_enabled(1);
+
     sfud_w25qxx_init();
 
     /* USER CODE END 2 */

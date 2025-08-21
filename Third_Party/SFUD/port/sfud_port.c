@@ -25,11 +25,11 @@
  * Function: Portable interface for each platform.
  * Created on: 2016-04-23
  */
-
+#define LOG_TAG "sfud"
 #include <sfud.h>
 #include <stdarg.h>
 #include "main.h"
-
+#include "elog.h"
 typedef struct
 {
     SPI_HandleTypeDef *hspix;
@@ -117,7 +117,6 @@ static sfud_err qspi_read(const struct __sfud_spi *spi, uint32_t addr, sfud_qspi
 /* about 100 microsecond delay */
 static void retry_delay_100us(void)
 {
-    HAL_Delay(1);
 }
 
 static void spi_lock(const sfud_spi *spi)
@@ -174,10 +173,10 @@ void sfud_log_debug(const char *file, const long line, const char *format, ...)
 
     /* args point to the first variable parameter */
     va_start(args, format);
-    printf("[SFUD](%s:%ld) ", file, line);
+    log_d("[SFUD](%s:%ld) ", file, line);
     /* must use vprintf to print */
     vsnprintf(log_buf, sizeof(log_buf), format, args);
-    printf("%s\n", log_buf);
+    log_d("%s\n", log_buf);
     va_end(args);
 }
 
@@ -193,9 +192,9 @@ void sfud_log_info(const char *format, ...)
 
     /* args point to the first variable parameter */
     va_start(args, format);
-    printf("[SFUD]");
+    log_i("[SFUD]");
     /* must use vprintf to print */
     vsnprintf(log_buf, sizeof(log_buf), format, args);
-    printf("%s\n", log_buf);
+    log_i("%s\n", log_buf);
     va_end(args);
 }

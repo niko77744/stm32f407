@@ -340,7 +340,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F407xx</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include;../User;..\Third_Party\SFUD\inc</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include;../User;..\Third_Party\SFUD\inc;..\Third_Party\EasyLogger\easylogger\inc;..\Third_Party\EasyFlash\easyflash\inc;..\Third_Party\EasyFlash\easyflash\plugins\types;..\Third_Party\EasyLogger\easylogger\plugins\file;..\Third_Party\EasyLogger\easylogger\plugins\flash;..\Third_Party\EasyFlash\easyflash\plugins\types\struct2json\inc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -787,16 +787,6 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>User</GroupName>
-          <Files>
-            <File>
-              <FileName>w25qxx.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\User\w25qxx.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>Third_Party/SFUD</GroupName>
           <Files>
             <File>
@@ -833,6 +823,191 @@
               <FileName>sfud_sfdp.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Third_Party\SFUD\src\sfud_sfdp.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Third_Party/Easy_Log</GroupName>
+          <Files>
+            <File>
+              <FileName>elog.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\EasyLogger\easylogger\inc\elog.h</FilePath>
+            </File>
+            <File>
+              <FileName>elog_cfg.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\EasyLogger\easylogger\inc\elog_cfg.h</FilePath>
+            </File>
+            <File>
+              <FileName>elog_port.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\EasyLogger\easylogger\port\elog_port.c</FilePath>
+            </File>
+            <File>
+              <FileName>elog.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\EasyLogger\easylogger\src\elog.c</FilePath>
+            </File>
+            <File>
+              <FileName>elog_async.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\EasyLogger\easylogger\src\elog_async.c</FilePath>
+            </File>
+            <File>
+              <FileName>elog_buf.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\EasyLogger\easylogger\src\elog_buf.c</FilePath>
+            </File>
+            <File>
+              <FileName>elog_utils.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\EasyLogger\easylogger\src\elog_utils.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Third_Party/Easy_Log/File</GroupName>
+          <Files>
+            <File>
+              <FileName>elog_file.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\EasyLogger\easylogger\plugins\file\elog_file.c</FilePath>
+            </File>
+            <File>
+              <FileName>elog_file_port.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\EasyLogger\easylogger\plugins\file\elog_file_port.c</FilePath>
+            </File>
+            <File>
+              <FileName>elog_file.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\EasyLogger\easylogger\plugins\file\elog_file.h</FilePath>
+            </File>
+            <File>
+              <FileName>elog_file_cfg.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\EasyLogger\easylogger\plugins\file\elog_file_cfg.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Third_Party/Easy_Log/Flash</GroupName>
+          <Files>
+            <File>
+              <FileName>elog_flash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\EasyLogger\easylogger\plugins\flash\elog_flash.c</FilePath>
+            </File>
+            <File>
+              <FileName>elog_flash_port.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\EasyLogger\easylogger\plugins\flash\elog_flash_port.c</FilePath>
+            </File>
+            <File>
+              <FileName>elog_flash.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\EasyLogger\easylogger\plugins\flash\elog_flash.h</FilePath>
+            </File>
+            <File>
+              <FileName>elog_flash_cfg.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\EasyLogger\easylogger\plugins\flash\elog_flash_cfg.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Third_Party/Easy_Flash</GroupName>
+          <Files>
+            <File>
+              <FileName>easyflash.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\EasyFlash\easyflash\inc\easyflash.h</FilePath>
+            </File>
+            <File>
+              <FileName>ef_cfg.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\EasyFlash\easyflash\inc\ef_cfg.h</FilePath>
+            </File>
+            <File>
+              <FileName>ef_def.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\EasyFlash\easyflash\inc\ef_def.h</FilePath>
+            </File>
+            <File>
+              <FileName>ef_port.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\EasyFlash\easyflash\port\ef_port.c</FilePath>
+            </File>
+            <File>
+              <FileName>easyflash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\EasyFlash\easyflash\src\easyflash.c</FilePath>
+            </File>
+            <File>
+              <FileName>ef_env.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\EasyFlash\easyflash\src\ef_env.c</FilePath>
+            </File>
+            <File>
+              <FileName>ef_env_legacy.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\EasyFlash\easyflash\src\ef_env_legacy.c</FilePath>
+            </File>
+            <File>
+              <FileName>ef_env_legacy_wl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\EasyFlash\easyflash\src\ef_env_legacy_wl.c</FilePath>
+            </File>
+            <File>
+              <FileName>ef_iap.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\EasyFlash\easyflash\src\ef_iap.c</FilePath>
+            </File>
+            <File>
+              <FileName>ef_log.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\EasyFlash\easyflash\src\ef_log.c</FilePath>
+            </File>
+            <File>
+              <FileName>ef_utils.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\EasyFlash\easyflash\src\ef_utils.c</FilePath>
+            </File>
+            <File>
+              <FileName>ef_types.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\EasyFlash\easyflash\plugins\types\ef_types.c</FilePath>
+            </File>
+            <File>
+              <FileName>ef_types.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\EasyFlash\easyflash\plugins\types\ef_types.h</FilePath>
+            </File>
+            <File>
+              <FileName>cJSON.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\EasyFlash\easyflash\plugins\types\struct2json\src\cJSON.c</FilePath>
+            </File>
+            <File>
+              <FileName>s2j.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\EasyFlash\easyflash\plugins\types\struct2json\src\s2j.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>User</GroupName>
+          <Files>
+            <File>
+              <FileName>w25qxx.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\w25qxx.c</FilePath>
+            </File>
+            <File>
+              <FileName>nsv_flash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\nsv_flash.c</FilePath>
             </File>
           </Files>
         </Group>

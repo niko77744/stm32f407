@@ -1,4 +1,7 @@
+#define LOG_TAG "w25qxx"
+
 #include "w25qxx.h"
+#include "elog.h"
 
 w25qxx_device_t w25q32_dev = {0};
 
@@ -50,7 +53,7 @@ uint16_t w25qxx_read_id(void)
 //[SFUD](../Lib_SFUD/src/sfud.c：861) 闪存设备复位成功。
 //[SFUD]W25Q128BV 闪存设备初始化成功。
 
-static void sfud_demo(uint32_t addr, uint32_t size, uint8_t *data)
+static void sfud_w25qxx_self_inspection(uint32_t addr, uint32_t size, uint8_t *data)
 {
     sfud_err result = SFUD_SUCCESS;
     const sfud_flash *flash = sfud_get_device_table() + 0;
@@ -64,60 +67,46 @@ static void sfud_demo(uint32_t addr, uint32_t size, uint8_t *data)
     result = sfud_erase(flash, addr, size);
     if (result == SFUD_SUCCESS)
     {
-        printf("Erase the %s flash data finish. Start from 0x%08X, size is %d.\r\n", flash->name, addr, size);
+        log_i("Erase the %s flash data finish. Start from 0x%08X, size is %d.", flash->name, addr, size);
     }
     else
     {
-        printf("Erase the %s flash data failed.\r\n", flash->name);
+        log_e("Erase the %s flash data failed.", flash->name);
         return;
     }
     /* write test */
     result = sfud_write(flash, addr, size, data);
     if (result == SFUD_SUCCESS)
     {
-        printf("Write the %s flash data finish. Start from 0x%08X, size is %d.\r\n", flash->name, addr, size);
+        log_i("Write the %s flash data finish. Start from 0x%08X, size is %d.", flash->name, addr, size);
     }
     else
     {
-        printf("Write the %s flash data failed.\r\n", flash->name);
+        log_e("Write the %s flash data failed.", flash->name);
         return;
     }
     /* read test */
     result = sfud_read(flash, addr, size, data);
     if (result == SFUD_SUCCESS)
     {
-        printf("Read the %s flash data success. Start from 0x%08X, size is %d. The data is:\r\n", flash->name, addr, size);
-        printf("Offset (h) 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F\r\n");
-        for (i = 0; i < size; i++)
-        {
-            if (i % 16 == 0)
-            {
-                printf("[%08X] ", addr + i);
-            }
-            printf("%02X ", data[i]);
-            if (((i + 1) % 16 == 0) || i == size - 1)
-            {
-                printf("\r\n");
-            }
-        }
-        printf("\r\n");
+        log_i("Read the %s flash data success. Start from 0x%08X, size is %d.", flash->name, addr, size);
     }
     else
     {
-        printf("Read the %s flash data failed.\r\n", flash->name);
+        log_e("Read the %s flash data failed.", flash->name);
     }
     /* data check */
     for (i = 0; i < size; i++)
     {
         if (data[i] != i % 256)
         {
-            printf("Read and check write data has an error. Write the %s flash data failed.\r\n", flash->name);
+            log_e("Read and check write data has an error. Write the %s flash data failed.", flash->name);
             break;
         }
     }
     if (i == size)
     {
-        printf("The %s flash test is success.\r\n", flash->name);
+        log_i("The %s flash test is success.", flash->name);
     }
 }
 
@@ -128,6 +117,6 @@ void sfud_w25qxx_init(void)
 {
     if (sfud_init() == SFUD_SUCCESS)
     {
-        sfud_demo(0, sizeof(sfud_buf), sfud_buf);
+        sfud_w25qxx_self_inspection(0, sizeof(sfud_buf), sfud_buf);
     }
 }
