@@ -340,7 +340,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F407xx</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include;../User;../Lib_SFUD/inc</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include;../User;..\Third_Party\SFUD\inc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -787,52 +787,52 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Lib_SFUD</GroupName>
-          <Files>
-            <File>
-              <FileName>sfud.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Lib_SFUD\inc\sfud.h</FilePath>
-            </File>
-            <File>
-              <FileName>sfud_cfg.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Lib_SFUD\inc\sfud_cfg.h</FilePath>
-            </File>
-            <File>
-              <FileName>sfud_def.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Lib_SFUD\inc\sfud_def.h</FilePath>
-            </File>
-            <File>
-              <FileName>sfud_flash_def.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Lib_SFUD\inc\sfud_flash_def.h</FilePath>
-            </File>
-            <File>
-              <FileName>sfud_port.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Lib_SFUD\port\sfud_port.c</FilePath>
-            </File>
-            <File>
-              <FileName>sfud.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Lib_SFUD\src\sfud.c</FilePath>
-            </File>
-            <File>
-              <FileName>sfud_sfdp.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Lib_SFUD\src\sfud_sfdp.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>User</GroupName>
           <Files>
             <File>
               <FileName>w25qxx.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\User\w25qxx.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Third_Party/SFUD</GroupName>
+          <Files>
+            <File>
+              <FileName>sfud.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\SFUD\inc\sfud.h</FilePath>
+            </File>
+            <File>
+              <FileName>sfud_cfg.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\SFUD\inc\sfud_cfg.h</FilePath>
+            </File>
+            <File>
+              <FileName>sfud_def.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\SFUD\inc\sfud_def.h</FilePath>
+            </File>
+            <File>
+              <FileName>sfud_flash_def.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\SFUD\inc\sfud_flash_def.h</FilePath>
+            </File>
+            <File>
+              <FileName>sfud_port.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\SFUD\port\sfud_port.c</FilePath>
+            </File>
+            <File>
+              <FileName>sfud.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\SFUD\src\sfud.c</FilePath>
+            </File>
+            <File>
+              <FileName>sfud_sfdp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\SFUD\src\sfud_sfdp.c</FilePath>
             </File>
           </Files>
         </Group>
