@@ -81,7 +81,7 @@
           </BeforeMake>
           <AfterMake>
             <RunUserProg1>0</RunUserProg1>
-            <RunUserProg2>1</RunUserProg2>
+            <RunUserProg2>0</RunUserProg2>
             <UserProg1Name></UserProg1Name>
             <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
@@ -340,7 +340,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F407xx</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include;../User;..\Third_Party\SFUD\inc;..\Third_Party\EasyLogger\easylogger\inc;..\Third_Party\EasyFlash\easyflash\inc;..\Third_Party\EasyFlash\easyflash\plugins\types;..\Third_Party\EasyLogger\easylogger\plugins\file;..\Third_Party\EasyLogger\easylogger\plugins\flash;..\Third_Party\EasyFlash\easyflash\plugins\types\struct2json\inc;..\Third_Party\MultiTimer</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include;../User;..\Third_Party\SFUD\inc;..\Third_Party\EasyLogger\easylogger\inc;..\Third_Party\EasyFlash\easyflash\inc;..\Third_Party\EasyFlash\easyflash\plugins\types;..\Third_Party\EasyLogger\easylogger\plugins\file;..\Third_Party\EasyLogger\easylogger\plugins\flash;..\Third_Party\EasyFlash\easyflash\plugins\types\struct2json\inc;..\Third_Party\MultiTimer;..\Third_Party\lwrb\lwrb\src\include\lwrb</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1017,6 +1017,26 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>Third_Party/Lwrb_RingBuf</GroupName>
+          <Files>
+            <File>
+              <FileName>lwrb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\lwrb\lwrb\src\lwrb\lwrb.c</FilePath>
+            </File>
+            <File>
+              <FileName>lwrb_ex.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\lwrb\lwrb\src\lwrb\lwrb_ex.c</FilePath>
+            </File>
+            <File>
+              <FileName>lwrb.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\lwrb\lwrb\src\include\lwrb\lwrb.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>User</GroupName>
           <Files>
             <File>
@@ -1033,6 +1053,11 @@
               <FileName>nvs_flash.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\User\nvs_flash.c</FilePath>
+            </File>
+            <File>
+              <FileName>ring_buf.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\ring_buf.c</FilePath>
             </File>
           </Files>
         </Group>
