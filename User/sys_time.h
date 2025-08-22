@@ -1,0 +1,19 @@
+#ifndef __SYS_TIME_H__
+#define __SYS_TIME_H__
+
+#include "main.h"
+
+typedef struct
+{
+    uint64_t hours;
+    uint64_t minutes;
+    uint64_t seconds;
+} sys_time_t;
+
+extern sys_time_t sys_time;
+
+void get_sys_time(sys_time_t *time);
+void start_log_timer(void);
+void timer_loop(void);
+
+#endif /* __SYS_TIME_H__ */

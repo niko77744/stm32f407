@@ -1025,9 +1025,14 @@
               <FilePath>..\User\w25qxx.c</FilePath>
             </File>
             <File>
-              <FileName>nsv_flash.c</FileName>
+              <FileName>sys_time.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\User\nsv_flash.c</FilePath>
+              <FilePath>..\User\sys_time.c</FilePath>
+            </File>
+            <File>
+              <FileName>nvs_flash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\nvs_flash.c</FilePath>
             </File>
           </Files>
         </Group>

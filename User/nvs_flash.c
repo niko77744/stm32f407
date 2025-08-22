@@ -1,4 +1,4 @@
-#include "nsv_flash.h"
+#include "nvs_flash.h"
 #include "easyflash.h"
 #include "elog.h"
 

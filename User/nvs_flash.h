@@ -1,5 +1,5 @@
-#ifndef __NSV_FLASH_H__
-#define __NSV_FLASH_H__
+#ifndef __NVS_FLASH_H__
+#define __NVS_FLASH_H__
 
 #include "main.h"
 
@@ -19,4 +19,5 @@
 #endif
 
 void nvs_flash_init(void);
-#endif /* __NSV_FLASH_H__ */
+
+#endif /* __NVS_FLASH_H__ */

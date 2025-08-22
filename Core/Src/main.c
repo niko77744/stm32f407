@@ -23,7 +23,6 @@
 /* USER CODE BEGIN Includes */
 /* ÒÆÖ²¿â https://www.zhihu.com/people/wang-shi-wei-67-38/posts */
 #define LOG_TAG "main"
-#include <stdio.h>
 #include "elog.h"
 /* USER CODE END Includes */
 
@@ -106,7 +105,8 @@ int main(void)
 
     log_i("Hello, EasyLogger!");
 
-    nvs_flash_init();
+    start_log_timer();
+    // nvs_flash_init();
     // sfud_w25qxx_init();
 
     /* USER CODE END 2 */
@@ -115,6 +115,7 @@ int main(void)
     /* USER CODE BEGIN WHILE */
     while (1)
     {
+        timer_loop();
         /* USER CODE END WHILE */
 
         /* USER CODE BEGIN 3 */

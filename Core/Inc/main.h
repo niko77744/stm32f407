@@ -30,8 +30,10 @@ extern "C"
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 
-/* Private includes ----------------------------------------------------------*/
+/* Private includes     ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdio.h>
+#include <stdarg.h>
 #include "usart.h"
 #include "spi.h"
 #include "dma.h"
@@ -39,7 +41,9 @@ extern "C"
 #include "usart.h"
 #include "gpio.h"
 #include "w25qxx.h"
-#include "nsv_flash.h"
+#include "nvs_flash.h"
+#include "MultiTimer.h"
+#include "sys_time.h"
     /* USER CODE END Includes */
 
     /* Exported types ------------------------------------------------------------*/

@@ -157,66 +157,18 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>870</LineNumber>
+          <LineNumber>56</LineNumber>
           <EnabledFlag>0</EnabledFlag>
-          <Address>134236270</Address>
+          <Address>134234774</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\Third_Party\EasyFlash\easyflash\src\ef_env.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\stm32f407\../Third_Party/EasyFlash/easyflash/src/ef_env.c\870</Expression>
-        </Bp>
-        <Bp>
-          <Number>1</Number>
-          <Type>0</Type>
-          <LineNumber>106</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>0</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>0</BreakIfRCount>
           <Filename>../Core/Src/main.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression></Expression>
-        </Bp>
-        <Bp>
-          <Number>2</Number>
-          <Type>0</Type>
-          <LineNumber>163</LineNumber>
-          <EnabledFlag>0</EnabledFlag>
-          <Address>134246550</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\User\nsv_flash.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\stm32f407\../User/nsv_flash.c\163</Expression>
-        </Bp>
-        <Bp>
-          <Number>3</Number>
-          <Type>0</Type>
-          <LineNumber>108</LineNumber>
-          <EnabledFlag>0</EnabledFlag>
-          <Address>134235482</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\Third_Party\EasyFlash\easyflash\src\easyflash.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\stm32f407\../Third_Party/EasyFlash/easyflash/src/easyflash.c\108</Expression>
+          <Expression>\\stm32f407\../Core/Src/main.c\56</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
@@ -234,6 +186,11 @@
           <count>2</count>
           <WinNumber>1</WinNumber>
           <ItemText>i_boot_times</ItemText>
+        </Ww>
+        <Ww>
+          <count>3</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>timer,0x0A</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>
@@ -1185,8 +1142,20 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\User\nsv_flash.c</PathWithFileName>
-      <FilenameWithoutPath>nsv_flash.c</FilenameWithoutPath>
+      <PathWithFileName>..\User\sys_time.c</PathWithFileName>
+      <FilenameWithoutPath>sys_time.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>11</GroupNumber>
+      <FileNumber>69</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\User\nvs_flash.c</PathWithFileName>
+      <FilenameWithoutPath>nvs_flash.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
