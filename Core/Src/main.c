@@ -21,6 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+/* ÒÆÖ²¿â https://www.zhihu.com/people/wang-shi-wei-67-38/posts */
 #define LOG_TAG "main"
 #include <stdio.h>
 #include "elog.h"
@@ -103,7 +104,10 @@ int main(void)
     elog_start();
     elog_set_text_color_enabled(1);
 
-    sfud_w25qxx_init();
+    log_i("Hello, EasyLogger!");
+
+    nvs_flash_init();
+    // sfud_w25qxx_init();
 
     /* USER CODE END 2 */
 

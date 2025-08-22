@@ -39,6 +39,7 @@ extern "C"
 #include "usart.h"
 #include "gpio.h"
 #include "w25qxx.h"
+#include "nsv_flash.h"
     /* USER CODE END Includes */
 
     /* Exported types ------------------------------------------------------------*/
