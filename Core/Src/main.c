@@ -18,10 +18,15 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "dma.h"
+#include "sdio.h"
+#include "spi.h"
+#include "usart.h"
+#include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-/* ��ֲ�� https://www.zhihu.com/people/wang-shi-wei-67-38/posts */
+/* https://www.zhihu.com/people/wang-shi-wei-67-38/posts */
 #define LOG_TAG "main"
 #include "elog.h"
 /* USER CODE END Includes */
@@ -64,6 +69,7 @@ void SystemClock_Config(void);
  */
 int main(void)
 {
+
     /* USER CODE BEGIN 1 */
 
     /* USER CODE END 1 */
@@ -87,10 +93,11 @@ int main(void)
     /* Initialize all configured peripherals */
     MX_GPIO_Init();
     MX_DMA_Init();
-    MX_UART5_Init();
     MX_SPI1_Init();
+    MX_USART6_UART_Init();
+    MX_SDIO_SD_Init();
     /* USER CODE BEGIN 2 */
-
+    HAL_SD_ConfigWideBusOperation(&hsd, SDIO_BUS_WIDE_4B); // 使能宽总线模式  SD 初始化时的时钟不能大于400KHZ
     elog_init();
     /* set EasyLogger log format */
     elog_set_fmt(ELOG_LVL_ASSERT, ELOG_FMT_ALL);
@@ -104,8 +111,12 @@ int main(void)
     elog_set_text_color_enabled(1);
 
     log_i("Hello, EasyLogger!");
+    log_i("_DATE_ is:%s\r\n", __DATE__);
+    log_i("_TIME_ is:%s\r\n", __TIME__);
 
-    start_log_timer();
+    // start_log_timer();
+    // HAL_UARTEx_ReceiveToIdle_DMA(&huart5);
+    // HAL_UART_Receive_DMA(&huart5, recv_buf, 13); // 使能DMA接收
     // nvs_flash_init();
     // sfud_w25qxx_init();
 
@@ -146,9 +157,9 @@ void SystemClock_Config(void)
     RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
     RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
     RCC_OscInitStruct.PLL.PLLM = 8;
-    RCC_OscInitStruct.PLL.PLLN = 168;
+    RCC_OscInitStruct.PLL.PLLN = 72;
     RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
-    RCC_OscInitStruct.PLL.PLLQ = 4;
+    RCC_OscInitStruct.PLL.PLLQ = 3;
     if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
     {
         Error_Handler();
@@ -159,10 +170,10 @@ void SystemClock_Config(void)
     RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
     RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
     RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-    RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
-    RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
+    RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
+    RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-    if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
+    if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
     {
         Error_Handler();
     }
