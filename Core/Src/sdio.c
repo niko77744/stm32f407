@@ -47,13 +47,8 @@ void MX_SDIO_SD_Init(void)
     hsd.Init.BusWide = SDIO_BUS_WIDE_1B;
     hsd.Init.HardwareFlowControl = SDIO_HARDWARE_FLOW_CONTROL_DISABLE;
     hsd.Init.ClockDiv = 0;
-    if (HAL_SD_Init(&hsd) != HAL_OK)
-    {
-        Error_Handler();
-    }
     /* USER CODE BEGIN SDIO_Init 2 */
-    // 使能宽总线模式
-    HAL_SD_ConfigWideBusOperation(&hsd, SDIO_BUS_WIDE_4B);
+
     /* USER CODE END SDIO_Init 2 */
 }
 
@@ -92,7 +87,7 @@ void HAL_SD_MspInit(SD_HandleTypeDef *sdHandle)
 
         /* SDIO DMA Init */
         /* SDIO_RX Init */
-        hdma_sdio_rx.Instance = DMA2_Stream6;
+        hdma_sdio_rx.Instance = DMA2_Stream3;
         hdma_sdio_rx.Init.Channel = DMA_CHANNEL_4;
         hdma_sdio_rx.Init.Direction = DMA_PERIPH_TO_MEMORY;
         hdma_sdio_rx.Init.PeriphInc = DMA_PINC_DISABLE;
@@ -113,7 +108,7 @@ void HAL_SD_MspInit(SD_HandleTypeDef *sdHandle)
         __HAL_LINKDMA(sdHandle, hdmarx, hdma_sdio_rx);
 
         /* SDIO_TX Init */
-        hdma_sdio_tx.Instance = DMA2_Stream3;
+        hdma_sdio_tx.Instance = DMA2_Stream6;
         hdma_sdio_tx.Init.Channel = DMA_CHANNEL_4;
         hdma_sdio_tx.Init.Direction = DMA_MEMORY_TO_PERIPH;
         hdma_sdio_tx.Init.PeriphInc = DMA_PINC_DISABLE;

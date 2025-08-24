@@ -1,6 +1,9 @@
 #define LOG_TAG "sd_card"
 #include "sd_card.h"
 #include "elog.h"
+#include "fatfs.h"
+#include "malloc.h"
+#include "string.h"
 
 // 得到卡信息
 // cardinfo:卡信息存储区
@@ -161,4 +164,128 @@ void log_sd_card_info(void)
     log_i("LogBlockNbr: %d ", (uint32_t)(SDCardInfo.LogBlockNbr));   // 逻辑块数量
     log_i("LogBlockSize: %d ", (uint32_t)(SDCardInfo.LogBlockSize)); // 逻辑块大小
     log_i("Card Capacity: %d MB", (uint32_t)(CardCap >> 20));        // 卡容量
+}
+
+void sd_fatfs_demo(void)
+{
+    FIL file;
+    FRESULT res;
+    FATFS *fsTF;
+    UINT byteswritten, bytesread;
+    char buffer[64];
+    const char *text = "Hello, FatFS! This is a test file.";
+    FILINFO fno;
+    DIR dir;
+
+    fsTF = (FATFS *)Mem_malloc(INSRAM, sizeof(FATFS)); // 为文件系统分配内存
+
+    // 1. 挂载文件系统
+    res = f_mount(fsTF, "0:", 1);
+    if (res != FR_OK)
+    {
+        log_e("Error mounting filesystem: %d", res);
+        return;
+    }
+
+    log_sd_card_info();
+
+    log_i("Filesystem mounted successfully!");
+
+    // 2. 创建并写入文件
+    log_i("Creating and writing to test.txt...");
+    res = f_open(&file, "test.txt", FA_CREATE_ALWAYS | FA_WRITE);
+    if (res != FR_OK)
+    {
+        log_e("Error creating file: %d", res);
+        f_mount(NULL, "", 0); // 卸载文件系统
+        return;
+    }
+
+    // 写入一些文本到文件
+    res = f_write(&file, text, strlen(text), &byteswritten);
+    if (res != FR_OK || byteswritten != strlen(text))
+    {
+        log_e("Error writing to file: %d", res);
+        f_close(&file);
+        f_mount(NULL, "", 0);
+    }
+
+    // 关闭文件
+    f_close(&file);
+    log_i("File written successfully! (%d bytes)", byteswritten);
+
+    // 3. 读取文件内容
+    log_i("Reading file contents...");
+    res = f_open(&file, "test.txt", FA_READ);
+    if (res != FR_OK)
+    {
+        log_e("Error opening file for reading: %d", res);
+        f_mount(NULL, "", 0);
+        return;
+    }
+
+    // 读取文件内容
+    res = f_read(&file, buffer, sizeof(buffer) - 1, &bytesread);
+    if (res != FR_OK)
+    {
+        log_e("Error reading file: %d", res);
+        f_close(&file);
+        f_mount(NULL, "", 0);
+    }
+
+    // 添加字符串结束符并打印内容
+    buffer[bytesread] = '\0';
+    log_i("File contents: %s", buffer);
+
+    // 关闭文件
+    f_close(&file);
+
+    // 4. 获取文件信息
+    log_i("Getting file info...");
+
+    res = f_stat("test.txt", &fno);
+    if (res == FR_OK)
+    {
+        log_i("File size: %lu bytes", fno.fsize);
+        log_i("Timestamp: %u/%02u/%02u, %02u:%02u",
+              (fno.fdate >> 9) + 1980, (fno.fdate >> 5) & 15, fno.fdate & 31,
+              fno.ftime >> 11, (fno.ftime >> 5) & 63);
+    }
+    else
+    {
+        log_e("Error getting file info: %d", res);
+        return;
+    }
+
+    // 5. 列出根目录内容（可选）
+    log_i("Listing root directory...");
+    res = f_opendir(&dir, "/");
+    if (res == FR_OK)
+    {
+        while (1)
+        {
+            res = f_readdir(&dir, &fno);
+            if (res != FR_OK || fno.fname[0] == 0)
+                break;
+            if (fno.fattrib & AM_DIR)
+            {
+                log_i("  [DIR]  %s", fno.fname);
+            }
+            else
+            {
+                log_i("  [FILE] %s (%lu bytes)", fno.fname, fno.fsize);
+            }
+        }
+        f_closedir(&dir);
+    }
+    else
+    {
+        log_e("Error opening directory: %d", res);
+        return;
+    }
+
+    // 6. 卸载文件系统
+    f_mount(NULL, "", 0);
+    log_i("Demo completed successfully!");
+    Mem_free(INSRAM, fsTF);
 }

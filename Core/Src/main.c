@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "dma.h"
+#include "fatfs.h"
 #include "sdio.h"
 #include "spi.h"
 #include "usart.h"
@@ -96,8 +97,9 @@ int main(void)
     MX_SPI1_Init();
     MX_USART6_UART_Init();
     MX_SDIO_SD_Init();
+    MX_FATFS_Init();
     /* USER CODE BEGIN 2 */
-    Memory_Init(INSRAM); // 初始化内部内存池
+    Memory_Init(INSRAM);
 
     elog_init();
     /* set EasyLogger log format */
@@ -114,8 +116,7 @@ int main(void)
     log_i("Hello, EasyLogger!");
     log_i("_DATE_ is:%s", __DATE__);
     log_i("_TIME_ is:%s", __TIME__);
-    log_sd_card_info();
-
+    sd_fatfs_demo();
     // start_log_timer();
     // nvs_flash_init();
     // sfud_w25qxx_init();
@@ -210,7 +211,7 @@ void assert_failed(uint8_t *file, uint32_t line)
 {
     /* USER CODE BEGIN 6 */
     /* User can add his own implementation to report the file name and line number,
-       ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+       ex: printf("Wrong parameters value: file %s on line %d", file, line) */
     /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
