@@ -71,6 +71,10 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define BLE_Connect_Pin GPIO_PIN_13
+#define BLE_Connect_GPIO_Port GPIOF
+#define ESP8266_EN_Pin GPIO_PIN_14
+#define ESP8266_EN_GPIO_Port GPIOF
 #define W25Qxx_CS_Pin GPIO_PIN_8
 #define W25Qxx_CS_GPIO_Port GPIOG
 

@@ -1956,6 +1956,16 @@
               <FileType>1</FileType>
               <FilePath>..\User\malloc.c</FilePath>
             </File>
+            <File>
+              <FileName>ble.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\ble.c</FilePath>
+            </File>
+            <File>
+              <FileName>esp8266.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\esp8266.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

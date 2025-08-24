@@ -5,6 +5,8 @@
 #include "malloc.h"
 #include "string.h"
 
+#define SD_TIMEOUT 30 * 1000
+
 // 得到卡信息
 // cardinfo:卡信息存储区
 // 返回值:错误状态
