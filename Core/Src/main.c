@@ -97,7 +97,8 @@ int main(void)
     MX_USART6_UART_Init();
     MX_SDIO_SD_Init();
     /* USER CODE BEGIN 2 */
-    HAL_SD_ConfigWideBusOperation(&hsd, SDIO_BUS_WIDE_4B); // 使能宽总线模式  SD 初始化时的时钟不能大于400KHZ
+    Memory_Init(INSRAM); // ��ʼ���ڲ��ڴ��
+
     elog_init();
     /* set EasyLogger log format */
     elog_set_fmt(ELOG_LVL_ASSERT, ELOG_FMT_ALL);
@@ -111,12 +112,11 @@ int main(void)
     elog_set_text_color_enabled(1);
 
     log_i("Hello, EasyLogger!");
-    log_i("_DATE_ is:%s\r\n", __DATE__);
-    log_i("_TIME_ is:%s\r\n", __TIME__);
+    log_i("_DATE_ is:%s", __DATE__);
+    log_i("_TIME_ is:%s", __TIME__);
+    log_sd_card_info();
 
     // start_log_timer();
-    // HAL_UARTEx_ReceiveToIdle_DMA(&huart5);
-    // HAL_UART_Receive_DMA(&huart5, recv_buf, 13); // 使能DMA接收
     // nvs_flash_init();
     // sfud_w25qxx_init();
 

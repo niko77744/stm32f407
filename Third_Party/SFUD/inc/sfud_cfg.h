@@ -47,6 +47,6 @@ enum
         [SFUD_W25Qxx_DEVICE_INDEX] = {.name = "W25Q128BV", .spi.name = "SPI1"}, \
     }
 
-#define SFUD_USING_QSPI
+// #define SFUD_USING_QSPI
 
 #endif /* _SFUD_CFG_H_ */

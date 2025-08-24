@@ -1,0 +1,217 @@
+#include "malloc.h"
+/*********************************************************************************
+**********************************************************************************
+* 文件名称: malloc.c                                                             *
+* 文件简述：内存分配                                                             *
+* 创建日期：2015.03.13                                                           *
+* 版    本：V1.0                                                                 *
+* 作    者：Clever                                                               *
+* 说    明：该文件参考网上代码http://www.openedv.com                             *
+**********************************************************************************
+*********************************************************************************/
+
+// 内存池(4字节对齐)
+uint8_t inmenbase[INMEM_MAX_SIZE] __attribute__((aligned(4)));                  // 内部SRAM内存池
+uint8_t exmen2base[EXMEM_MAX_SIZE] __attribute__((at(0X68000000), aligned(4))); // 外部SRAM内存池
+// 内存管理表
+uint16_t inmemmapbase[INMEM_ALLOC_TABLE_SIZE];                                                  // 内部SRAM内存池MAP
+uint16_t exmemmapbase[EXMEM_ALLOC_TABLE_SIZE] __attribute__((at(0X68000000 + EXMEM_MAX_SIZE))); // 外部SRAM内存池MAP
+// 内存管理参数
+const uint32_t memtblsize[2] = {INMEM_ALLOC_TABLE_SIZE, EXMEM_ALLOC_TABLE_SIZE}; // 内存表大小
+const uint32_t memblksize[2] = {INMEM_BLOCK_SIZE, EXMEM_BLOCK_SIZE};             // 内存分块大小
+const uint32_t memsize[2] = {INMEM_MAX_SIZE, EXMEM_MAX_SIZE};                    // 内存总大小
+
+uint8_t *membase[2] = {inmenbase, exmen2base};      // 内存池 管理2个区域的内存
+uint16_t *memmap[2] = {inmemmapbase, exmemmapbase}; // 内存管理状态表
+uint8_t memrdy[2] = {0, 0};                         // 内存管理是否就绪
+
+/****************************************************************************
+* 名    称: void mymemcpy(void *des,void *src,u32 n)
+* 功    能：复制内存
+* 入口参数：*des:目的地址
+            *src:源地址
+            n:需要复制的内存长度(字节为单位)
+* 返回参数：无
+* 说    明：
+****************************************************************************/
+void mymemcpy(void *des, void *src, uint32_t n)
+{
+
+    uint8_t *xdes = des;
+    uint8_t *xsrc = src;
+    while (n--)
+        *xdes++ = *xsrc++;
+}
+
+/****************************************************************************
+* 名    称: void mymemset(void *s,uint8_t c,u32 count)
+* 功    能：设置内存
+* 入口参数：*s:内存首地址
+            c :要设置的值
+            count:需要设置的内存大小(字节为单位)
+* 返回参数：无
+* 说    明：
+****************************************************************************/
+void mymemset(void *s, uint8_t c, uint32_t count)
+{
+    uint8_t *xs = s;
+    while (count--)
+        *xs++ = c;
+}
+
+// 内存管理初始化
+// memx:所属内存块
+void Memory_Init(uint8_t memx)
+{
+    mymemset(memmap[memx], 0, memtblsize[memx] * 2); // 内存状态表数据清零
+    mymemset(membase[memx], 0, memsize[memx]);       // 内存池所有数据清零
+    memrdy[memx] = 1;                                // 内存管理初始化OK
+}
+
+/****************************************************************************
+ * 名    称: uint8_t Mem_perused(uint8_t memx)
+ * 功    能：获取内存使用率
+ * 入口参数：memx:所属内存块
+ * 返回参数：使用率(0~100)
+ * 说    明：
+ ****************************************************************************/
+uint8_t Mem_perused(uint8_t memx)
+{
+    uint32_t used = 0;
+    uint32_t i;
+    for (i = 0; i < memtblsize[memx]; i++)
+    {
+        if (memmap[memx][i])
+            used++;
+    }
+    return (used * 100) / (memtblsize[memx]);
+}
+
+/****************************************************************************
+* 名    称: uint32_t memin_malloc(uint8_t memx,uint32_t size)
+* 功    能：内存分配(内部调用)
+* 入口参数：memx:所属内存块
+            size:要分配的内存大小(字节)
+* 返回参数：0XFFFFFFFF,代表错误;其他,内存偏移地址
+* 说    明：
+****************************************************************************/
+uint32_t memin_malloc(uint8_t memx, uint32_t size)
+{
+    signed long offset = 0;
+    uint16_t nmemb;     // 需要的内存块数
+    uint16_t cmemb = 0; // 连续空内存块数
+    uint32_t i;
+
+    if (!memrdy[memx])
+        Memory_Init(memx); // 未初始化,先执行初始化
+    if (size == 0)
+        return 0XFFFFFFFF; // 不需要分配
+
+    nmemb = size / memblksize[memx]; // 获取需要分配的连续内存块数
+    if (size % memblksize[memx])
+        nmemb++;
+    for (offset = memtblsize[memx] - 1; offset >= 0; offset--) // 搜索整个内存控制区
+    {
+        if (!memmap[memx][offset])
+            cmemb++; // 连续空内存块数增加
+        else
+            cmemb = 0;      // 连续内存块清零
+        if (cmemb == nmemb) // 找到了连续nmemb个空内存块
+        {
+            for (i = 0; i < nmemb; i++) // 标注内存块非空
+            {
+                memmap[memx][offset + i] = nmemb;
+            }
+            return (offset * memblksize[memx]); // 返回偏移地址
+        }
+    }
+    return 0XFFFFFFFF; // 未找到符合分配条件的内存块
+}
+
+/****************************************************************************
+ * 名    称: uint8_t memin_free(uint8_t memx,u32 offset)
+ * 功    能：释放内存(内部调用)
+ * 入口参数：offset:内存地址偏移
+ * 返回参数：0,释放成功;1,释放失败;
+ * 说    明：
+ ****************************************************************************/
+uint8_t memin_free(uint8_t memx, uint32_t offset)
+{
+    int i;
+    if (!memrdy[memx]) // 未初始化,先执行初始化
+    {
+        Memory_Init(memx);
+        return 1; // 未初始化
+    }
+    if (offset < memsize[memx]) // 偏移在内存池内.
+    {
+        int index = offset / memblksize[memx]; // 偏移所在内存块号码
+        int nmemb = memmap[memx][index];       // 内存块数量
+        for (i = 0; i < nmemb; i++)            // 内存块清零
+        {
+            memmap[memx][index + i] = 0;
+        }
+        return 0;
+    }
+    else
+        return 2; // 偏移超区了.  SRAMIN
+}
+
+/****************************************************************************
+* 名    称: void Mem_free(uint8_t memx,void *use)
+* 功    能：内存释放
+* 入口参数：memx: 内外内存选择  0：内部    1：外部
+            use： 前面分配的内存首地址
+* 返回参数：无
+* 说    明：
+****************************************************************************/
+void Mem_free(uint8_t memx, void *use)
+{
+    uint32_t offset;
+    if (use == NULL)
+        return; // 地址为0.
+    offset = (uint32_t)use - (uint32_t)membase[memx];
+    memin_free(memx, offset); // 释放内存
+}
+
+/****************************************************************************
+* 名    称: void *Mem_malloc(uint8_t memx,uint32_t size)
+* 功    能：内存分配
+* 入口参数：memx: 内外内存选择  0：内部    1：外部
+*           size：需要分配内存的大小
+* 返回参数：分配到的内存首地址
+* 说    明：比如变量ABC需要2K的内存  可这样分配 ABC=Mem_malloc(0,2048);
+            注意该变量必须是指针变量，或者数组首个元素地址 因为该函数返回的是地址值
+****************************************************************************/
+void *Mem_malloc(uint8_t memx, uint32_t size)
+{
+    uint32_t offset;
+    offset = memin_malloc(memx, size);
+    if (offset == 0XFFFFFFFF)
+        return NULL;
+    else
+        return (void *)((uint32_t)membase[memx] + offset);
+}
+
+/****************************************************************************
+* 名    称: void *Remem_malloc(uint8_t memx,void *old,uint32_t size);
+* 功    能：重新内存分配
+* 入口参数：memx: 内外内存选择  0：内部    1：外部
+            old： 旧内存首地址
+*           size：需要重新分配内存的大小
+* 返回参数：分配到的内存首地址
+* 说    明：
+****************************************************************************/
+void *Remem_malloc(uint8_t memx, void *old, uint32_t size)
+{
+    uint32_t offset;
+    offset = memin_malloc(memx, size);
+    if (offset == 0XFFFFFFFF)
+        return NULL;
+    else
+    {
+        mymemcpy((void *)((uint32_t)membase[memx] + offset), old, size); // 拷贝旧内存内容到新内存
+        Mem_free(memx, old);                                             // 释放旧内存
+        return (void *)((uint32_t)membase[memx] + offset);               // 返回新内存首地址
+    }
+}
