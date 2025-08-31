@@ -6,7 +6,7 @@
 #define CHIP_FLASH 0
 #define W25Qxx_FLASH 1
 
-#define FLASH_TYPE W25Qxx_FLASH
+#define FLASH_TYPE CHIP_FLASH
 
 #if FLASH_TYPE == CHIP_FLASH
 #define USER_ERASE_MIN_SIEZ (128 * 1024)

@@ -168,16 +168,10 @@ void log_sd_card_info(void)
     log_i("Card Capacity: %d MB", (uint32_t)(CardCap >> 20));        // 卡容量
 }
 
-void sd_fatfs_demo(void)
+void sd_fatfs_init(void)
 {
-    FIL file;
     FRESULT res;
     FATFS *fsTF;
-    UINT byteswritten, bytesread;
-    char buffer[64];
-    const char *text = "Hello, FatFS! This is a test file.";
-    FILINFO fno;
-    DIR dir;
 
     fsTF = (FATFS *)Mem_malloc(INSRAM, sizeof(FATFS)); // 为文件系统分配内存
 
@@ -192,6 +186,13 @@ void sd_fatfs_demo(void)
     log_sd_card_info();
 
     log_i("Filesystem mounted successfully!");
+#if 0
+    FIL file;
+    UINT byteswritten, bytesread;
+    char buffer[64];
+    const char *text = "Hello, FatFS! This is a test file.";
+    FILINFO fno;
+    DIR dir;
 
     // 2. 创建并写入文件
     log_i("Creating and writing to test.txt...");
@@ -290,4 +291,5 @@ void sd_fatfs_demo(void)
     f_mount(NULL, "", 0);
     log_i("Demo completed successfully!");
     Mem_free(INSRAM, fsTF);
+#endif
 }

@@ -119,9 +119,10 @@ uint32_t stm32_get_sector_size(uint32_t sector)
  */
 
 /**
- * Env demo.
+ * @brief 获取启动次数
+ *
  */
-void test_env(void)
+void nvs_get_boot_times_from_env(void)
 {
     uint32_t i_boot_times = NULL;
     char *c_old_boot_times, c_new_boot_times[11] = {0};
@@ -176,7 +177,6 @@ void nvs_flash_init(void)
 {
     if (easyflash_init() == EF_NO_ERR)
     {
-        /* test Env demo */
-        test_env();
+        nvs_get_boot_times_from_env();
     }
 }

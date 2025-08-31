@@ -40,7 +40,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define SoftWare_Version "V1.0.1"
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -105,29 +105,15 @@ int main(void)
     /* USER CODE BEGIN 2 */
     Memory_Init(INSRAM);
 
-    elog_init();
-    /* set EasyLogger log format */
-    elog_set_fmt(ELOG_LVL_ASSERT, ELOG_FMT_ALL);
-    elog_set_fmt(ELOG_LVL_ERROR, ELOG_FMT_LVL | ELOG_FMT_TAG | ELOG_FMT_TIME);
-    elog_set_fmt(ELOG_LVL_WARN, ELOG_FMT_LVL | ELOG_FMT_TAG | ELOG_FMT_TIME);
-    elog_set_fmt(ELOG_LVL_INFO, ELOG_FMT_LVL | ELOG_FMT_TAG | ELOG_FMT_TIME);
-    elog_set_fmt(ELOG_LVL_DEBUG, ELOG_FMT_ALL & ~(ELOG_FMT_FUNC | ELOG_FMT_T_INFO | ELOG_FMT_P_INFO));
-    elog_set_fmt(ELOG_LVL_VERBOSE, ELOG_FMT_ALL & ~(ELOG_FMT_FUNC | ELOG_FMT_T_INFO | ELOG_FMT_P_INFO));
-    /* start EasyLogger */
-    elog_start();
-    elog_set_text_color_enabled(1);
+    log_init();
 
-    log_i("Hello, EasyLogger!");
-    log_i("_DATE_ is:%s", __DATE__);
-    log_i("_TIME_ is:%s", __TIME__);
-
-    log_i("Software Version:%s", SoftWare_Version);
     sw_time_init();
+    sys_time_init();
     buttons_init();
     ble_init();
-    // sd_fatfs_demo();
-    // nvs_flash_init();
-    // sfud_w25qxx_init();
+    sd_fatfs_init();
+    nvs_flash_init();
+    sfud_w25qxx_init();
 
     /* USER CODE END 2 */
 
