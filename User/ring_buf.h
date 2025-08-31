@@ -3,4 +3,6 @@
 
 #include "main.h"
 
+void ring_buf_init(void);
+
 #endif /* __RING_BUF_H__ */

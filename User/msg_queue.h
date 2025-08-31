@@ -3,4 +3,6 @@
 
 #include "main.h"
 
+void message_queue_init(void);
+
 #endif /* __MSG_QUEUE_H__ */

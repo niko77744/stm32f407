@@ -104,16 +104,16 @@ int main(void)
     MX_I2C1_Init();
     /* USER CODE BEGIN 2 */
     Memory_Init(INSRAM);
-
     log_init();
-
+    // ring_buf_init();
     sw_time_init();
     sys_time_init();
     buttons_init();
     ble_init();
-    sd_fatfs_init();
-    nvs_flash_init();
-    sfud_w25qxx_init();
+    message_queue_init();
+    // sd_fatfs_init();
+    // nvs_flash_init();
+    // sfud_w25qxx_init();
 
     /* USER CODE END 2 */
 

@@ -340,7 +340,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F407xx</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include;../User;../Third_Party/SFUD/inc;../Third_Party/EasyLogger/easylogger/inc;../Third_Party/EasyFlash/easyflash/inc;../Third_Party/EasyFlash/easyflash/plugins/types;../Third_Party/EasyLogger/easylogger/plugins/file;../Third_Party/EasyLogger/easylogger/plugins/flash;../Third_Party/EasyFlash/easyflash/plugins/types/struct2json/inc;../Third_Party/MultiTimer;../Third_Party/lwrb/lwrb/src/include/lwrb;../FATFS/Target;../FATFS/App;../Middlewares/Third_Party/FatFs/src;..\Third_Party\MultiButton</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include;../User;../Third_Party/SFUD/inc;../Third_Party/EasyLogger/easylogger/inc;../Third_Party/EasyFlash/easyflash/inc;../Third_Party/EasyFlash/easyflash/plugins/types;../Third_Party/EasyLogger/easylogger/plugins/file;../Third_Party/EasyLogger/easylogger/plugins/flash;../Third_Party/EasyFlash/easyflash/plugins/types/struct2json/inc;../Third_Party/MultiTimer;../Third_Party/lwrb/lwrb/src/include/lwrb;../FATFS/Target;../FATFS/App;../Middlewares/Third_Party/FatFs/src;..\Third_Party\MultiButton;..\Third_Party\lwevt\lwevt\src\include\lwevt</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1415,6 +1415,41 @@
               <FileName>lwrb.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\Third_Party\lwrb\lwrb\src\include\lwrb\lwrb.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Third_Party/Lwevt</GroupName>
+          <Files>
+            <File>
+              <FileName>lwevt.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\lwevt\lwevt\src\include\lwevt\lwevt.h</FilePath>
+            </File>
+            <File>
+              <FileName>lwevt_opt.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\lwevt\lwevt\src\include\lwevt\lwevt_opt.h</FilePath>
+            </File>
+            <File>
+              <FileName>lwevt_type.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\lwevt\lwevt\src\include\lwevt\lwevt_type.h</FilePath>
+            </File>
+            <File>
+              <FileName>lwevt_opts.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\lwevt\lwevt\src\include\lwevt\lwevt_opts.h</FilePath>
+            </File>
+            <File>
+              <FileName>lwevt_types.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\lwevt\lwevt\src\include\lwevt\lwevt_types.h</FilePath>
+            </File>
+            <File>
+              <FileName>lwevt.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\lwevt\lwevt\src\lwevt\lwevt.c</FilePath>
             </File>
           </Files>
         </Group>
