@@ -20,6 +20,7 @@
 #include "main.h"
 #include "dma.h"
 #include "fatfs.h"
+#include "i2c.h"
 #include "sdio.h"
 #include "spi.h"
 #include "usart.h"
@@ -39,7 +40,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#define SoftWare_Version "V1.0.1"
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -100,6 +101,7 @@ int main(void)
     MX_FATFS_Init();
     MX_UART4_Init();
     MX_USART3_UART_Init();
+    MX_I2C1_Init();
     /* USER CODE BEGIN 2 */
     Memory_Init(INSRAM);
 
@@ -118,8 +120,12 @@ int main(void)
     log_i("Hello, EasyLogger!");
     log_i("_DATE_ is:%s", __DATE__);
     log_i("_TIME_ is:%s", __TIME__);
-    sd_fatfs_demo();
-    // start_log_timer();
+
+    log_i("Software Version:%s", SoftWare_Version);
+    sw_time_init();
+    buttons_init();
+    ble_init();
+    // sd_fatfs_demo();
     // nvs_flash_init();
     // sfud_w25qxx_init();
 
@@ -129,7 +135,7 @@ int main(void)
     /* USER CODE BEGIN WHILE */
     while (1)
     {
-        timer_loop();
+        sw_timer_loop();
         /* USER CODE END WHILE */
 
         /* USER CODE BEGIN 3 */

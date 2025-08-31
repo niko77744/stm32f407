@@ -12,8 +12,8 @@ typedef struct
 
 extern sys_time_t sys_time;
 
+void sw_time_init(void);
 void get_sys_time(sys_time_t *time);
-void start_log_timer(void);
-void timer_loop(void);
+void sw_timer_loop(void);
 
 #endif /* __SYS_TIME_H__ */
