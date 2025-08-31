@@ -3,7 +3,15 @@
 
 #include "main.h"
 
-void buzzer_on(void);
-void buzzer_off(void);
+#define BEEP_SHORT_TIME 100
+#define BEEP_LONG_TIME 300
+
+typedef enum
+{
+    beep_short = 0,
+    beep_long,
+} buzzer_mode_e;
+
+void beep_start(buzzer_mode_e mode);
 
 #endif /* __BUZZER_H__ */
