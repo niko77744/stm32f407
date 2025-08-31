@@ -5,6 +5,8 @@
 
 lwevt_t evt_local;
 
+// 当需要高效利用有限资源或应对大量异步操作时，采用事件驱动架构能显著提升系统的性能和可靠性。
+
 static void prv_evt_fn_1(lwevt_t *e)
 {
     switch ((unsigned)e->type)
