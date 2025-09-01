@@ -141,7 +141,8 @@ void nvs_flash_init(void)
      *        NULL: The user data if you need, now is empty.
      */
 
-    result = fdb_kvdb_init(&kvdb, "env", "bl", &default_kv, NULL);
+    // result = fdb_kvdb_init(&kvdb, "env", "bl", &default_kv, NULL);
+    result = fdb_kvdb_init(&kvdb, "env", "easyflash", &default_kv, NULL);
 
     if (result != FDB_NO_ERR)
         return;

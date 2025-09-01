@@ -1437,6 +1437,11 @@
               <FilePath>..\Third_Party\FlashDB\fal\fal_flash_stm32f4.c</FilePath>
             </File>
             <File>
+              <FileName>fal_flash_sfud_port.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\FlashDB\fal\fal_flash_sfud_port.c</FilePath>
+            </File>
+            <File>
               <FileName>fal_partition.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Third_Party\FlashDB\fal\fal_partition.c</FilePath>

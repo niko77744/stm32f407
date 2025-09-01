@@ -32,12 +32,13 @@
 #include "elog.h"
 typedef struct
 {
+    SPI_TypeDef *spix;
     SPI_HandleTypeDef *hspix;
     GPIO_TypeDef *cs_gpiox;
     uint16_t cs_gpio_pin;
 } spi_user_data, *spi_user_data_t;
 
-static spi_user_data spi1 = {.hspix = &hspi1, .cs_gpiox = W25Qxx_CS_GPIO_Port, .cs_gpio_pin = W25Qxx_CS_Pin};
+static spi_user_data spi1 = {.hspix = &hspi1, .cs_gpiox = W25Qxx_CS_GPIO_Port, .cs_gpio_pin = W25Qxx_CS_Pin, .spix = SPI1};
 
 static char log_buf[256];
 
@@ -48,6 +49,7 @@ void sfud_log_debug(const char *file, const long line, const char *format, ...);
  */
 static sfud_err spi_write_read(const sfud_spi *spi, const uint8_t *write_buf, size_t write_size, uint8_t *read_buf, size_t read_size)
 {
+#if 0
     sfud_err result = SFUD_SUCCESS;
     uint8_t send_data, read_data;
 
@@ -95,6 +97,48 @@ static sfud_err spi_write_read(const sfud_spi *spi, const uint8_t *write_buf, si
     HAL_GPIO_WritePin(spi_dev->cs_gpiox, spi_dev->cs_gpio_pin, GPIO_PIN_SET);
 
     return result;
+#else
+    sfud_err result = SFUD_SUCCESS;
+    spi_user_data_t spi_dev = (spi_user_data_t)spi->user_data;
+    HAL_StatusTypeDef state = HAL_OK;
+
+    if (write_size)
+    {
+        SFUD_ASSERT(write_buf);
+    }
+    if (read_size)
+    {
+        SFUD_ASSERT(read_buf);
+    }
+
+    HAL_GPIO_WritePin(spi_dev->cs_gpiox, spi_dev->cs_gpio_pin, GPIO_PIN_RESET);
+
+    if (write_size)
+    {
+        state = HAL_SPI_Transmit(spi_dev->hspix, (uint8_t *)write_buf, write_size, 1000);
+        while (HAL_SPI_GetState(spi_dev->hspix) != HAL_SPI_STATE_READY)
+            ;
+    }
+
+    if (state != HAL_OK)
+    {
+        goto __exit;
+    }
+
+    if (read_size)
+    {
+        memset((uint8_t *)read_buf, 0xFF, read_size);
+        state = HAL_SPI_Receive(spi_dev->hspix, read_buf, read_size, 1000);
+        while (HAL_SPI_GetState(spi_dev->hspix) != HAL_SPI_STATE_READY)
+            ;
+    }
+
+__exit:
+
+    HAL_GPIO_WritePin(spi_dev->cs_gpiox, spi_dev->cs_gpio_pin, GPIO_PIN_SET);
+
+    return result;
+#endif
 }
 
 #ifdef SFUD_USING_QSPI
@@ -117,6 +161,9 @@ static sfud_err qspi_read(const struct __sfud_spi *spi, uint32_t addr, sfud_qspi
 /* about 100 microsecond delay */
 static void retry_delay_100us(void)
 {
+    uint32_t delay = 120;
+    while (delay--)
+        ;
 }
 
 static void spi_lock(const sfud_spi *spi)
