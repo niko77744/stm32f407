@@ -340,7 +340,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F407xx</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include;../User;../Third_Party/SFUD/inc;../Third_Party/EasyLogger/easylogger/inc;../Third_Party/EasyFlash/easyflash/inc;../Third_Party/EasyFlash/easyflash/plugins/types;../Third_Party/EasyLogger/easylogger/plugins/file;../Third_Party/EasyLogger/easylogger/plugins/flash;../Third_Party/EasyFlash/easyflash/plugins/types/struct2json/inc;../Third_Party/MultiTimer;../Third_Party/lwrb/lwrb/src/include/lwrb;../FATFS/Target;../FATFS/App;../Middlewares/Third_Party/FatFs/src;..\Third_Party\MultiButton;..\Third_Party\lwevt\lwevt\src\include\lwevt</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include;../User;../Third_Party/SFUD/inc;../Third_Party/EasyLogger/easylogger/inc;../Third_Party/EasyFlash/easyflash/inc;../Third_Party/EasyFlash/easyflash/plugins/types;../Third_Party/EasyLogger/easylogger/plugins/file;../Third_Party/EasyLogger/easylogger/plugins/flash;../Third_Party/EasyFlash/easyflash/plugins/types/struct2json/inc;../Third_Party/MultiTimer;../Third_Party/lwrb/lwrb/src/include/lwrb;../FATFS/Target;../FATFS/App;../Middlewares/Third_Party/FatFs/src;..\Third_Party\MultiButton;..\Third_Party\lwevt\lwevt\src\include\lwevt;..\Third_Party\FlashDB</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1380,6 +1380,111 @@
               <FileName>api.md</FileName>
               <FileType>5</FileType>
               <FilePath>..\Third_Party\EasyFlash\docs\zh\api.md</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Third_Party/FlashDB</GroupName>
+          <Files>
+            <File>
+              <FileName>fdb_cfg.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\FlashDB\fdb_cfg.h</FilePath>
+            </File>
+            <File>
+              <FileName>fal_cfg.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\FlashDB\fal_cfg.h</FilePath>
+            </File>
+            <File>
+              <FileName>fal.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\FlashDB\fal.h</FilePath>
+            </File>
+            <File>
+              <FileName>fal_def.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\FlashDB\fal_def.h</FilePath>
+            </File>
+            <File>
+              <FileName>fdb_def.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\FlashDB\fdb_def.h</FilePath>
+            </File>
+            <File>
+              <FileName>fdb_low_lvl.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\FlashDB\fdb_low_lvl.h</FilePath>
+            </File>
+            <File>
+              <FileName>flashdb.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\FlashDB\flashdb.h</FilePath>
+            </File>
+            <File>
+              <FileName>fal.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\FlashDB\fal\fal.c</FilePath>
+            </File>
+            <File>
+              <FileName>fal_flash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\FlashDB\fal\fal_flash.c</FilePath>
+            </File>
+            <File>
+              <FileName>fal_flash_stm32f4.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\FlashDB\fal\fal_flash_stm32f4.c</FilePath>
+            </File>
+            <File>
+              <FileName>fal_partition.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\FlashDB\fal\fal_partition.c</FilePath>
+            </File>
+            <File>
+              <FileName>fdb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\FlashDB\fdb\fdb.c</FilePath>
+            </File>
+            <File>
+              <FileName>fdb_file.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\FlashDB\fdb\fdb_file.c</FilePath>
+            </File>
+            <File>
+              <FileName>fdb_kvdb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\FlashDB\fdb\fdb_kvdb.c</FilePath>
+            </File>
+            <File>
+              <FileName>fdb_tsdb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\FlashDB\fdb\fdb_tsdb.c</FilePath>
+            </File>
+            <File>
+              <FileName>fdb_utils.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\FlashDB\fdb\fdb_utils.c</FilePath>
+            </File>
+            <File>
+              <FileName>kvdb_basic_sample.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\FlashDB\samples\kvdb_basic_sample.c</FilePath>
+            </File>
+            <File>
+              <FileName>kvdb_type_blob_sample.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\FlashDB\samples\kvdb_type_blob_sample.c</FilePath>
+            </File>
+            <File>
+              <FileName>kvdb_type_string_sample.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\FlashDB\samples\kvdb_type_string_sample.c</FilePath>
+            </File>
+            <File>
+              <FileName>tsdb_sample.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\FlashDB\samples\tsdb_sample.c</FilePath>
             </File>
           </Files>
         </Group>

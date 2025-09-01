@@ -110,9 +110,9 @@ int main(void)
     sys_time_init();
     buttons_init();
     ble_init();
-    message_queue_init();
+    // message_queue_init();
     // sd_fatfs_init();
-    // nvs_flash_init();
+    nvs_flash_init();
     // sfud_w25qxx_init();
 
     /* USER CODE END 2 */

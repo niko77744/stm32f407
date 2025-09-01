@@ -1,6 +1,7 @@
 #include "nvs_flash.h"
 #include "easyflash.h"
 #include "elog.h"
+#include "flashdb.h"
 
 // 移植: https://zhuanlan.zhihu.com/p/136168426
 // EasyFlash V4.0 ENV 功能设计与实现: https://mculover666.blog.csdn.net/article/details/105715982
@@ -96,87 +97,54 @@ uint32_t stm32_get_sector_size(uint32_t sector)
     }
 }
 
-/**
- * @brief 获取 blob 类型环境变量 size_t ef_get_env_blob(const char *key, void *value_buf, size_t buf_len, size_t *save_value_len);
- *
- * @param key 环境变量名称
- * @param value_buf 存放环境变量的缓冲区
- * @param buf_len 该缓冲区的大小
- * @param save_value_len 返回该环境变量实际存储在 flash 中的大小
- * @return size_t 成功存放至缓冲区中的数据长度
- */
+static uint32_t boot_count = 0;
+static time_t boot_time[10] = {0, 1, 2, 3};
+/* KVDB object */
+static struct fdb_kvdb kvdb = {0};
+/* default KV nodes */
+static struct fdb_default_kv_node default_kv_table[] = {
+    {"username", "armink", 0},                       /* string KV */
+    {"password", "123456", 0},                       /* string KV */
+    {"boot_count", &boot_count, sizeof(boot_count)}, /* int type KV */
+    {"boot_time", &boot_time, sizeof(boot_time)},    /* int array type KV */
+};
 
-/**
- * @brief 设置 blob 类型环境变量 EfErrCode ef_set_env_blob(const char *key, const void *value_buf, size_t buf_len);
- *  增加 ：当环境变量表中不存在该名称的环境变量时，则会执行新增操作；
- *  修改 ：入参中的环境变量名称在当前环境变量表中存在，则把该环境变量值修改为入参中的值；
- *  删除：当入参中的value为NULL时，则会删除入参名对应的环境变量。
- *
- * @param key 环境变量名称
- * @param value_buf 环境变量值缓冲区
- * @param buf_len 缓冲区长度，即值的长度
- * @return EfErrCode
- */
+extern void kvdb_basic_sample(fdb_kvdb_t kvdb);
 
-/**
- * @brief 获取启动次数
- *
- */
-void nvs_get_boot_times_from_env(void)
+static void lock(fdb_db_t db)
 {
-    uint32_t i_boot_times = NULL;
-    char *c_old_boot_times, c_new_boot_times[11] = {0};
+    __disable_irq();
+}
 
-    /*以下接口在 V4.0 中仍然可用，但已经由于种种原因被废弃，可能将会在 V5.0 版本中被正式删除 由于 V4.0 版本开始，在该函数内部具有环境变量的缓冲区，不允许连续多次同时使用该函数，例如如下代码：
-    // 错误的使用方法
-    ssid = ef_get_env("ssid");
-    password = ef_get_env("password"); // 由于 buf 共用，password 与 ssid 会返回相同的 buf 地址
-
-    // 建议改为下面的方式
-    ssid = strdup(ef_get_env("ssid")); // 克隆获取回来的环境变量
-    password = strdup(ef_get_env("password"));
-
-    // 使用完成后，释放资源
-    free(ssid); // 与 strdup 成对
-    free(password);*/
-
-    /* get the boot count number from Env */
-    c_old_boot_times = ef_get_env("boot_times");
-    i_boot_times = atol(c_old_boot_times);
-    /* boot count +1 */
-    i_boot_times++;
-    log_i("The system now boot %d times\n", i_boot_times);
-    /* interger to string */
-    sprintf(c_new_boot_times, "%u", i_boot_times);
-    /* set and store the boot count number to Env */
-    ef_set_env("boot_times", c_new_boot_times);
-    ef_save_env();
-
-    // char wifi_ssid[20] = {0};
-    // char wifi_passwd[20] = {0};
-    // size_t len = 0;
-    // /* 读取默认环境变量值 */
-    // // 环境变量长度未知，先获取 Flash 上存储的实际长度 */
-    // ef_get_env_blob("wifi_ssid", NULL, 0, &len);
-    // // 获取环境变量
-    // ef_get_env_blob("wifi_ssid", wifi_ssid, len, NULL);
-    // // 打印获取的环境变量值
-    // log_i("wifi_ssid env is:%s\r\n", wifi_ssid);
-    // // 环境变量长度未知，先获取 Flash 上存储的实际长度 */
-    // ef_get_env_blob("wifi_passwd", NULL, 0, &len);
-    // // 获取环境变量
-    // ef_get_env_blob("wifi_passwd", wifi_passwd, len, NULL);
-    // // 打印获取的环境变量值
-    // log_i("wifi_passwd env is:%s\r\n", wifi_passwd);
-    // /* 将环境变量值改变 */
-    // ef_set_env_blob("wifi_ssid", "SSID_TEST", 9);
-    // ef_set_env_blob("wifi_passwd", "66666666", 8);
+static void unlock(fdb_db_t db)
+{
+    __enable_irq();
 }
 
 void nvs_flash_init(void)
 {
-    if (easyflash_init() == EF_NO_ERR)
-    {
-        nvs_get_boot_times_from_env();
-    }
+    struct fdb_default_kv default_kv;
+    fdb_err_t result;
+
+    default_kv.kvs = default_kv_table;
+    default_kv.num = sizeof(default_kv_table) / sizeof(default_kv_table[0]);
+    /* set the lock and unlock function if you want */
+    fdb_kvdb_control(&kvdb, FDB_KVDB_CTRL_SET_LOCK, (void *)lock);
+    fdb_kvdb_control(&kvdb, FDB_KVDB_CTRL_SET_UNLOCK, (void *)unlock);
+    /* Key-Value database initialization
+     *
+     *       &kvdb: database object
+     *       "env": database name
+     * "fdb_kvdb1": The flash partition name base on FAL. Please make sure it's in FAL partition table.
+     *              Please change to YOUR partition name.
+     * &default_kv: The default KV nodes. It will auto add to KVDB when first initialize successfully.
+     *        NULL: The user data if you need, now is empty.
+     */
+
+    result = fdb_kvdb_init(&kvdb, "env", "bl", &default_kv, NULL);
+
+    if (result != FDB_NO_ERR)
+        return;
+
+    kvdb_basic_sample(&kvdb);
 }
