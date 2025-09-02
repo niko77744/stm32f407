@@ -53,6 +53,16 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
         // 关闭DMA传输过半中断（HAL库默认开启，但我们只需要接收完成中断）
         __HAL_DMA_DISABLE_IT(huart3.hdmarx, DMA_IT_HT);
     }
+    else if (huart->Instance == UART4)
+    {
+        log_i("ESP8266 data received %s", esp8266_buf);
+        // esp8266_send_to_logbuf(esp8266_buf, Size);
+        memset(esp8266_buf, 0, sizeof(esp8266_buf));
+        // 重新启动接收，使用Ex函数，接收不定长数据
+        HAL_UARTEx_ReceiveToIdle_IT(&huart4, esp8266_buf, sizeof(esp8266_buf));
+        // 关闭DMA传输过半中断（HAL库默认开启，但我们只需要接收完成中断）
+        __HAL_DMA_DISABLE_IT(huart4.hdmarx, DMA_IT_HT);
+    }
 }
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)

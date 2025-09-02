@@ -1,3 +1,4 @@
+#define LOG_TAG "log"
 #include "log.h"
 #include "elog.h"
 
