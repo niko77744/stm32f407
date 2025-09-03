@@ -12,5 +12,6 @@ typedef enum
 
 void led_on(LED_TypeDef led);
 void led_off(LED_TypeDef led);
+void led_toggle(LED_TypeDef led);
 
 #endif /* __LED_H__ */

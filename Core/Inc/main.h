@@ -59,6 +59,7 @@ extern "C" {
 #include "buzzer.h"
 #include "button.h"
 #include "log.h"
+#include "app.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/

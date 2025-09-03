@@ -22,6 +22,13 @@
 #include "stm32f4xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#define LOG_TAG "stm32f4xx_it"
+#include "elog.h"
+#include "FreeRTOS.h"
+#include "task.h"
+/* Definitions that map the FreeRTOS port interrupt handlers to their CMSIS
+standard names. */
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -46,7 +53,7 @@
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN PFP */
-
+extern void xPortSysTickHandler(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -154,19 +161,6 @@ void UsageFault_Handler(void)
 }
 
 /**
-  * @brief This function handles System service call via SWI instruction.
-  */
-void SVC_Handler(void)
-{
-  /* USER CODE BEGIN SVCall_IRQn 0 */
-
-  /* USER CODE END SVCall_IRQn 0 */
-  /* USER CODE BEGIN SVCall_IRQn 1 */
-
-  /* USER CODE END SVCall_IRQn 1 */
-}
-
-/**
   * @brief This function handles Debug monitor.
   */
 void DebugMon_Handler(void)
@@ -180,19 +174,6 @@ void DebugMon_Handler(void)
 }
 
 /**
-  * @brief This function handles Pendable request for system service.
-  */
-void PendSV_Handler(void)
-{
-  /* USER CODE BEGIN PendSV_IRQn 0 */
-
-  /* USER CODE END PendSV_IRQn 0 */
-  /* USER CODE BEGIN PendSV_IRQn 1 */
-
-  /* USER CODE END PendSV_IRQn 1 */
-}
-
-/**
   * @brief This function handles System tick timer.
   */
 void SysTick_Handler(void)
@@ -202,7 +183,10 @@ void SysTick_Handler(void)
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
   /* USER CODE BEGIN SysTick_IRQn 1 */
-
+    if (xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED)
+    {
+        xPortSysTickHandler();
+    }
   /* USER CODE END SysTick_IRQn 1 */
 }
 
@@ -452,5 +436,28 @@ void USART6_IRQHandler(void)
 }
 
 /* USER CODE BEGIN 1 */
+void vApplicationIdleHook(void)
+{
+}
 
+void vApplicationStackOverflowHook(TaskHandle_t pxTask,
+                                   char *pcTaskName)
+{
+    (void)pcTaskName;
+    (void)pxTask;
+
+    /* Run time stack overflow checking is performed if
+     * configCHECK_FOR_STACK_OVERFLOW is defined to 1 or 2.  This hook
+     * function is called if a stack overflow is detected. */
+    log_e("stack overflow %s", pcTaskName);
+    for (;;)
+    {
+    }
+}
+void vApplicationTickHook(void)
+{
+}
+void vApplicationMallocFailedHook(void)
+{
+}
 /* USER CODE END 1 */

@@ -45,7 +45,6 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
     if (huart->Instance == USART3)
     {
         // 使用DMA将接收到的数据发送回去
-        // HAL_UART_Transmit_DMA(&huart3, ble_rx_buffer, Size);
         HAL_UART_Transmit(&huart3, ble_rx_buffer, Size, 1000);
         memset(ble_rx_buffer, 0, sizeof(ble_rx_buffer));
         // 重新启动接收，使用Ex函数，接收不定长数据
@@ -56,7 +55,6 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
     else if (huart->Instance == UART4)
     {
         log_i("ESP8266 data received %s", esp8266_buf);
-        // esp8266_send_to_logbuf(esp8266_buf, Size);
         memset(esp8266_buf, 0, sizeof(esp8266_buf));
         // 重新启动接收，使用Ex函数，接收不定长数据
         HAL_UARTEx_ReceiveToIdle_IT(&huart4, esp8266_buf, sizeof(esp8266_buf));

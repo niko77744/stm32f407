@@ -340,7 +340,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F407xx</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include;../User;../Third_Party/SFUD/inc;../Third_Party/EasyLogger/easylogger/inc;../Third_Party/EasyFlash/easyflash/inc;../Third_Party/EasyFlash/easyflash/plugins/types;../Third_Party/EasyLogger/easylogger/plugins/file;../Third_Party/EasyLogger/easylogger/plugins/flash;../Third_Party/EasyFlash/easyflash/plugins/types/struct2json/inc;../Third_Party/MultiTimer;../Third_Party/lwrb/lwrb/src/include/lwrb;../FATFS/Target;../FATFS/App;../Middlewares/Third_Party/FatFs/src;../Third_Party/MultiButton;../Third_Party/lwevt/lwevt/src/include/lwevt;../Third_Party/FlashDB</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include;../User;../Third_Party/SFUD/inc;../Third_Party/EasyLogger/easylogger/inc;../Third_Party/EasyFlash/easyflash/inc;../Third_Party/EasyFlash/easyflash/plugins/types;../Third_Party/EasyLogger/easylogger/plugins/file;../Third_Party/EasyLogger/easylogger/plugins/flash;../Third_Party/EasyFlash/easyflash/plugins/types/struct2json/inc;../Third_Party/MultiTimer;../Third_Party/lwrb/lwrb/src/include/lwrb;../FATFS/Target;../FATFS/App;../Middlewares/Third_Party/FatFs/src;../Third_Party/MultiButton;../Third_Party/lwevt/lwevt/src/include/lwevt;../Third_Party/FlashDB;../Third_Party/FreeRTOS-Kernel/include;../Third_Party/FreeRTOS-Kernel;../Third_Party/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1579,6 +1579,66 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>Third_Party/FreeRtos</GroupName>
+          <Files>
+            <File>
+              <FileName>FreeRTOSConfig.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\FreeRTOS-Kernel\FreeRTOSConfig.h</FilePath>
+            </File>
+            <File>
+              <FileName>croutine.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\FreeRTOS-Kernel\croutine.c</FilePath>
+            </File>
+            <File>
+              <FileName>event_groups.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\FreeRTOS-Kernel\event_groups.c</FilePath>
+            </File>
+            <File>
+              <FileName>list.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\FreeRTOS-Kernel\list.c</FilePath>
+            </File>
+            <File>
+              <FileName>queue.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\FreeRTOS-Kernel\queue.c</FilePath>
+            </File>
+            <File>
+              <FileName>stream_buffer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\FreeRTOS-Kernel\stream_buffer.c</FilePath>
+            </File>
+            <File>
+              <FileName>tasks.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\FreeRTOS-Kernel\tasks.c</FilePath>
+            </File>
+            <File>
+              <FileName>timers.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\FreeRTOS-Kernel\timers.c</FilePath>
+            </File>
+            <File>
+              <FileName>heap_4.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\FreeRTOS-Kernel\portable\MemMang\heap_4.c</FilePath>
+            </File>
+            <File>
+              <FileName>port.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\FreeRTOS-Kernel\portable\RVDS\ARM_CM4F\port.c</FilePath>
+            </File>
+            <File>
+              <FileName>portmacro.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\FreeRTOS-Kernel\portable\RVDS\ARM_CM4F\portmacro.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>Third_Party/Fatfs</GroupName>
         </Group>
         <Group>
@@ -2254,6 +2314,11 @@
         <Group>
           <GroupName>User</GroupName>
           <Files>
+            <File>
+              <FileName>app.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\app.c</FilePath>
+            </File>
             <File>
               <FileName>w25qxx.c</FileName>
               <FileType>1</FileType>

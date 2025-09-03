@@ -171,12 +171,12 @@ void log_sd_card_info(void)
 void sd_fatfs_init(void)
 {
     FRESULT res;
-    FATFS *fsTF;
+    // FATFS *fsTF;
 
-    fsTF = (FATFS *)Mem_malloc(INSRAM, sizeof(FATFS)); // 为文件系统分配内存
+    // fsTF = (FATFS *)Mem_malloc(INSRAM, sizeof(FATFS)); // 为文件系统分配内存
 
     // 1. 挂载文件系统
-    res = f_mount(fsTF, "0:", 1);
+    res = f_mount(&SDFatFS, "0:", 1);
     if (res != FR_OK)
     {
         log_e("Error mounting filesystem: %d", res);
