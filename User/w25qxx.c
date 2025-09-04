@@ -53,7 +53,15 @@ uint16_t w25qxx_read_id(void)
 //[SFUD](../Lib_SFUD/src/sfud.c：861) 闪存设备复位成功。
 //[SFUD]W25Q128BV 闪存设备初始化成功。
 
-static void sfud_w25qxx_self_inspection(uint32_t addr, uint32_t size, uint8_t *data)
+#if 0
+/**
+ * @brief 自检程序
+ *
+ * @param addr
+ * @param size
+ * @param data
+ */
+DEPRECATED static void sfud_w25qxx_self_inspection(uint32_t addr, uint32_t size, uint8_t *data)
 {
     sfud_err result = SFUD_SUCCESS;
     const sfud_flash *flash = sfud_get_device_table() + 0;
@@ -113,55 +121,58 @@ static void sfud_w25qxx_self_inspection(uint32_t addr, uint32_t size, uint8_t *d
 #define SFUD_BUFFER_SIZE 1024
 uint8_t sfud_buf[SFUD_BUFFER_SIZE];
 
-void sfud_w25qxx_init(void)
+DEPRECATED void sfud_w25qxx_init(void)
 {
     if (sfud_init() == SFUD_SUCCESS)
     {
         sfud_w25qxx_self_inspection(0, sizeof(sfud_buf), sfud_buf);
     }
 }
+#endif
 
 lfs_t lfs;
 lfs_file_t file;
 struct lfs_config cfg;
 
-void lfs_demo(void)
+void user_lfs_init(void)
 {
-    sfud_init();
-    extern int lfs_spi_flash_init(struct lfs_config * cfg);
-    int err = lfs_spi_flash_init(&cfg);
-    if (err)
+    if (sfud_init() == SFUD_SUCCESS)
     {
-        log_i("lfs_spi_flash_init() failed");
+        extern int lfs_spi_flash_init(struct lfs_config * cfg);
+        int err = lfs_spi_flash_init(&cfg);
+        if (err)
+        {
+            log_i("lfs_spi_flash_init() failed");
+        }
+
+        // mount the filesystem
+        err = lfs_mount(&lfs, &cfg);
+
+        // reformat if we can't mount the filesystem
+        // this should only happen on the first boot
+        if (err)
+        {
+            lfs_format(&lfs, &cfg);
+            lfs_mount(&lfs, &cfg);
+        }
+
+        // read current count
+        uint32_t boot_count = 0;
+        lfs_file_open(&lfs, &file, "boot_count", LFS_O_RDWR | LFS_O_CREAT);
+        lfs_file_read(&lfs, &file, &boot_count, sizeof(boot_count));
+
+        // update boot count
+        boot_count += 1;
+        lfs_file_rewind(&lfs, &file);
+        lfs_file_write(&lfs, &file, &boot_count, sizeof(boot_count));
+
+        // remember the storage is not updated until the file is closed successfully
+        lfs_file_close(&lfs, &file);
+
+        // release any resources we were using
+        lfs_unmount(&lfs);
+
+        // print the boot count
+        log_i("boot_count: %d", boot_count);
     }
-
-    // mount the filesystem
-    err = lfs_mount(&lfs, &cfg);
-
-    // reformat if we can't mount the filesystem
-    // this should only happen on the first boot
-    if (err)
-    {
-        lfs_format(&lfs, &cfg);
-        lfs_mount(&lfs, &cfg);
-    }
-
-    // read current count
-    uint32_t boot_count = 0;
-    lfs_file_open(&lfs, &file, "boot_count", LFS_O_RDWR | LFS_O_CREAT);
-    lfs_file_read(&lfs, &file, &boot_count, sizeof(boot_count));
-
-    // update boot count
-    boot_count += 1;
-    lfs_file_rewind(&lfs, &file);
-    lfs_file_write(&lfs, &file, &boot_count, sizeof(boot_count));
-
-    // remember the storage is not updated until the file is closed successfully
-    lfs_file_close(&lfs, &file);
-
-    // release any resources we were using
-    lfs_unmount(&lfs);
-
-    // print the boot count
-    log_i("boot_count: %d", boot_count);
 }

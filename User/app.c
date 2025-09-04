@@ -86,21 +86,16 @@ void app_init(void)
 {
     Memory_Init(INSRAM);
     log_init();
-    lfs_demo();
-    while (1)
-    {
-    }
-
-    // ring_buf_init();
+    user_lfs_init();
+    nvs_flash_init();
     sw_time_init();
     sys_time_init();
     buttons_init();
     ble_init();
+    // sd_fatfs_init();
+    // ring_buf_init();
     // esp8266_hw_init();
     // message_queue_init();
-    // sd_fatfs_init();
-    // nvs_flash_init();
-    // sfud_w25qxx_init();
 }
 
 void app_os_start(void)

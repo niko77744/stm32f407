@@ -31,12 +31,16 @@
 #define W25X_ManufactDeviceID 0x90
 #define W25X_JedecDeviceID 0x9F
 
+// W25Q128 Ãÿ∂®≈‰÷√
+#define W25Q128_FLASH_SIZE (16 * 1024 * 1024)                         // 16MB
+#define W25Q128_SECTOR_SIZE 4096                                      // 4KB …»«¯
+#define W25Q128_SECTOR_NUM (W25Q128_FLASH_SIZE / W25Q128_SECTOR_SIZE) // 4096
+
 typedef struct
 {
     uint16_t id;
 } w25qxx_device_t;
 
-void sfud_w25qxx_init(void);
-void lfs_demo(void);
+void user_lfs_init(void);
 
 #endif /* __W25QXX_H__ */

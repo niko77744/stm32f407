@@ -35,7 +35,7 @@ static sfud_flash_t sfud_dev = NULL;
 struct fal_flash_dev nor_flash0 =
     {
         .name = FAL_USING_NOR_FLASH_DEV_NAME,
-        .addr = 0,
+        .addr = 8 * 1024 * 1024,
         .len = 8 * 1024 * 1024,
         .blk_size = 4096,
         .ops = {init, read, write, erase},
@@ -50,10 +50,11 @@ static int init(void)
 #else
     /* bare metal platform */
     /* SFUD initialize */
-    if (sfud_device_init(&sfud_norflash0) != SFUD_SUCCESS)
-        return -1;
+    // if (sfud_device_init(&sfud_norflash0) != SFUD_SUCCESS)
+    //     return -1;
 
-    sfud_dev = &sfud_norflash0;
+    // sfud_dev = &sfud_norflash0;
+    sfud_dev = sfud_get_device(0);
 #endif
 
     if (NULL == sfud_dev)

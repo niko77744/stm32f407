@@ -34,6 +34,13 @@ extern struct fal_flash_dev nor_flash0;
     }
 #endif /* FAL_PART_HAS_TABLE_CFG */
 /*
+#define FAL_PART_TABLE                                                               \
+{                                                                                    \
+    {FAL_PART_MAGIC_WORD,        "bl",     "stm32_onchip",         0,   64*1024, 0}, \
+    {FAL_PART_MAGIC_WORD,       "app",     "stm32_onchip",   64*1024,  704*1024, 0}, \
+    {FAL_PART_MAGIC_WORD, "easyflash", NOR_FLASH_DEV_NAME,         0, 1024*1024, 0}, \
+    {FAL_PART_MAGIC_WORD,  "download", NOR_FLASH_DEV_NAME, 1024*1024, 1024*1024, 0}, \
+}
 | 分区名         | Flash 设备名    | 偏移地址   | 大小  | 说明
 | "bl"           | "stm32_onchip" | 0         | 64KB  | 引导程序
 | "app"          | "stm32_onchip" | 64*1024   | 704KB | 应用程序

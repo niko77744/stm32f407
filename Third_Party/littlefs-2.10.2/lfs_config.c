@@ -1,7 +1,7 @@
 #include "lfs_config.h"
 
-#define W25Qxx_SECTOR_SIZE 4096
-#define W25Qxx_SECTOR_NUM 256
+#define W25Qxx_SECTOR_SIZE W25Q128_SECTOR_SIZE
+#define W25Qxx_SECTOR_NUM 256 * 8 // 使用256个扇区做为littlefs的存储空间 8 * 256 * 4096 = 8MB
 int lfs_spi_flash_init(struct lfs_config *cfg);
 int lfs_spi_flash_read(const struct lfs_config *cfg, lfs_block_t block, lfs_off_t off, void *buffer, lfs_size_t size);
 int lfs_spi_flash_prog(const struct lfs_config *cfg, lfs_block_t block, lfs_off_t off, const void *buffer, lfs_size_t size);
