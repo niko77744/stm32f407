@@ -3,6 +3,9 @@
 
 #include "main.h"
 #include "sfud.h"
+#include "lfs_config.h"
+#include "lfs.h"
+#include "lfs_util.h"
 
 // W25X系列/Q系列芯片列表
 #define W25Q80 0XEF13
@@ -34,5 +37,6 @@ typedef struct
 } w25qxx_device_t;
 
 void sfud_w25qxx_init(void);
+void lfs_demo(void);
 
 #endif /* __W25QXX_H__ */

@@ -340,7 +340,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F407xx</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include;../User;../Third_Party/SFUD/inc;../Third_Party/EasyLogger/easylogger/inc;../Third_Party/EasyFlash/easyflash/inc;../Third_Party/EasyFlash/easyflash/plugins/types;../Third_Party/EasyLogger/easylogger/plugins/file;../Third_Party/EasyLogger/easylogger/plugins/flash;../Third_Party/EasyFlash/easyflash/plugins/types/struct2json/inc;../Third_Party/MultiTimer;../Third_Party/lwrb/lwrb/src/include/lwrb;../FATFS/Target;../FATFS/App;../Middlewares/Third_Party/FatFs/src;../Third_Party/MultiButton;../Third_Party/lwevt/lwevt/src/include/lwevt;../Third_Party/FlashDB;../Third_Party/FreeRTOS-Kernel/include;../Third_Party/FreeRTOS-Kernel;../Third_Party/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include;../User;../Third_Party/SFUD/inc;../Third_Party/EasyLogger/easylogger/inc;../Third_Party/EasyFlash/easyflash/inc;../Third_Party/EasyFlash/easyflash/plugins/types;../Third_Party/EasyLogger/easylogger/plugins/file;../Third_Party/EasyLogger/easylogger/plugins/flash;../Third_Party/EasyFlash/easyflash/plugins/types/struct2json/inc;../Third_Party/MultiTimer;../Third_Party/lwrb/lwrb/src/include/lwrb;../FATFS/Target;../FATFS/App;../Middlewares/Third_Party/FatFs/src;../Third_Party/MultiButton;../Third_Party/lwevt/lwevt/src/include/lwevt;../Third_Party/FlashDB;../Third_Party/FreeRTOS-Kernel/include;../Third_Party/FreeRTOS-Kernel;../Third_Party/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F;..\Third_Party\littlefs-2.10.2</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1560,6 +1560,41 @@
               <FileName>lwevt.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Third_Party\lwevt\lwevt\src\lwevt\lwevt.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Third_Party/LittleFs</GroupName>
+          <Files>
+            <File>
+              <FileName>lfs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\littlefs-2.10.2\lfs.c</FilePath>
+            </File>
+            <File>
+              <FileName>lfs.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\littlefs-2.10.2\lfs.h</FilePath>
+            </File>
+            <File>
+              <FileName>lfs_util.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\littlefs-2.10.2\lfs_util.c</FilePath>
+            </File>
+            <File>
+              <FileName>lfs_util.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\littlefs-2.10.2\lfs_util.h</FilePath>
+            </File>
+            <File>
+              <FileName>lfs_config.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\littlefs-2.10.2\lfs_config.h</FilePath>
+            </File>
+            <File>
+              <FileName>lfs_config.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\littlefs-2.10.2\lfs_config.c</FilePath>
             </File>
           </Files>
         </Group>

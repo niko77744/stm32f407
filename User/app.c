@@ -86,6 +86,10 @@ void app_init(void)
 {
     Memory_Init(INSRAM);
     log_init();
+    lfs_demo();
+    while (1)
+    {
+    }
 
     // ring_buf_init();
     sw_time_init();

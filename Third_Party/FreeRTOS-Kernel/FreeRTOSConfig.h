@@ -55,7 +55,7 @@ extern uint32_t SystemCoreClock;
 #define configMAX_TASK_NAME_LEN (10)
 #define configUSE_TRACE_FACILITY 1
 #define configUSE_16_BIT_TICKS 0
-#define configIDLE_SHOULD_YIELD 1
+#define configIDLE_SHOULD_YIELD 0
 #define configUSE_MUTEXES 1
 #define configQUEUE_REGISTRY_SIZE 8
 #define configCHECK_FOR_STACK_OVERFLOW 2
@@ -64,6 +64,9 @@ extern uint32_t SystemCoreClock;
 #define configUSE_APPLICATION_TASK_TAG 0
 #define configUSE_COUNTING_SEMAPHORES 1
 #define configGENERATE_RUN_TIME_STATS 0
+#define configUSE_QUEUE_SETS 1 // 为1时启用队列集功能
+#define configUSE_TASK_NOTIFICATIONS 1 // 使用任务通知功能
+// #define configUSE_PORT_OPTIMISED_TASK_SELECTION 1 
 
 /* Co-routine definitions. */
 #define configUSE_CO_ROUTINES 0
