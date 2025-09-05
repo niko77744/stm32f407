@@ -25,6 +25,7 @@
 #include "spi.h"
 #include "usart.h"
 #include "gpio.h"
+#include "fsmc.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -51,13 +52,34 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+static uint8_t fac_us = SYSCLK; // us延时倍乘数
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-
+void delay_us(uint32_t nus)
+{
+    uint32_t ticks;
+    uint32_t told, tnow, tcnt = 0;
+    uint32_t reload = SysTick->LOAD; // LOAD的值
+    ticks = nus * fac_us;            // 需要的节拍数
+    told = SysTick->VAL;             // 刚进入时的计数器值
+    while (1)
+    {
+        tnow = SysTick->VAL;
+        if (tnow != told)
+        {
+            if (tnow < told)
+                tcnt += told - tnow; // 这里注意一下SYSTICK是一个递减的计数器就可以了.
+            else
+                tcnt += reload - tnow + told;
+            told = tnow;
+            if (tcnt >= ticks)
+                break; // 时间超过/等于要延迟的时间,则退出.
+        }
+    };
+}
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -102,6 +124,7 @@ int main(void)
     MX_UART4_Init();
     MX_USART3_UART_Init();
     MX_I2C1_Init();
+    MX_FSMC_Init();
     /* USER CODE BEGIN 2 */
     app_init();
     app_os_start();

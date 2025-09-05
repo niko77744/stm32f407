@@ -62,13 +62,41 @@ void app_task(void *pvParameters)
     }
 }
 
+// 清空屏幕
+void Clear_Screen(void)
+{
+    LCD_Clear(WHITE);                                                // 清屏
+    BRUSH_COLOR = BLUE;                                              // 设置字体为蓝色
+    LCD_DisplayString(lcd_width - 40, lcd_height - 18, 16, "Clear"); // 显示清屏区域
+    BRUSH_COLOR = RED;                                               // 设置画笔蓝色
+}
+void Draw_Point(uint16_t x, uint16_t y, uint16_t color)
+{
+    BRUSH_COLOR = color;
+    for (uint8_t i = 0; i < 4; i++)
+    {
+        LCD_DrawPoint(x, y + i);
+        LCD_DrawPoint(x + 1, y + i);
+        LCD_DrawPoint(x + 2, y + i);
+        LCD_DrawPoint(x + 3, y + i);
+    }
+}
+
 void display_task(void *pvParameters)
 {
     while (1)
     {
-        log_i("display task is running.");
-        led_toggle(LED1);
-        vTaskDelay(pdMS_TO_TICKS(1000));
+        // log_i("display task is running.");
+        // led_toggle(LED1);
+        XPT2046_Scan(0);
+        if (Xdown < lcd_width && Ydown < lcd_height)
+        {
+            if (Xdown > (lcd_width - 40) && Ydown > lcd_height - 18)
+                Clear_Screen(); // 清空屏幕
+            else
+                Draw_Point(Xdown, Ydown, RED); // 画图
+        }
+        vTaskDelay(pdMS_TO_TICKS(1));
     }
 }
 
@@ -86,12 +114,15 @@ void app_init(void)
 {
     Memory_Init(INSRAM);
     log_init();
-    user_lfs_init();
-    nvs_flash_init();
-    sw_time_init();
-    sys_time_init();
+    // user_lfs_init();
+    // nvs_flash_init();
+    // sw_time_init();
+    // sys_time_init();
     buttons_init();
     ble_init();
+    LCD_Init();        // 初始化LCD FSMC接口和显示驱动
+    BRUSH_COLOR = RED; // 设置画笔颜色为红色
+    LCD_DisplayString(10, 10, 24, "Illuminati STM32");
     // sd_fatfs_init();
     // ring_buf_init();
     // esp8266_hw_init();
