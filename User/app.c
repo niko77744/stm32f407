@@ -123,6 +123,7 @@ void app_init(void)
     LCD_Init();        // 初始化LCD FSMC接口和显示驱动
     BRUSH_COLOR = RED; // 设置画笔颜色为红色
     LCD_DisplayString(10, 10, 24, "Illuminati STM32");
+    
     // sd_fatfs_init();
     // ring_buf_init();
     // esp8266_hw_init();

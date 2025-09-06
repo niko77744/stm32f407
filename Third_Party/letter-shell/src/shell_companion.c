@@ -4,16 +4,17 @@
  * @brief shell companion object support
  * @version 3.0.3
  * @date 2020-07-22
- * 
+ *
  * @copyright (c) 2020 Letter
- * 
+ *
  */
- #include "shell.h"
- 
+#include "malloc.h"
+#include "shell.h"
+
 #if SHELL_USING_COMPANION == 1
 /**
  * @brief shell添加伴生对象
- * 
+ *
  * @param shell shell对象
  * @param id 伴生对象ID
  * @param object 伴生对象
@@ -33,7 +34,7 @@ signed char shellCompanionAdd(Shell *shell, int id, void *object)
 
 /**
  * @brief shell删除伴生对象
- * 
+ *
  * @param shell shell对象
  * @param id 伴生对象ID
  * @return signed char 0 删除成功 -1 无匹配对象
@@ -46,7 +47,7 @@ signed char shellCompanionDel(Shell *shell, int id)
     {
         if (companions->id == id)
         {
-            if (companions == shell->info.companions && !(companions->next)) 
+            if (companions == shell->info.companions && !(companions->next))
             {
                 shell->info.companions = (void *)0;
             }
@@ -65,7 +66,7 @@ signed char shellCompanionDel(Shell *shell, int id)
 
 /**
  * @brief shell获取伴生对象
- * 
+ *
  * @param shell shell对象
  * @param id 伴生对象ID
  * @return void* 伴生对象，无匹配对象时返回NULL

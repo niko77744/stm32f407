@@ -340,7 +340,7 @@
               <MiscControls>--diag_suppress=68 --diag_suppress=111 --diag_suppress=188 --diag_suppress=223 --diag_suppress=546  --diag_suppress=1295</MiscControls>
               <Define>USE_HAL_DRIVER,STM32F407xx,LV_CONF_INCLUDE_SIMPLE</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include;../User;../Third_Party/SFUD/inc;../Third_Party/EasyLogger/easylogger/inc;../Third_Party/EasyFlash/easyflash/inc;../Third_Party/EasyFlash/easyflash/plugins/types;../Third_Party/EasyLogger/easylogger/plugins/file;../Third_Party/EasyLogger/easylogger/plugins/flash;../Third_Party/EasyFlash/easyflash/plugins/types/struct2json/inc;../Third_Party/MultiTimer;../Third_Party/lwrb/lwrb/src/include/lwrb;../FATFS/Target;../FATFS/App;../Middlewares/Third_Party/FatFs/src;../Third_Party/MultiButton;../Third_Party/lwevt/lwevt/src/include/lwevt;../Third_Party/FlashDB;../Third_Party/FreeRTOS-Kernel/include;../Third_Party/FreeRTOS-Kernel;../Third_Party/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F;../Third_Party/littlefs-2.10.2;..\Third_Party\lvgl-release-v8.4.0;..\Third_Party\lvgl-release-v8.4.0\src;..\Third_Party\lvgl-release-v8.4.0\porting</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include;../User;../Third_Party/SFUD/inc;../Third_Party/EasyLogger/easylogger/inc;../Third_Party/EasyFlash/easyflash/inc;../Third_Party/EasyFlash/easyflash/plugins/types;../Third_Party/EasyLogger/easylogger/plugins/file;../Third_Party/EasyLogger/easylogger/plugins/flash;../Third_Party/EasyFlash/easyflash/plugins/types/struct2json/inc;../Third_Party/MultiTimer;../Third_Party/lwrb/lwrb/src/include/lwrb;../FATFS/Target;../FATFS/App;../Middlewares/Third_Party/FatFs/src;../Third_Party/MultiButton;../Third_Party/lwevt/lwevt/src/include/lwevt;../Third_Party/FlashDB;../Third_Party/FreeRTOS-Kernel/include;../Third_Party/FreeRTOS-Kernel;../Third_Party/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F;../Third_Party/littlefs-2.10.2;..\Third_Party\lvgl-release-v8.4.0;..\Third_Party\lvgl-release-v8.4.0\src;..\Third_Party\lvgl-release-v8.4.0\porting;..\Third_Party\letter-shell\src</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -2011,6 +2011,56 @@
         </Group>
         <Group>
           <GroupName>Third_Party/Fatfs</GroupName>
+        </Group>
+        <Group>
+          <GroupName>Third_Party/letter-shell</GroupName>
+          <Files>
+            <File>
+              <FileName>shell_cfg.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\letter-shell\src\shell_cfg.h</FilePath>
+            </File>
+            <File>
+              <FileName>shell.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\letter-shell\src\shell.c</FilePath>
+            </File>
+            <File>
+              <FileName>shell.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\letter-shell\src\shell.h</FilePath>
+            </File>
+            <File>
+              <FileName>shell_cmd_list.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\letter-shell\src\shell_cmd_list.c</FilePath>
+            </File>
+            <File>
+              <FileName>shell_companion.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\letter-shell\src\shell_companion.c</FilePath>
+            </File>
+            <File>
+              <FileName>shell_ext.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\letter-shell\src\shell_ext.c</FilePath>
+            </File>
+            <File>
+              <FileName>shell_ext.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\letter-shell\src\shell_ext.h</FilePath>
+            </File>
+            <File>
+              <FileName>shell_port.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\letter-shell\src\shell_port.c</FilePath>
+            </File>
+            <File>
+              <FileName>shell_port.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\letter-shell\src\shell_port.h</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>Application/User/FATFS/Target</GroupName>
