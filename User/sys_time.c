@@ -4,6 +4,7 @@
 
 MultiTimer sys_timer;
 sys_time_t sys_time;
+static const uint8_t fac_us = SYSCLK; // us延时倍乘数
 
 static uint64_t get_platform_tick(void)
 {
@@ -38,4 +39,42 @@ void sw_time_init(void)
 void sw_timer_loop(void)
 {
     multiTimerYield();
+}
+
+void delay_us(uint32_t nus)
+{
+    uint32_t ticks;
+    uint32_t told, tnow, tcnt = 0;
+    uint32_t reload = SysTick->LOAD; // LOAD的值
+    ticks = nus * fac_us;            // 需要的节拍数
+    told = SysTick->VAL;             // 刚进入时的计数器值
+    while (1)
+    {
+        tnow = SysTick->VAL;
+        if (tnow != told)
+        {
+            if (tnow < told)
+                tcnt += told - tnow; // 这里注意一下SYSTICK是一个递减的计数器就可以了.
+            else
+                tcnt += reload - tnow + told;
+            told = tnow;
+            if (tcnt >= ticks)
+                break; // 时间超过/等于要延迟的时间,则退出.
+        }
+    }
+}
+
+/**
+ * @brief     延时nms
+ * @param     nms: 要延时的ms数 (0< nms <= 65535)
+ * @retval    无
+ */
+void delay_ms(uint16_t nms)
+{
+    uint32_t i;
+
+    for (i = 0; i < nms; i++)
+    {
+        delay_us(1000);
+    }
 }

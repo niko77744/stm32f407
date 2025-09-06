@@ -139,7 +139,6 @@ extern "C"
 
     /* Exported functions prototypes ---------------------------------------------*/
     void Error_Handler(void);
-    void delay_us(uint32_t nus);
 
 /* USER CODE BEGIN EFP */
 #define SoftWare_Version "V1.0.0"

@@ -16,5 +16,7 @@ void sw_time_init(void);
 void get_sys_time(sys_time_t *time);
 void sw_timer_loop(void);
 void sys_time_init(void);
+void delay_ms(uint16_t nms);
+void delay_us(uint32_t nus);
 
 #endif /* __SYS_TIME_H__ */
