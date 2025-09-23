@@ -2,6 +2,7 @@
 #include "app.h"
 #include "elog.h"
 #include "lvgl.h"
+#define SUPPORT_OS 0
 
 #define START_TASK_STACK_SIZE 128
 #define START_TASK_PRIORITY 15
@@ -88,7 +89,8 @@ void app_init(void)
 {
     Memory_Init(INSRAM);
     log_init();
-    sd_fatfs_init();
+    // sd_fatfs_init();
+    at24c02_hw_init();
     // user_lfs_init();
     // nvs_flash_init();
 
@@ -103,6 +105,13 @@ void app_init(void)
     // lv_init();            /* lvgl系统初始化 */
     // lv_port_disp_init();  /* lvgl显示接口初始化,放在lv_init()的后面 */
     // lv_port_indev_init(); /* lvgl输入接口初始化,放在lv_init()的后面 */
+
+#if SUPPORT_OS == 0
+    while (1)
+    {
+        sw_timer_loop();
+    }
+#endif
 }
 
 void app_os_start(void)

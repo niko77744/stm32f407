@@ -7,26 +7,6 @@
 
 #define SD_TIMEOUT 30 * 1000
 
-uint8_t BSP_SD_Init(void)
-{
-    uint8_t sd_state = MSD_OK;
-    /* Check if the SD card is plugged in the slot */
-    if (BSP_SD_IsDetected() != SD_PRESENT)
-    {
-        return MSD_ERROR;
-    }
-    /* HAL SD initialization */
-    sd_state = HAL_SD_Init(&hsd);
-    if (sd_state != MSD_OK)
-        return sd_state;
-
-    sd_state = HAL_SD_ConfigWideBusOperation(&hsd, SDIO_BUS_WIDE_4B); // 使能宽总线模式
-    if (sd_state != MSD_OK)
-        return sd_state;
-
-    return sd_state;
-}
-
 void log_sd_card_info(void)
 {
     uint64_t CardCap; // SD卡容量
