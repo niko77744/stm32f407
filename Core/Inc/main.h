@@ -23,8 +23,7 @@
 #define __MAIN_H
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
@@ -63,20 +62,21 @@ extern "C"
 #include "app.h"
 #include "lcd.h"
 #include "xtp_2046.h"
+#include "ui.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-#define SYSCLK 168 // ÏµÍ³Ê±ÖÓ
+#define SYSCLK 168 // ÏµÍ³Ê±ï¿½ï¿½
 #define DEPRECATED __attribute__((deprecated))
 
-// Î»´ø²Ù×÷,ÊµÏÖ51ÀàËÆµÄGPIO¿ØÖÆ¹¦ÄÜ
-// ¾ßÌåÊµÏÖË¼Ïë,²Î¿¼<<CM3È¨ÍþÖ¸ÄÏ>>µÚÎåÕÂ(87Ò³~92Ò³).M4Í¬M3ÀàËÆ,Ö»ÊÇ¼Ä´æÆ÷µØÖ·±äÁË.
-// IO¿Ú²Ù×÷ºê¶¨Òå
+// Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,Êµï¿½ï¿½51ï¿½ï¿½ï¿½Æµï¿½GPIOï¿½ï¿½ï¿½Æ¹ï¿½ï¿½ï¿½
+// ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½Ë¼ï¿½ï¿½,ï¿½Î¿ï¿½<<CM3È¨ï¿½ï¿½Ö¸ï¿½ï¿½>>ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(87Ò³~92Ò³).M4Í¬M3ï¿½ï¿½ï¿½ï¿½,Ö»ï¿½Ç¼Ä´ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½.
+// IOï¿½Ú²ï¿½ï¿½ï¿½ï¿½ê¶¨ï¿½ï¿½
 #define BITBAND(addr, bitnum) ((addr & 0xF0000000) + 0x2000000 + ((addr & 0xFFFFF) << 5) + (bitnum << 2))
 #define MEM_ADDR(addr) *((volatile unsigned long *)(addr))
 #define BIT_ADDR(addr, bitnum) MEM_ADDR(BITBAND(addr, bitnum))
-// IO¿ÚµØÖ·Ó³Éä
+// IOï¿½Úµï¿½Ö·Ó³ï¿½ï¿½
 #define GPIOA_ODR_Addr (GPIOA_BASE + 20) // 0x40020014
 #define GPIOB_ODR_Addr (GPIOB_BASE + 20) // 0x40020414
 #define GPIOC_ODR_Addr (GPIOC_BASE + 20) // 0x40020814
@@ -97,48 +97,48 @@ extern "C"
 #define GPIOH_IDR_Addr (GPIOH_BASE + 16) // 0x40021C10
 #define GPIOI_IDR_Addr (GPIOI_BASE + 16) // 0x40022010
 
-// IO¿Ú²Ù×÷,Ö»¶Ôµ¥Ò»µÄIO¿Ú!
-// È·±£nµÄÖµÐ¡ÓÚ16!
-#define PAout(n) BIT_ADDR(GPIOA_ODR_Addr, n) // Êä³ö
-#define PAin(n) BIT_ADDR(GPIOA_IDR_Addr, n)  // ÊäÈë
+// IOï¿½Ú²ï¿½ï¿½ï¿½,Ö»ï¿½Ôµï¿½Ò»ï¿½ï¿½IOï¿½ï¿½!
+// È·ï¿½ï¿½nï¿½ï¿½ÖµÐ¡ï¿½ï¿½16!
+#define PAout(n) BIT_ADDR(GPIOA_ODR_Addr, n) // ï¿½ï¿½ï¿½
+#define PAin(n) BIT_ADDR(GPIOA_IDR_Addr, n)  // ï¿½ï¿½ï¿½ï¿½
 
-#define PBout(n) BIT_ADDR(GPIOB_ODR_Addr, n) // Êä³ö
-#define PBin(n) BIT_ADDR(GPIOB_IDR_Addr, n)  // ÊäÈë
+#define PBout(n) BIT_ADDR(GPIOB_ODR_Addr, n) // ï¿½ï¿½ï¿½
+#define PBin(n) BIT_ADDR(GPIOB_IDR_Addr, n)  // ï¿½ï¿½ï¿½ï¿½
 
-#define PCout(n) BIT_ADDR(GPIOC_ODR_Addr, n) // Êä³ö
-#define PCin(n) BIT_ADDR(GPIOC_IDR_Addr, n)  // ÊäÈë
+#define PCout(n) BIT_ADDR(GPIOC_ODR_Addr, n) // ï¿½ï¿½ï¿½
+#define PCin(n) BIT_ADDR(GPIOC_IDR_Addr, n)  // ï¿½ï¿½ï¿½ï¿½
 
-#define PDout(n) BIT_ADDR(GPIOD_ODR_Addr, n) // Êä³ö
-#define PDin(n) BIT_ADDR(GPIOD_IDR_Addr, n)  // ÊäÈë
+#define PDout(n) BIT_ADDR(GPIOD_ODR_Addr, n) // ï¿½ï¿½ï¿½
+#define PDin(n) BIT_ADDR(GPIOD_IDR_Addr, n)  // ï¿½ï¿½ï¿½ï¿½
 
-#define PEout(n) BIT_ADDR(GPIOE_ODR_Addr, n) // Êä³ö
-#define PEin(n) BIT_ADDR(GPIOE_IDR_Addr, n)  // ÊäÈë
+#define PEout(n) BIT_ADDR(GPIOE_ODR_Addr, n) // ï¿½ï¿½ï¿½
+#define PEin(n) BIT_ADDR(GPIOE_IDR_Addr, n)  // ï¿½ï¿½ï¿½ï¿½
 
-#define PFout(n) BIT_ADDR(GPIOF_ODR_Addr, n) // Êä³ö
-#define PFin(n) BIT_ADDR(GPIOF_IDR_Addr, n)  // ÊäÈë
+#define PFout(n) BIT_ADDR(GPIOF_ODR_Addr, n) // ï¿½ï¿½ï¿½
+#define PFin(n) BIT_ADDR(GPIOF_IDR_Addr, n)  // ï¿½ï¿½ï¿½ï¿½
 
-#define PGout(n) BIT_ADDR(GPIOG_ODR_Addr, n) // Êä³ö
-#define PGin(n) BIT_ADDR(GPIOG_IDR_Addr, n)  // ÊäÈë
+#define PGout(n) BIT_ADDR(GPIOG_ODR_Addr, n) // ï¿½ï¿½ï¿½
+#define PGin(n) BIT_ADDR(GPIOG_IDR_Addr, n)  // ï¿½ï¿½ï¿½ï¿½
 
-#define PHout(n) BIT_ADDR(GPIOH_ODR_Addr, n) // Êä³ö
-#define PHin(n) BIT_ADDR(GPIOH_IDR_Addr, n)  // ÊäÈë
+#define PHout(n) BIT_ADDR(GPIOH_ODR_Addr, n) // ï¿½ï¿½ï¿½
+#define PHin(n) BIT_ADDR(GPIOH_IDR_Addr, n)  // ï¿½ï¿½ï¿½ï¿½
 
-#define PIout(n) BIT_ADDR(GPIOI_ODR_Addr, n) // Êä³ö
-#define PIin(n) BIT_ADDR(GPIOI_IDR_Addr, n)  // ÊäÈë
-    /* USER CODE END ET */
+#define PIout(n) BIT_ADDR(GPIOI_ODR_Addr, n) // ï¿½ï¿½ï¿½
+#define PIin(n) BIT_ADDR(GPIOI_IDR_Addr, n)  // ï¿½ï¿½ï¿½ï¿½
+/* USER CODE END ET */
 
-    /* Exported constants --------------------------------------------------------*/
-    /* USER CODE BEGIN EC */
+/* Exported constants --------------------------------------------------------*/
+/* USER CODE BEGIN EC */
 
-    /* USER CODE END EC */
+/* USER CODE END EC */
 
-    /* Exported macro ------------------------------------------------------------*/
-    /* USER CODE BEGIN EM */
+/* Exported macro ------------------------------------------------------------*/
+/* USER CODE BEGIN EM */
 
-    /* USER CODE END EM */
+/* USER CODE END EM */
 
-    /* Exported functions prototypes ---------------------------------------------*/
-    void Error_Handler(void);
+/* Exported functions prototypes ---------------------------------------------*/
+void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
 #define SoftWare_Version "V1.0.0"
@@ -180,9 +180,9 @@ extern "C"
 #define LED_2_Pin GPIO_PIN_9
 #define LED_2_GPIO_Port GPIOG
 
-    /* USER CODE BEGIN Private defines */
+/* USER CODE BEGIN Private defines */
 
-    /* USER CODE END Private defines */
+/* USER CODE END Private defines */
 
 #ifdef __cplusplus
 }

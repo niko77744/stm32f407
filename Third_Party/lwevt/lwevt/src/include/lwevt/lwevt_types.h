@@ -47,11 +47,9 @@
  */
 
 /* Define basic types */
-LWEVT_TYPE_BASIC(LWEVT_TYPE_MY_BASIC_1)
-LWEVT_TYPE_BASIC(LWEVT_TYPE_MY_BASIC_2)
-LWEVT_TYPE_BASIC(LWEVT_TYPE_MY_BASIC_3)
+LWEVT_TYPE_BASIC(LWEVT_TYPE_BLE_CONNECT_BASIC)
+LWEVT_TYPE_BASIC(LWEVT_TYPE_BLE_DISCONNECT_BASIC)
 
 /* Define extended types */
-LWEVT_TYPE_EXT(LWEVT_TYPE_MY_EXT_1, struct { int par1; int par2; } ext1)
-LWEVT_TYPE_EXT(LWEVT_TYPE_MY_EXT_2, struct { int par3; int par4; } ext2)
-LWEVT_TYPE_EXT(LWEVT_TYPE_MY_EXT_3, struct { int par1; int par2; } ext3)
+LWEVT_TYPE_EXT(LWEVT_TYPE_EXT_BLE_RX, struct { uint8_t data_len; uint8_t* data; } ble_rx)
+LWEVT_TYPE_EXT(LWEVT_TYPE_EXT_BLE_TX, struct { uint8_t data_len; uint8_t* data; } ble_tx)

@@ -883,7 +883,7 @@
 #endif
 
 /*Stress test for LVGL LVGL—π¡¶≤‚ ‘ */
-#define LV_USE_DEMO_STRESS 1
+#define LV_USE_DEMO_STRESS 0
 
 /*Music player demo “Ù¿÷≤•∑≈∆˜µƒ—› æ*/
 #define LV_USE_DEMO_MUSIC 0
@@ -892,7 +892,7 @@
     #define LV_DEMO_MUSIC_LANDSCAPE 0
     #define LV_DEMO_MUSIC_ROUND     0
     #define LV_DEMO_MUSIC_LARGE     0
-    #define LV_DEMO_MUSIC_AUTO_PLAY 0
+    #define LV_DEMO_MUSIC_AUTO_PLAY 1
 #endif
 
 /*--END OF LV_CONF_H--*/

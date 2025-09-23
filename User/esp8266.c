@@ -20,7 +20,8 @@ void esp8266_enable(void)
 void esp8266_hw_init(void)
 {
     // 使用Ex函数，接收不定长数据
-    HAL_UARTEx_ReceiveToIdle_IT(&huart4, esp8266_buf, sizeof(esp8266_buf));
+    HAL_UARTEx_ReceiveToIdle_DMA(&huart4, esp8266_buf, sizeof(esp8266_buf));
+    // HAL_UARTEx_ReceiveToIdle_IT(&huart4, esp8266_buf, sizeof(esp8266_buf));
 
     esp8266_enable();
     esp_delay;

@@ -7,128 +7,24 @@
 
 #define SD_TIMEOUT 30 * 1000
 
-// 得到卡信息
-// cardinfo:卡信息存储区
-// 返回值:错误状态
-uint8_t SD_GetCardInfo(HAL_SD_CardInfoTypeDef *cardinfo)
+uint8_t BSP_SD_Init(void)
 {
-    uint8_t sta;
-    sta = HAL_SD_GetCardInfo(&hsd, cardinfo);
-    return sta;
-}
-
-// 获取卡的状态
-uint8_t SD_GetCardState(void)
-{
-    if (HAL_SD_GetCardState(&hsd) == HAL_SD_CARD_TRANSFER)
+    uint8_t sd_state = MSD_OK;
+    /* Check if the SD card is plugged in the slot */
+    if (BSP_SD_IsDetected() != SD_PRESENT)
     {
-        return SD_TRANSFER_OK;
+        return MSD_ERROR;
     }
-    else
-    {
-        return SD_TRANSFER_BUSY;
-    }
-}
+    /* HAL SD initialization */
+    sd_state = HAL_SD_Init(&hsd);
+    if (sd_state != MSD_OK)
+        return sd_state;
 
-// SD卡里面他就是以扇区为大小来进行读取的。也就是SD卡里面每个地址是512个字节。他的最小读写单元就是512个字节，也就是一个扇区。
-uint8_t SD_ReadBlocks_DMA(uint32_t *buf, uint64_t sector, uint32_t blocksize, uint32_t cnt)
-{
-    uint8_t err = 0;
-    uint32_t timeout = SD_TIMEOUT;
-    err = HAL_SD_ReadBlocks_DMA(&hsd, (uint8_t *)buf, sector, cnt); // 通过DMA读取SD卡n个扇区
+    sd_state = HAL_SD_ConfigWideBusOperation(&hsd, SDIO_BUS_WIDE_4B); // 使能宽总线模式
+    if (sd_state != MSD_OK)
+        return sd_state;
 
-    if (err == 0)
-    {
-        // 等待SD卡读完
-        while (SD_GetCardState() != SD_TRANSFER_OK)
-        {
-            if (timeout-- == 0)
-            {
-                err = SD_TRANSFER_BUSY;
-            }
-        }
-    }
-    return err;
-}
-
-uint8_t SD_WriteBlocks_DMA(uint32_t *buf, uint64_t sector, uint32_t blocksize, uint32_t cnt)
-{
-    uint8_t err = 0;
-    uint32_t timeout = SD_TIMEOUT;
-    err = HAL_SD_WriteBlocks_DMA(&hsd, (uint8_t *)buf, sector, cnt); // 通过DMA写SD卡n个扇区
-
-    if (err == 0)
-    {
-        // 等待SD卡写完
-        while (SD_GetCardState() != SD_TRANSFER_OK)
-        {
-            if (timeout-- == 0)
-            {
-                err = SD_TRANSFER_BUSY;
-            }
-        }
-    }
-    return err;
-}
-
-uint8_t SD_ReadSDisk(uint8_t *buf, uint32_t sector, uint32_t cnt)
-{
-    uint8_t sta = HAL_OK;
-    long long lsector = sector;
-
-    sta = SD_ReadBlocks_DMA((uint32_t *)buf, lsector, 512, cnt);
-
-    return sta;
-}
-
-uint8_t SD_WriteSDisk(uint8_t *buf, uint32_t sector, uint32_t cnt)
-{
-    uint8_t sta = HAL_OK;
-    long long lsector = sector;
-
-    sta = SD_WriteBlocks_DMA((uint32_t *)buf, lsector, 512, cnt); // 多个sector的写操作
-
-    return sta;
-}
-
-uint8_t SD_ReadSDisk_NoDma(uint8_t *buf, uint32_t sector, uint32_t cnt)
-{
-    uint8_t sta = HAL_OK;
-    uint32_t timeout = SD_TIMEOUT;
-    long long lsector = sector;
-    __disable_irq();                                                         // 关闭总中断
-    sta = HAL_SD_ReadBlocks(&hsd, (uint8_t *)buf, lsector, cnt, SD_TIMEOUT); // 多个sector的读操作
-
-    // 等待SD卡读完
-    while (SD_GetCardState() != SD_TRANSFER_OK)
-    {
-        if (timeout-- == 0)
-        {
-            sta = SD_TRANSFER_BUSY;
-        }
-    }
-    __enable_irq(); // 开启总中断
-    return sta;
-}
-
-uint8_t SD_WriteSDisk_NoDma(uint8_t *buf, uint32_t sector, uint32_t cnt)
-{
-    uint8_t sta = HAL_OK;
-    uint32_t timeout = SD_TIMEOUT;
-    long long lsector = sector;
-    __disable_irq();                                                          // 关闭总中断(POLLING模式,严禁中断打断SDIO读写操作!!!)
-    sta = HAL_SD_WriteBlocks(&hsd, (uint8_t *)buf, lsector, cnt, SD_TIMEOUT); // 多个sector的写操作
-
-    // 等待SD卡写完
-    while (SD_GetCardState() != SD_TRANSFER_OK)
-    {
-        if (timeout-- == 0)
-        {
-            sta = SD_TRANSFER_BUSY;
-        }
-    }
-    __enable_irq(); // 开启总中断
-    return sta;
+    return sd_state;
 }
 
 void log_sd_card_info(void)
@@ -293,3 +189,129 @@ void sd_fatfs_init(void)
     Mem_free(INSRAM, fsTF);
 #endif
 }
+
+#if 0
+// 得到卡信息
+// cardinfo:卡信息存储区
+// 返回值:错误状态
+uint8_t SD_GetCardInfo(HAL_SD_CardInfoTypeDef *cardinfo)
+{
+    uint8_t sta;
+    sta = HAL_SD_GetCardInfo(&hsd, cardinfo);
+    return sta;
+}
+
+// 获取卡的状态
+uint8_t SD_GetCardState(void)
+{
+    if (HAL_SD_GetCardState(&hsd) == HAL_SD_CARD_TRANSFER)
+    {
+        return SD_TRANSFER_OK;
+    }
+    else
+    {
+        return SD_TRANSFER_BUSY;
+    }
+}
+
+// SD卡里面他就是以扇区为大小来进行读取的。也就是SD卡里面每个地址是512个字节。他的最小读写单元就是512个字节，也就是一个扇区。
+uint8_t SD_ReadBlocks_DMA(uint32_t *buf, uint64_t sector, uint32_t blocksize, uint32_t cnt)
+{
+    uint8_t err = 0;
+    uint32_t timeout = SD_TIMEOUT;
+    err = HAL_SD_ReadBlocks_DMA(&hsd, (uint8_t *)buf, sector, cnt); // 通过DMA读取SD卡n个扇区
+
+    if (err == 0)
+    {
+        // 等待SD卡读完
+        while (SD_GetCardState() != SD_TRANSFER_OK)
+        {
+            if (timeout-- == 0)
+            {
+                err = SD_TRANSFER_BUSY;
+            }
+        }
+    }
+    return err;
+}
+
+uint8_t SD_WriteBlocks_DMA(uint32_t *buf, uint64_t sector, uint32_t blocksize, uint32_t cnt)
+{
+    uint8_t err = 0;
+    uint32_t timeout = SD_TIMEOUT;
+    err = HAL_SD_WriteBlocks_DMA(&hsd, (uint8_t *)buf, sector, cnt); // 通过DMA写SD卡n个扇区
+
+    if (err == 0)
+    {
+        // 等待SD卡写完
+        while (SD_GetCardState() != SD_TRANSFER_OK)
+        {
+            if (timeout-- == 0)
+            {
+                err = SD_TRANSFER_BUSY;
+            }
+        }
+    }
+    return err;
+}
+
+uint8_t SD_ReadSDisk(uint8_t *buf, uint32_t sector, uint32_t cnt)
+{
+    uint8_t sta = HAL_OK;
+    long long lsector = sector;
+
+    sta = SD_ReadBlocks_DMA((uint32_t *)buf, lsector, 512, cnt);
+
+    return sta;
+}
+
+uint8_t SD_WriteSDisk(uint8_t *buf, uint32_t sector, uint32_t cnt)
+{
+    uint8_t sta = HAL_OK;
+    long long lsector = sector;
+
+    sta = SD_WriteBlocks_DMA((uint32_t *)buf, lsector, 512, cnt); // 多个sector的写操作
+
+    return sta;
+}
+
+uint8_t SD_ReadSDisk_NoDma(uint8_t *buf, uint32_t sector, uint32_t cnt)
+{
+    uint8_t sta = HAL_OK;
+    uint32_t timeout = SD_TIMEOUT;
+    long long lsector = sector;
+    __disable_irq();                                                         // 关闭总中断
+    sta = HAL_SD_ReadBlocks(&hsd, (uint8_t *)buf, lsector, cnt, SD_TIMEOUT); // 多个sector的读操作
+
+    // 等待SD卡读完
+    while (SD_GetCardState() != SD_TRANSFER_OK)
+    {
+        if (timeout-- == 0)
+        {
+            sta = SD_TRANSFER_BUSY;
+        }
+    }
+    __enable_irq(); // 开启总中断
+    return sta;
+}
+
+uint8_t SD_WriteSDisk_NoDma(uint8_t *buf, uint32_t sector, uint32_t cnt)
+{
+    uint8_t sta = HAL_OK;
+    uint32_t timeout = SD_TIMEOUT;
+    long long lsector = sector;
+    __disable_irq();                                                          // 关闭总中断(POLLING模式,严禁中断打断SDIO读写操作!!!)
+    sta = HAL_SD_WriteBlocks(&hsd, (uint8_t *)buf, lsector, cnt, SD_TIMEOUT); // 多个sector的写操作
+
+    // 等待SD卡写完
+    while (SD_GetCardState() != SD_TRANSFER_OK)
+    {
+        if (timeout-- == 0)
+        {
+            sta = SD_TRANSFER_BUSY;
+        }
+    }
+    __enable_irq(); // 开启总中断
+    return sta;
+}
+#endif
