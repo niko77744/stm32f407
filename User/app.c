@@ -3,6 +3,7 @@
 #include "elog.h"
 #include "lvgl.h"
 #define SUPPORT_OS 0
+#define SUPPORT_LVGL 0
 
 #define START_TASK_STACK_SIZE 128
 #define START_TASK_PRIORITY 15
@@ -64,14 +65,21 @@ void app_task(void *pvParameters)
 
 void display_task(void *pvParameters)
 {
-    // create_clickable_button();
+#if SUPPORT_LVGL == 1
+    create_clickable_button();
     // lv_demo_stress(); /* 测试的demo */
-    // lv_demo_music(); /* 测试的demo */
+    // lv_demo_music();  /* 测试的demo */
     while (1)
     {
-        // lv_timer_handler(); /* LVGL计时器 */
+        lv_timer_handler(); /* LVGL计时器 */
         vTaskDelay(pdMS_TO_TICKS(5));
     }
+#else
+    while (1)
+    {
+        vTaskDelay(pdMS_TO_TICKS(5));
+    }
+#endif
 }
 
 void communication_task(void *pvParameters)
@@ -89,8 +97,8 @@ void app_init(void)
 {
     Memory_Init(INSRAM);
     log_init();
-    // sd_fatfs_init();
-    at24c02_hw_init();
+    sd_fatfs_init();
+    // at24c02_hw_init();
     // user_lfs_init();
     // nvs_flash_init();
 
@@ -101,10 +109,11 @@ void app_init(void)
     buttons_init();
     ble_init();
     // esp8266_hw_init();
-
-    // lv_init();            /* lvgl系统初始化 */
-    // lv_port_disp_init();  /* lvgl显示接口初始化,放在lv_init()的后面 */
-    // lv_port_indev_init(); /* lvgl输入接口初始化,放在lv_init()的后面 */
+#if SUPPORT_LVGL == 1
+    lv_init();            /* lvgl系统初始化 */
+    lv_port_disp_init();  /* lvgl显示接口初始化,放在lv_init()的后面 */
+    lv_port_indev_init(); /* lvgl输入接口初始化,放在lv_init()的后面 */
+#endif
 
 #if SUPPORT_OS == 0
     while (1)
@@ -124,4 +133,37 @@ void app_os_start(void)
         START_TASK_PRIORITY,
         &start_task_handle);
     vTaskStartScheduler();
+}
+
+// 不定长数据接收完成回调函数
+void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
+{
+    if (huart->Instance == USART3) // ble
+    {
+        ble_rx_event_callback(Size);
+    }
+    else if (huart->Instance == UART4) // wifi
+    {
+        wifi_rx_event_callback(Size);
+    }
+    else if (huart->Instance == USART6) // log
+    {
+    }
+}
+
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+{
+    if (huart->Instance == USART3) // ble
+    {
+        log_i("BLE data send over");
+    }
+}
+
+void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
+{
+    if (huart->Instance == UART4) // wifi
+    {
+        __HAL_UART_CLEAR_FEFLAG(huart);
+        HAL_UARTEx_ReceiveToIdle_DMA(&huart4, esp8266_buf, sizeof(esp8266_buf));
+    }
 }

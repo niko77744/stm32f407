@@ -564,10 +564,10 @@ void at24c02_hw_init(void)
     uint8_t total_files, used_space, free_space;
     fs_get_stats(&total_files, &used_space, &free_space);
     log_i("文件系统状态:");
-    log_i("  总文件数: %d", total_files);
-    log_i("  已用空间: %d字节", used_space);
-    log_i("  剩余空间: %d字节", free_space);
-    log_i("  使用率: %d%%", (used_space * 100) / AT24C02_SIZE);
+    log_i("总文件数: %d", total_files);
+    log_i("已用空间: %d字节", used_space);
+    log_i("剩余空间: %d字节", free_space);
+    log_i("使用率: %.2f%%", (float)(used_space * 100.0f) / AT24C02_SIZE);
 
     // 更新文件
     uint8_t new_config[] = {0x01, 0x7F, 0x01, 0x14};

@@ -45,44 +45,12 @@ static void ble_ticks_callback(MultiTimer *timer, void *userData)
     multiTimerStart(&ble_timer, 10, ble_ticks_callback, NULL);
 }
 
-// 不定长数据接收完成回调函数
-void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
+void ble_rx_event_callback(uint16_t Size)
 {
-    if (huart->Instance == USART3)
-    {
-        ble_rx_len = Size;
-        ble_evt_local.msg.ble_rx.data = ble_rx_buffer;
-        ble_evt_local.msg.ble_rx.data_len = ble_rx_len;
-        lwevt_dispatch_ex(&ble_evt_local, LWEVT_TYPE_EXT_BLE_RX); // 用本地句柄分发事件
-    }
-    else if (huart->Instance == UART4)
-    {
-        log_i("ESP8266 data received %s", esp8266_buf);
-        memset(esp8266_buf, 0, sizeof(esp8266_buf));
-        // 重新启动接收，使用Ex函数，接收不定长数据
-        // HAL_UARTEx_ReceiveToIdle_IT(&huart4, esp8266_buf, sizeof(esp8266_buf));
-        HAL_UARTEx_ReceiveToIdle_DMA(&huart4, esp8266_buf, sizeof(esp8266_buf));
-    }
-    else if (huart->Instance == USART6)
-    {
-    }
-}
-
-void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
-{
-    if (huart->Instance == USART3)
-    {
-        log_i("BLE data send over");
-    }
-}
-
-void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
-{
-    if (huart->Instance == UART4)
-    {
-        __HAL_UART_CLEAR_FEFLAG(huart);
-        HAL_UARTEx_ReceiveToIdle_DMA(&huart4, esp8266_buf, sizeof(esp8266_buf));
-    }
+    ble_rx_len = Size;
+    ble_evt_local.msg.ble_rx.data = ble_rx_buffer;
+    ble_evt_local.msg.ble_rx.data_len = ble_rx_len;
+    lwevt_dispatch_ex(&ble_evt_local, LWEVT_TYPE_EXT_BLE_RX); // 用本地句柄分发事件
 }
 
 static void ble_evt_callback(lwevt_t *e)
