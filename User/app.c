@@ -2,8 +2,6 @@
 #include "app.h"
 #include "elog.h"
 #include "lvgl.h"
-#define SUPPORT_OS 0
-#define SUPPORT_LVGL 0
 
 #define START_TASK_STACK_SIZE 128
 #define START_TASK_PRIORITY 15
@@ -11,7 +9,7 @@ TaskHandle_t start_task_handle = NULL;
 void start_task(void *pvParameters);
 
 #define APP_TASK_STACK_SIZE 512
-#define APP_TASK_PRIORITY 10 // 低优先级 越大越高
+#define APP_TASK_PRIORITY 5 // 低优先级 越大越高
 TaskHandle_t app_task_handle = NULL;
 void app_task(void *pvParameters);
 
@@ -21,13 +19,21 @@ TaskHandle_t display_task_handle = NULL;
 void display_task(void *pvParameters);
 
 #define COMMUNICATION_TASK_STACK_SIZE 512
-#define COMMUNICATION_TASK_PRIORITY 8
+#define COMMUNICATION_TASK_PRIORITY 5
 TaskHandle_t communication_task_handle = NULL;
 void communication_task(void *pvParameters);
+
+#define IAP_TASK_STACK_SIZE 4096
+#define IAP_TASK_PRIORITY 6
+TaskHandle_t iap_task_handle = NULL;
+void iap_task(void *pvParameters);
+
+static SemaphoreHandle_t Fatfs_Mutex_Semaphore = NULL;
 
 void start_task(void *pvParameters)
 {
     taskENTER_CRITICAL();
+    Fatfs_Mutex_Semaphore = xSemaphoreCreateMutex();
     xTaskCreate(
         (TaskFunction_t)app_task,
         (char *)"app_task",
@@ -49,6 +55,13 @@ void start_task(void *pvParameters)
         NULL,
         COMMUNICATION_TASK_PRIORITY,
         &communication_task_handle);
+    xTaskCreate(
+        (TaskFunction_t)iap_task,
+        (char *)"iap_task",
+        IAP_TASK_STACK_SIZE,
+        NULL,
+        IAP_TASK_PRIORITY,
+        &iap_task_handle);
 
     vTaskDelete(NULL);
     taskEXIT_CRITICAL();
@@ -92,6 +105,15 @@ void communication_task(void *pvParameters)
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
+void iap_task(void *pvParameters)
+{
+    while (1)
+    {
+        xSemaphoreTake(Fatfs_Mutex_Semaphore, portMAX_DELAY);
+        xSemaphoreGive(Fatfs_Mutex_Semaphore);
+        vTaskDelay(pdMS_TO_TICKS(1));
+    }
+}
 
 void app_init(void)
 {
@@ -107,24 +129,27 @@ void app_init(void)
     sw_time_init();
     message_queue_init();
     buttons_init();
-    ble_init();
+    iap_init(iap_from_uart);
+    // ble_init();
     // esp8266_hw_init();
+    iap_process();
+    stmflash_earse(FLASH_APP1_ADDR, 0x1000); // 4096
 #if SUPPORT_LVGL == 1
     lv_init();            /* lvgl系统初始化 */
     lv_port_disp_init();  /* lvgl显示接口初始化,放在lv_init()的后面 */
     lv_port_indev_init(); /* lvgl输入接口初始化,放在lv_init()的后面 */
 #endif
-
-#if SUPPORT_OS == 0
-    while (1)
-    {
-        sw_timer_loop();
-    }
-#endif
 }
 
 void app_os_start(void)
 {
+#if SUPPORT_OS == 0
+    while (1)
+    {
+        sw_timer_loop();
+        iap_uart_proceess();
+    }
+#else
     xTaskCreate(
         (TaskFunction_t)start_task,
         "start_task",
@@ -133,6 +158,7 @@ void app_os_start(void)
         START_TASK_PRIORITY,
         &start_task_handle);
     vTaskStartScheduler();
+#endif
 }
 
 // 不定长数据接收完成回调函数
@@ -148,6 +174,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
     }
     else if (huart->Instance == USART6) // log
     {
+        log_rx_event_callback(Size);
     }
 }
 

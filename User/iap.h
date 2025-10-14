@@ -53,4 +53,45 @@ typedef struct
     uint32_t timeout;      // 超时时间
 } iap_t;
 
+typedef enum
+{
+    IMG_VALID = 0,      // 没有限制，可以选取。
+    IMG_UNDEFINED,      // 没有限制，可以选取。
+    IMG_INVALID,        // 不会选取。
+    IMG_ABORTED,        // 不会选取。
+    IMG_NEW,            // 则仅会选取一次。在引导加载程序中，状态立即变为 IMG_PENDING_VERIFY
+    IMG_PENDING_VERIFY, // 不会选取，状态变为 IMG_ABORTED
+} img_status_e;
+
+#pragma pack(push) // 保存当前对齐状态
+#pragma pack(1)    // 设置为1字节对齐
+typedef struct
+{
+    uint8_t running_partition;  // 当前运行的分区 (1 或 2)
+    uint8_t ota_in_progress;    // OTA升级进行中标志
+    uint8_t boot_attempts;      // 启动尝试次数（用于防止启动循环）
+    uint8_t rollback_requested; // 请求回滚到之前版本
+
+    uint32_t app1_addr; // 应用程序分区1的起始地址
+    uint32_t app1_size; // 分区1的固件大小
+    uint32_t app2_addr; // 应用程序分区2的起始地址
+    uint32_t app2_size; // 分区2的固件大小
+
+    // 分区状态管理
+    img_status_e app1_status; // 分区1的状态
+    img_status_e app2_status; // 分区2的状态
+
+    uint32_t crc32;  // 整个结构体的CRC32校验值
+} iap_information_t; // __attribute__((packed))
+#pragma pack(pop)    // 恢复之前的对齐状态
+
+#define FLASH_APP1_ADDR 0x08010000 /* 第一个应用程序起始地址(存放在内部FLASH)              \
+                                    * 保留 0x08000000~0x0800FFFF 的空间为 Bootloader 使用(共64KB) \
+                                    */
+void iap_init(iap_source_t source);
+void log_rx_event_callback(uint16_t Size);
+void iap_write_appbin(uint32_t appxaddr, uint8_t *appbuf, uint32_t appsize);
+void iap_load_app(uint32_t appxaddr);
+void iap_process(void);
+void iap_uart_proceess(void);
 #endif /* __IAP_H__ */

@@ -16,5 +16,6 @@ uint8_t SD_ReadBlocks_DMA(uint32_t *buf, uint64_t sector, uint32_t blocksize, ui
 uint8_t SD_WriteBlocks_DMA(uint32_t *buf, uint64_t sector, uint32_t blocksize, uint32_t cnt);
 void log_sd_card_info(void);
 void sd_fatfs_init(void);
+void sd_fatsf_self_inspection(void);
 
 #endif /* __SD_CARD_H__ */

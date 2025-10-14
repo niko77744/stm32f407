@@ -23,7 +23,8 @@
 #define __MAIN_H
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 /* Includes ------------------------------------------------------------------*/
@@ -67,16 +68,12 @@ extern "C" {
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-#define SYSCLK 168 // ϵͳʱ��
+#define SYSCLK 168
 #define DEPRECATED __attribute__((deprecated))
 
-// λ������,ʵ��51���Ƶ�GPIO���ƹ���
-// ����ʵ��˼��,�ο�<<CM3Ȩ��ָ��>>������(87ҳ~92ҳ).M4ͬM3����,ֻ�ǼĴ�����ַ����.
-// IO�ڲ����궨��
 #define BITBAND(addr, bitnum) ((addr & 0xF0000000) + 0x2000000 + ((addr & 0xFFFFF) << 5) + (bitnum << 2))
 #define MEM_ADDR(addr) *((volatile unsigned long *)(addr))
 #define BIT_ADDR(addr, bitnum) MEM_ADDR(BITBAND(addr, bitnum))
-// IO�ڵ�ַӳ��
 #define GPIOA_ODR_Addr (GPIOA_BASE + 20) // 0x40020014
 #define GPIOB_ODR_Addr (GPIOB_BASE + 20) // 0x40020414
 #define GPIOC_ODR_Addr (GPIOC_BASE + 20) // 0x40020814
@@ -97,48 +94,46 @@ extern "C" {
 #define GPIOH_IDR_Addr (GPIOH_BASE + 16) // 0x40021C10
 #define GPIOI_IDR_Addr (GPIOI_BASE + 16) // 0x40022010
 
-// IO�ڲ���,ֻ�Ե�һ��IO��!
-// ȷ��n��ֵС��16!
-#define PAout(n) BIT_ADDR(GPIOA_ODR_Addr, n) // ���
-#define PAin(n) BIT_ADDR(GPIOA_IDR_Addr, n)  // ����
+#define PAout(n) BIT_ADDR(GPIOA_ODR_Addr, n)
+#define PAin(n) BIT_ADDR(GPIOA_IDR_Addr, n)
 
-#define PBout(n) BIT_ADDR(GPIOB_ODR_Addr, n) // ���
-#define PBin(n) BIT_ADDR(GPIOB_IDR_Addr, n)  // ����
+#define PBout(n) BIT_ADDR(GPIOB_ODR_Addr, n)
+#define PBin(n) BIT_ADDR(GPIOB_IDR_Addr, n)
 
-#define PCout(n) BIT_ADDR(GPIOC_ODR_Addr, n) // ���
-#define PCin(n) BIT_ADDR(GPIOC_IDR_Addr, n)  // ����
+#define PCout(n) BIT_ADDR(GPIOC_ODR_Addr, n)
+#define PCin(n) BIT_ADDR(GPIOC_IDR_Addr, n)
 
-#define PDout(n) BIT_ADDR(GPIOD_ODR_Addr, n) // ���
-#define PDin(n) BIT_ADDR(GPIOD_IDR_Addr, n)  // ����
+#define PDout(n) BIT_ADDR(GPIOD_ODR_Addr, n)
+#define PDin(n) BIT_ADDR(GPIOD_IDR_Addr, n)
 
-#define PEout(n) BIT_ADDR(GPIOE_ODR_Addr, n) // ���
-#define PEin(n) BIT_ADDR(GPIOE_IDR_Addr, n)  // ����
+#define PEout(n) BIT_ADDR(GPIOE_ODR_Addr, n)
+#define PEin(n) BIT_ADDR(GPIOE_IDR_Addr, n)
 
-#define PFout(n) BIT_ADDR(GPIOF_ODR_Addr, n) // ���
-#define PFin(n) BIT_ADDR(GPIOF_IDR_Addr, n)  // ����
+#define PFout(n) BIT_ADDR(GPIOF_ODR_Addr, n)
+#define PFin(n) BIT_ADDR(GPIOF_IDR_Addr, n)
 
-#define PGout(n) BIT_ADDR(GPIOG_ODR_Addr, n) // ���
-#define PGin(n) BIT_ADDR(GPIOG_IDR_Addr, n)  // ����
+#define PGout(n) BIT_ADDR(GPIOG_ODR_Addr, n)
+#define PGin(n) BIT_ADDR(GPIOG_IDR_Addr, n)
 
-#define PHout(n) BIT_ADDR(GPIOH_ODR_Addr, n) // ���
-#define PHin(n) BIT_ADDR(GPIOH_IDR_Addr, n)  // ����
+#define PHout(n) BIT_ADDR(GPIOH_ODR_Addr, n)
+#define PHin(n) BIT_ADDR(GPIOH_IDR_Addr, n)
 
-#define PIout(n) BIT_ADDR(GPIOI_ODR_Addr, n) // ���
-#define PIin(n) BIT_ADDR(GPIOI_IDR_Addr, n)  // ����
-/* USER CODE END ET */
+#define PIout(n) BIT_ADDR(GPIOI_ODR_Addr, n)
+#define PIin(n) BIT_ADDR(GPIOI_IDR_Addr, n)
+    /* USER CODE END ET */
 
-/* Exported constants --------------------------------------------------------*/
-/* USER CODE BEGIN EC */
+    /* Exported constants --------------------------------------------------------*/
+    /* USER CODE BEGIN EC */
 
-/* USER CODE END EC */
+    /* USER CODE END EC */
 
-/* Exported macro ------------------------------------------------------------*/
-/* USER CODE BEGIN EM */
+    /* Exported macro ------------------------------------------------------------*/
+    /* USER CODE BEGIN EM */
 
-/* USER CODE END EM */
+    /* USER CODE END EM */
 
-/* Exported functions prototypes ---------------------------------------------*/
-void Error_Handler(void);
+    /* Exported functions prototypes ---------------------------------------------*/
+    void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
 #define SoftWare_Version "V1.0.0"
@@ -180,9 +175,9 @@ void Error_Handler(void);
 #define LED_2_Pin GPIO_PIN_9
 #define LED_2_GPIO_Port GPIOG
 
-/* USER CODE BEGIN Private defines */
+    /* USER CODE BEGIN Private defines */
 
-/* USER CODE END Private defines */
+    /* USER CODE END Private defines */
 
 #ifdef __cplusplus
 }

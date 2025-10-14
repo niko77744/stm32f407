@@ -62,7 +62,13 @@ void sd_fatfs_init(void)
     log_sd_card_info();
 
     log_i("Filesystem mounted successfully!");
+    // sd_fatsf_self_inspection();
+}
+
+void sd_fatsf_self_inspection(void)
+{
 #if 1
+    FRESULT res;
     FIL file;
     UINT byteswritten, bytesread;
     char buffer[64];

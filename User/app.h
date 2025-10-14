@@ -8,6 +8,9 @@
 #include "semphr.h"
 #include "timers.h"
 
+#define SUPPORT_OS 0
+#define SUPPORT_LVGL 0
+
 void app_init(void);
 void app_os_start(void);
 

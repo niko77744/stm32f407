@@ -113,6 +113,7 @@ void at24c02_erase_chip(void)
     }
 }
 
+#if 0
 // 文件系统配置
 #define FS_MAGIC 0x55AA
 #define FS_VERSION 1
@@ -582,3 +583,4 @@ void at24c02_hw_init(void)
         log_i("日志文件删除成功");
     }
 }
+#endif
