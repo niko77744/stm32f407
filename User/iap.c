@@ -62,10 +62,10 @@ void log_rx_event_callback(uint16_t Size)
     memcpy(g_log_buffers[g_current_write_index].data, g_logbuf, Size);
     g_log_buffers[g_current_write_index].size = Size;
     g_log_buffers[g_current_write_index].used = 1;
-    
+
     // 更新写索引
     g_current_write_index = (g_current_write_index + 1) % BUFFER_COUNT;
-    
+
     // 更新可用缓冲区计数
     if (g_buffer_available > 0)
     {

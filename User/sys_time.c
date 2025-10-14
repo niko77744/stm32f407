@@ -13,21 +13,69 @@ static uint64_t get_platform_tick(void)
 
 void get_sys_time(sys_time_t *time)
 {
+    RTC_TimeTypeDef sTime = {0};
+    RTC_DateTypeDef sDate = {0};
     uint64_t current_tick = get_platform_tick();
-    uint64_t total_seconds = current_tick / 1000;
-    time->hours = total_seconds / 3600;
-    time->minutes = (total_seconds % 3600) / 60;
-    time->seconds = total_seconds % 60;
+    HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
+    HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
+    time->hours = sTime.Hours;
+    time->minutes = sTime.Minutes;
+    time->seconds = sTime.Seconds;
 }
 
 static void sys_timer_callback(MultiTimer *timer, void *userData)
 {
     get_sys_time(&sys_time);
-    multiTimerStart(&sys_timer, 500, sys_timer_callback, NULL);
+    // log_i("Time-- %llu:%llu:%llu",
+    //       sys_time.hours, sys_time.minutes, sys_time.seconds);
+    multiTimerStart(&sys_timer, 1000, sys_timer_callback, NULL);
 }
 
 void sys_time_init(void)
 {
+    RTC_TimeTypeDef sTime = {0};
+    RTC_DateTypeDef sDate = {0};
+    const char *build_date = __DATE__;
+    const char *build_time = __TIME__;
+    // 解析编译时间
+    char month[4];
+    int day, year;
+    sscanf(build_date, "%s %d %d", month, &day, &year);
+
+    // 解析编译时间
+    int hour, minute, second;
+    sscanf(build_time, "%d:%d:%d", &hour, &minute, &second);
+
+    // 设置RTC时间
+    sTime.Hours = hour;
+    sTime.Minutes = minute;
+    sTime.Seconds = second;
+
+    sDate.Date = day;
+    sDate.Year = year - 2000; // RTC年份从2000开始
+
+    // 月份转换
+    const char *months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+    for (int i = 0; i < 12; i++)
+    {
+        if (strcmp(month, months[i]) == 0)
+        {
+            sDate.Month = i + 1;
+            break;
+        }
+    }
+
+    HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
+    HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
+
+    // 必须在HAL_RTC_GetTime()之后调用HAL_RTC_GetDate()来解锁高阶日历阴影寄存器中的值，以确保时间和日期值之间的一致性，否则会被上锁。
+    HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
+    HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
+
+    log_i("Time--%d-%d-%d %d:%d:%d\r\n",
+          sDate.Year, sDate.Month, sDate.Date,
+          sTime.Hours, sTime.Minutes, sTime.Seconds);
     multiTimerStart(&sys_timer, 1000, sys_timer_callback, NULL);
 }
 

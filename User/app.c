@@ -125,15 +125,15 @@ void app_init(void)
     // nvs_flash_init();
 
     // ring_buf_init();
-    // sys_time_init();
     sw_time_init();
+    sys_time_init();
     message_queue_init();
     buttons_init();
     iap_init(iap_from_uart);
     // ble_init();
     // esp8266_hw_init();
-    iap_process();
-    stmflash_earse(FLASH_APP1_ADDR, 0x1000); // 4096
+    // stmflash_earse(FLASH_APP1_ADDR, 0x1000); // 4096
+    // iap_process();
 #if SUPPORT_LVGL == 1
     lv_init();            /* lvgl系统初始化 */
     lv_port_disp_init();  /* lvgl显示接口初始化,放在lv_init()的后面 */
