@@ -1,6 +1,7 @@
 #define LOG_TAG "log"
 #include "log.h"
 #include "elog.h"
+#include "shell.h"
 
 void log_init(void)
 {
@@ -22,3 +23,10 @@ void log_init(void)
 
     log_i("Software Version:%s", SoftWare_Version);
 }
+
+int func(int i, char ch, char *str)
+{
+    printf("input int: %d, char: %c, string: %s\r\n", i, ch, str);
+	return 0;
+}
+SHELL_EXPORT_CMD(SHELL_CMD_PERMISSION(0) | SHELL_CMD_TYPE(SHELL_TYPE_CMD_FUNC), func, func, this is a c like func);

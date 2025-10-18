@@ -50,11 +50,11 @@ static int init(void)
 #else
     /* bare metal platform */
     /* SFUD initialize */
-    // if (sfud_device_init(&sfud_norflash0) != SFUD_SUCCESS)
-    //     return -1;
+    if (sfud_device_init(&sfud_norflash0) != SFUD_SUCCESS)
+        return -1;
 
-    // sfud_dev = &sfud_norflash0;
-    sfud_dev = sfud_get_device(0);
+    sfud_dev = &sfud_norflash0;
+    // sfud_dev = sfud_get_device(0);
 #endif
 
     if (NULL == sfud_dev)

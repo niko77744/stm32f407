@@ -25,12 +25,16 @@ extern struct fal_flash_dev nor_flash0;
 /* ====================== Partition Configuration ========================== */
 #ifdef FAL_PART_HAS_TABLE_CFG
 /* partition table */
-#define FAL_PART_TABLE                                                               \
-    {                                                                                \
-        {FAL_PART_MAGIC_WORD, "bl", "stm32_onchip", 256 * 1024, 256 * 1024, 0},      \
-        {FAL_PART_MAGIC_WORD, "app", "stm32_onchip", 512 * 1024, 256 * 1024, 0},     \
-        {FAL_PART_MAGIC_WORD, "easyflash", "norflash0", 0, 1024 * 1024, 0},          \
-        {FAL_PART_MAGIC_WORD, "download", "norflash0", 1024 * 1024, 1024 * 1024, 0}, \
+#define FAL_PART_TABLE                                                                           \
+    {                                                                                            \
+        {FAL_PART_MAGIC_WORD, "bl", "stm32_onchip", 0 * 1024, 512 * 1024, 0},                    \
+        {FAL_PART_MAGIC_WORD, "app1", "stm32_onchip", 512 * 1024, 128 * 1024, 0},                \
+        {FAL_PART_MAGIC_WORD, "app2", "stm32_onchip", 640 * 1024, 128 * 1024, 0},                \
+        {FAL_PART_MAGIC_WORD, "fdb", "stm32_onchip", 768 * 1024, 256 * 1024, 0},                 \
+        {FAL_PART_MAGIC_WORD, "factory_bl", "norflash0", 0 * 1024, 1024 * 1024, 0},              \
+        {FAL_PART_MAGIC_WORD, "factory_app1", "norflash0", 1 * 1024 * 1024, 1 * 1024 * 1024, 0}, \
+        {FAL_PART_MAGIC_WORD, "factory_app2", "norflash0", 2 * 1024 * 1024, 1 * 1024 * 1024, 0}, \
+        {FAL_PART_MAGIC_WORD, "font", "norflash0", 3 * 1024 * 1024, 5 * 1024 * 1024, 0},         \
     }
 #endif /* FAL_PART_HAS_TABLE_CFG */
 /*

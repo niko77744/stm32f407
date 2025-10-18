@@ -114,7 +114,11 @@ void MX_USART6_UART_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN USART6_Init 2 */
-
+  huart6.Init.BaudRate = 921600;
+  if (HAL_UART_Init(&huart6) != HAL_OK)
+  {
+    Error_Handler();
+  }
   /* USER CODE END USART6_Init 2 */
 }
 

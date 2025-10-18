@@ -52,31 +52,27 @@ extern uint32_t SystemCoreClock;
 #define configTICK_RATE_HZ ((TickType_t)1000)          /* 定义系统时钟节拍频率, 单位: Hz, 无默认需定义 */
 #define configMAX_PRIORITIES (5)                       /* 定义最大优先级数, 最大优先级=configMAX_PRIORITIES-1, 无默认需定义 */
 #define configMINIMAL_STACK_SIZE ((unsigned short)128) /* 定义空闲任务的栈空间大小, 单位: Word, 无默认需定义 */
-#if SUPPORT_OS == 1
-#define configTOTAL_HEAP_SIZE ((size_t)(64 * 1024)) /* FreeRTOS堆中可用的RAM总量, 单位: Byte, 无默认需定义 */
-#else
-#define configTOTAL_HEAP_SIZE (1)
-#endif
-#define configMAX_TASK_NAME_LEN (10)              /* 定义任务名最大字符数, 默认: 16 */
-#define configUSE_TRACE_FACILITY 1                /* 1: 使能可视化跟踪调试, 默认: 0 */
-#define configUSE_16_BIT_TICKS 0                  /* 1: 定义系统时钟节拍计数器的数据类型为16位无符号数, 无默认需定义 */
-#define configIDLE_SHOULD_YIELD 0                 /* 1: 使能在抢占式调度下,同优先级的任务能抢占空闲任务, 默认: 1 */
-#define configUSE_MUTEXES 1                       /* 1: 使能互斥信号量, 默认: 0 */
-#define configQUEUE_REGISTRY_SIZE 8               /* 定义可以注册的信号量和消息队列的个数, 默认: 0 */
-#define configCHECK_FOR_STACK_OVERFLOW 2          /* 1: 使能栈溢出检测方法1, 2: 使能栈溢出检测方法2, 默认: 0 */
-#define configUSE_RECURSIVE_MUTEXES 1             /* 1: 使能递归互斥信号量, 默认: 0 */
-#define configUSE_MALLOC_FAILED_HOOK 1            /* 1: 使能动态内存申请失败钩子函数, 默认: 0 */
-#define configUSE_COUNTING_SEMAPHORES 1           /* 1: 使能计数信号量, 默认: 0 */
-#define configGENERATE_RUN_TIME_STATS 0           /* 1: 使能任务运行时间统计功能, 默认: 0 */
-#define configUSE_QUEUE_SETS 1                    /* 1: 使能队列集, 默认: 0 */
-#define configUSE_TASK_NOTIFICATIONS 1            /* 1: 使能任务间直接的消息传递,包括信号量、事件标志组和消息邮箱, 默认: 1 */
-#define configTASK_NOTIFICATION_ARRAY_ENTRIES 1   /* 定义任务通知数组的大小, 默认: 1 */
-#define configUSE_PORT_OPTIMISED_TASK_SELECTION 1 /* 1: 使用硬件计算下一个要运行的任务, 0: 使用软件算法计算下一个要运行的任务, 默认: 0 */
-#define configUSE_TICKLESS_IDLE 0                 /* 1: 使能tickless低功耗模式, 默认: 0 */
-#define configUSE_TIME_SLICING 1                  /* 1: 使能时间片调度, 默认: 1 */
-#define configUSE_NEWLIB_REENTRANT 0              /* 1: 任务创建时分配Newlib的重入结构体, 默认: 0 */
-#define configENABLE_BACKWARD_COMPATIBILITY 0     /* 1: 使能兼容老版本, 默认: 1 */
-#define configUSE_APPLICATION_TASK_TAG 0          /* */
+#define configTOTAL_HEAP_SIZE ((size_t)(64 * 1024))    /* FreeRTOS堆中可用的RAM总量, 单位: Byte, 无默认需定义 */
+#define configMAX_TASK_NAME_LEN (10)                   /* 定义任务名最大字符数, 默认: 16 */
+#define configUSE_TRACE_FACILITY 1                     /* 1: 使能可视化跟踪调试, 默认: 0 */
+#define configUSE_16_BIT_TICKS 0                       /* 1: 定义系统时钟节拍计数器的数据类型为16位无符号数, 无默认需定义 */
+#define configIDLE_SHOULD_YIELD 0                      /* 1: 使能在抢占式调度下,同优先级的任务能抢占空闲任务, 默认: 1 */
+#define configUSE_MUTEXES 1                            /* 1: 使能互斥信号量, 默认: 0 */
+#define configQUEUE_REGISTRY_SIZE 8                    /* 定义可以注册的信号量和消息队列的个数, 默认: 0 */
+#define configCHECK_FOR_STACK_OVERFLOW 2               /* 1: 使能栈溢出检测方法1, 2: 使能栈溢出检测方法2, 默认: 0 */
+#define configUSE_RECURSIVE_MUTEXES 1                  /* 1: 使能递归互斥信号量, 默认: 0 */
+#define configUSE_MALLOC_FAILED_HOOK 1                 /* 1: 使能动态内存申请失败钩子函数, 默认: 0 */
+#define configUSE_COUNTING_SEMAPHORES 1                /* 1: 使能计数信号量, 默认: 0 */
+#define configGENERATE_RUN_TIME_STATS 0                /* 1: 使能任务运行时间统计功能, 默认: 0 */
+#define configUSE_QUEUE_SETS 1                         /* 1: 使能队列集, 默认: 0 */
+#define configUSE_TASK_NOTIFICATIONS 1                 /* 1: 使能任务间直接的消息传递,包括信号量、事件标志组和消息邮箱, 默认: 1 */
+#define configTASK_NOTIFICATION_ARRAY_ENTRIES 1        /* 定义任务通知数组的大小, 默认: 1 */
+#define configUSE_PORT_OPTIMISED_TASK_SELECTION 1      /* 1: 使用硬件计算下一个要运行的任务, 0: 使用软件算法计算下一个要运行的任务, 默认: 0 */
+#define configUSE_TICKLESS_IDLE 0                      /* 1: 使能tickless低功耗模式, 默认: 0 */
+#define configUSE_TIME_SLICING 1                       /* 1: 使能时间片调度, 默认: 1 */
+#define configUSE_NEWLIB_REENTRANT 0                   /* 1: 任务创建时分配Newlib的重入结构体, 默认: 0 */
+#define configENABLE_BACKWARD_COMPATIBILITY 0          /* 1: 使能兼容老版本, 默认: 1 */
+#define configUSE_APPLICATION_TASK_TAG 0               /* */
 
 /* 内存分配相关定义 */
 #define configSUPPORT_STATIC_ALLOCATION 0  /* 1: 支持静态申请内存, 默认: 0 */

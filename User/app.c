@@ -2,8 +2,10 @@
 #include "app.h"
 #include "elog.h"
 #include "lvgl.h"
+#include "shell.h"
+#include "shell_port.h"
 
-#define START_TASK_STACK_SIZE 128
+#define START_TASK_STACK_SIZE 1024
 #define START_TASK_PRIORITY 15
 TaskHandle_t start_task_handle = NULL;
 void start_task(void *pvParameters);
@@ -28,12 +30,16 @@ void communication_task(void *pvParameters);
 TaskHandle_t iap_task_handle = NULL;
 void iap_task(void *pvParameters);
 
+#define SHELL_TASK_STACK_SIZE 2048
+#define SHELL_TASK_PRIORITY 5
+
 static SemaphoreHandle_t Fatfs_Mutex_Semaphore = NULL;
 
 void start_task(void *pvParameters)
 {
     taskENTER_CRITICAL();
     Fatfs_Mutex_Semaphore = xSemaphoreCreateMutex();
+    userShellInit();
     xTaskCreate(
         (TaskFunction_t)app_task,
         (char *)"app_task",
@@ -41,28 +47,34 @@ void start_task(void *pvParameters)
         NULL,
         APP_TASK_PRIORITY,
         &app_task_handle);
+    // xTaskCreate(
+    //     (TaskFunction_t)display_task,
+    //     (char *)"display_task",
+    //     DISPLAY_TASK_STACK_SIZE,
+    //     NULL,
+    //     DISPLAY_TASK_PRIORITY,
+    //     &display_task_handle);
+    // xTaskCreate(
+    //     (TaskFunction_t)communication_task,
+    //     (char *)"communication_task",
+    //     COMMUNICATION_TASK_STACK_SIZE,
+    //     NULL,
+    //     COMMUNICATION_TASK_PRIORITY,
+    //     &communication_task_handle);
+    // xTaskCreate(
+    //     (TaskFunction_t)iap_task,
+    //     (char *)"iap_task",
+    //     IAP_TASK_STACK_SIZE,
+    //     NULL,
+    //     IAP_TASK_PRIORITY,
+    //     &iap_task_handle);
     xTaskCreate(
-        (TaskFunction_t)display_task,
-        (char *)"display_task",
-        DISPLAY_TASK_STACK_SIZE,
-        NULL,
-        DISPLAY_TASK_PRIORITY,
-        &display_task_handle);
-    xTaskCreate(
-        (TaskFunction_t)communication_task,
-        (char *)"communication_task",
-        COMMUNICATION_TASK_STACK_SIZE,
-        NULL,
-        COMMUNICATION_TASK_PRIORITY,
-        &communication_task_handle);
-    xTaskCreate(
-        (TaskFunction_t)iap_task,
-        (char *)"iap_task",
-        IAP_TASK_STACK_SIZE,
-        NULL,
-        IAP_TASK_PRIORITY,
-        &iap_task_handle);
-
+        shellTask,
+        "shell",
+        SHELL_TASK_STACK_SIZE,
+        &shell,
+        SHELL_TASK_PRIORITY,
+        NULL);
     vTaskDelete(NULL);
     taskEXIT_CRITICAL();
 }
@@ -99,9 +111,6 @@ void communication_task(void *pvParameters)
 {
     while (1)
     {
-        led_toggle(LED0);
-        led_toggle(LED1);
-        led_toggle(LED2);
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
@@ -118,22 +127,23 @@ void iap_task(void *pvParameters)
 void app_init(void)
 {
     Memory_Init(INSRAM);
-    log_init();
+    // sw_time_init();
+    // log_init();
     sd_fatfs_init();
     // at24c02_hw_init();
     // user_lfs_init();
     // nvs_flash_init();
 
     // ring_buf_init();
-    sw_time_init();
-    sys_time_init();
-    message_queue_init();
-    buttons_init();
-    iap_init(iap_from_uart);
+    // message_queue_init();
+    // buttons_init();
+    // app_led_init();
+    // iap_init(iap_from_uart);
     // ble_init();
     // esp8266_hw_init();
     // stmflash_earse(FLASH_APP1_ADDR, 0x1000); // 4096
     // iap_process();
+    // sys_time_init();
 #if SUPPORT_LVGL == 1
     lv_init();            /* lvgl系统初始化 */
     lv_port_disp_init();  /* lvgl显示接口初始化,放在lv_init()的后面 */
@@ -147,7 +157,7 @@ void app_os_start(void)
     while (1)
     {
         sw_timer_loop();
-        iap_uart_proceess();
+        // iap_uart_proceess();
     }
 #else
     xTaskCreate(
@@ -174,7 +184,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
     }
     else if (huart->Instance == USART6) // log
     {
-        log_rx_event_callback(Size);
+        // log_rx_event_callback(Size);
     }
 }
 

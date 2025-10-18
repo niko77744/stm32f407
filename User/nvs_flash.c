@@ -173,8 +173,8 @@ void nvs_flash_init(void)
      *        NULL: The user data if you need, now is empty.
      */
 
-    // result = fdb_kvdb_init(&kvdb, "env", "bl", &default_kv, NULL);
-    result = fdb_kvdb_init(&kvdb, "env", "easyflash", &default_kv, NULL);
+    result = fdb_kvdb_init(&kvdb, "env", "fdb", &default_kv, NULL);
+    // result = fdb_kvdb_init(&kvdb, "env", "easyflash", &default_kv, NULL);
 
     if (result != FDB_NO_ERR)
         return;
@@ -291,7 +291,7 @@ void stmflash_read(uint32_t raddr, uint32_t *pbuf, uint32_t length)
 void stmflash_earse(uint32_t waddr, uint32_t length)
 {
     FLASH_EraseInitTypeDef flasheraseinit;
-    
+
     uint32_t addrx = 0;
     uint32_t endaddr = 0;
     uint32_t sectorerror = 0;
@@ -333,5 +333,5 @@ void stmflash_earse(uint32_t waddr, uint32_t length)
     }
 
     FLASH->ACR |= 1 << 10; /* FLASH擦除结束,开启数据fetch */
-    HAL_FLASH_Lock(); /* 上锁 */
+    HAL_FLASH_Lock();      /* 上锁 */
 }
