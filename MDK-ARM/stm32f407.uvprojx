@@ -340,7 +340,7 @@
               <MiscControls>--diag_suppress=68 --diag_suppress=111 --diag_suppress=188 --diag_suppress=223 --diag_suppress=546  --diag_suppress=1295</MiscControls>
               <Define>USE_HAL_DRIVER,STM32F407xx,LV_CONF_INCLUDE_SIMPLE</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include;../User;../Third_Party/SFUD/inc;../Third_Party/EasyLogger/easylogger/inc;../Third_Party/EasyFlash/easyflash/inc;../Third_Party/EasyFlash/easyflash/plugins/types;../Third_Party/EasyLogger/easylogger/plugins/file;../Third_Party/EasyLogger/easylogger/plugins/flash;../Third_Party/EasyFlash/easyflash/plugins/types/struct2json/inc;../Third_Party/MultiTimer;../Third_Party/lwrb/lwrb/src/include/lwrb;../FATFS/Target;../FATFS/App;../Middlewares/Third_Party/FatFs/src;../Third_Party/MultiButton;../Third_Party/lwevt/lwevt/src/include/lwevt;../Third_Party/FlashDB;../Third_Party/FreeRTOS-Kernel/include;../Third_Party/FreeRTOS-Kernel;../Third_Party/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F;../Third_Party/littlefs-2.10.2;../Third_Party/lvgl-release-v8.4.0;../Third_Party/lvgl-release-v8.4.0/src;../Third_Party/lvgl-release-v8.4.0/porting;../Third_Party/letter-shell/src;..\Third_Party\letter-shell\src;..\Third_Party\letter-shell\demo\stm32-freertos</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include;../User;../Third_Party/SFUD/inc;../Third_Party/EasyLogger/easylogger/inc;../Third_Party/EasyFlash/easyflash/inc;../Third_Party/EasyFlash/easyflash/plugins/types;../Third_Party/EasyLogger/easylogger/plugins/file;../Third_Party/EasyLogger/easylogger/plugins/flash;../Third_Party/EasyFlash/easyflash/plugins/types/struct2json/inc;../Third_Party/MultiTimer;../Third_Party/lwrb/lwrb/src/include/lwrb;../FATFS/Target;../FATFS/App;../Middlewares/Third_Party/FatFs/src;../Third_Party/MultiButton;../Third_Party/lwevt/lwevt/src/include/lwevt;../Third_Party/FlashDB;../Third_Party/FreeRTOS-Kernel/include;../Third_Party/FreeRTOS-Kernel;../Third_Party/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F;../Third_Party/littlefs-2.10.2;../Third_Party/lvgl-release-v8.4.0;../Third_Party/lvgl-release-v8.4.0/src;../Third_Party/lvgl-release-v8.4.0/porting;../Third_Party/letter-shell/src;../Third_Party/letter-shell/demo/stm32-freertos</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -374,7 +374,7 @@
             <ScatterFile>..\stm32f407_mem_alloc.sct</ScatterFile>
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
-            <Misc></Misc>
+            <Misc>--keep shellCommand*</Misc>
             <LinkerInputFile></LinkerInputFile>
             <DisabledWarnings></DisabledWarnings>
           </LDads>
@@ -4228,6 +4228,9 @@
         <Group>
           <GroupName>::CMSIS</GroupName>
         </Group>
+        <Group>
+          <GroupName>::Compiler</GroupName>
+        </Group>
       </Groups>
     </Target>
   </Targets>
@@ -4237,6 +4240,12 @@
     <components>
       <component Cclass="CMSIS" Cgroup="CORE" Cvendor="ARM" Cversion="6.1.0" condition="ARMv6_7_8-M Device">
         <package name="CMSIS" schemaVersion="1.7.36" url="https://www.keil.com/pack/" vendor="ARM" version="6.1.0"/>
+        <targetInfos>
+          <targetInfo name="stm32f407"/>
+        </targetInfos>
+      </component>
+      <component Cbundle="ARM Compiler" Cclass="Compiler" Cgroup="I/O" Csub="STDERR" Cvariant="ITM" Cvendor="Keil" Cversion="1.2.0" condition="ARMCC Cortex-M with ITM">
+        <package name="ARM_Compiler" schemaVersion="1.7.7" url="https://www.keil.com/pack/" vendor="Keil" version="1.7.2"/>
         <targetInfos>
           <targetInfo name="stm32f407"/>
         </targetInfos>

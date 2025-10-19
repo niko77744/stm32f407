@@ -14,4 +14,6 @@
 void app_init(void);
 void app_os_start(void);
 
+extern const struct fal_partition *fal_little_fs_partition;
+
 #endif /* __APP_H__ */

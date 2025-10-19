@@ -4,6 +4,7 @@
 #include "lvgl.h"
 #include "shell.h"
 #include "shell_port.h"
+#include "fal_cfg.h"
 
 #define START_TASK_STACK_SIZE 1024
 #define START_TASK_PRIORITY 15
@@ -124,15 +125,26 @@ void iap_task(void *pvParameters)
     }
 }
 
+const struct fal_flash_dev *fal_little_fs;
+const struct fal_partition *fal_little_fs_partition;
+extern int fal_init(void);
+extern const struct fal_flash_dev *fal_flash_device_find(const char *name);
+extern const struct fal_partition *fal_partition_find(const char *name);
 void app_init(void)
 {
     Memory_Init(INSRAM);
     // sw_time_init();
-    // log_init();
+    log_init();
     sd_fatfs_init();
-    // at24c02_hw_init();
-    // user_lfs_init();
     // nvs_flash_init();
+    fal_init();
+    // fal_little_fs = fal_flash_device_find("norflash0");
+    // if (fal_little_fs == NULL)
+    //     log_i("Error: Flash Device (norflash0) not found.");
+    // fal_little_fs_partition = fal_partition_find(FAL_LFS_PART_NAME);
+    // if (fal_little_fs_partition == NULL)
+    //     log_i("Error: Partition (%s) not found.", FAL_LFS_PART_NAME);
+    // user_lfs_init();
 
     // ring_buf_init();
     // message_queue_init();

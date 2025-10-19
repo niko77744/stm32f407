@@ -23,18 +23,55 @@ extern struct fal_flash_dev nor_flash0;
     }
 
 /* ====================== Partition Configuration ========================== */
+#define FAL_BOOT_PART_NAME "bl"
+#define FAL_BOOT_START_ADDR (0 * 1024)
+#define FAL_BOOT_SIZE (512 * 1024)
+
+#define FAL_APP1_PART_NAME "app1"
+#define FAL_APP1_START_ADDR (512 * 1024) // 0x08080000
+#define FAL_APP1_PART_SIZE (128 * 1024)
+
+#define FAL_APP2_PART_NAME "app2"
+#define FAL_APP2_START_ADDR (640 * 1024) // 0x080a0000
+#define FAL_APP2_PART_SIZE (128 * 1024)
+
+#define FAL_FDB_PART_NAME "fdb"
+#define FAL_FDB_START_ADDR (768 * 1024) // 0x080c0000
+#define FAL_FDB_PART_SIZE (256 * 1024)
+
+#define FAL_FAC_BL_PART_NAME "factory_bl"
+#define FAL_FAC_BL_START_ADDR (0 * 1024 * 1024)
+#define FAL_FAC_BL_PART_SIZE (1 * 1024 * 1024)
+
+#define FAL_FAC_APP1_PART_NAME "factory_app1"
+#define FAL_FAC_APP1_START_ADDR (1 * 1024 * 1024)
+#define FAL_FAC_APP1_PART_SIZE (1 * 1024 * 1024)
+
+#define FAL_FAC_APP2_PART_NAME "factory_app2"
+#define FAL_FAC_APP2_START_ADDR (2 * 1024 * 1024)
+#define FAL_FAC_APP2_PART_SIZE (1 * 1024 * 1024)
+
+#define FAL_FONT_PART_NAME "font"
+#define FAL_FONT_START_ADDR (3 * 1024 * 1024)
+#define FAL_FONT_PART_SIZE (5 * 1024 * 1024)
+
+#define FAL_LFS_PART_NAME "littlefs"
+#define FAL_LFS_START_ADDR (8 * 1024 * 1024)
+#define FAL_LFS_PART_SIZE (8 * 1024 * 1024)
+
 #ifdef FAL_PART_HAS_TABLE_CFG
 /* partition table */
-#define FAL_PART_TABLE                                                                           \
-    {                                                                                            \
-        {FAL_PART_MAGIC_WORD, "bl", "stm32_onchip", 0 * 1024, 512 * 1024, 0},                    \
-        {FAL_PART_MAGIC_WORD, "app1", "stm32_onchip", 512 * 1024, 128 * 1024, 0},                \
-        {FAL_PART_MAGIC_WORD, "app2", "stm32_onchip", 640 * 1024, 128 * 1024, 0},                \
-        {FAL_PART_MAGIC_WORD, "fdb", "stm32_onchip", 768 * 1024, 256 * 1024, 0},                 \
-        {FAL_PART_MAGIC_WORD, "factory_bl", "norflash0", 0 * 1024, 1024 * 1024, 0},              \
-        {FAL_PART_MAGIC_WORD, "factory_app1", "norflash0", 1 * 1024 * 1024, 1 * 1024 * 1024, 0}, \
-        {FAL_PART_MAGIC_WORD, "factory_app2", "norflash0", 2 * 1024 * 1024, 1 * 1024 * 1024, 0}, \
-        {FAL_PART_MAGIC_WORD, "font", "norflash0", 3 * 1024 * 1024, 5 * 1024 * 1024, 0},         \
+#define FAL_PART_TABLE                                                                                                  \
+    {                                                                                                                   \
+        {FAL_PART_MAGIC_WORD, FAL_BOOT_PART_NAME, "stm32_onchip", FAL_BOOT_START_ADDR, FAL_BOOT_SIZE, 0},               \
+        {FAL_PART_MAGIC_WORD, FAL_APP1_PART_NAME, "stm32_onchip", FAL_APP1_START_ADDR, FAL_APP1_PART_SIZE, 0},          \
+        {FAL_PART_MAGIC_WORD, FAL_APP2_PART_NAME, "stm32_onchip", FAL_APP2_START_ADDR, FAL_APP2_PART_SIZE, 0},          \
+        {FAL_PART_MAGIC_WORD, FAL_FDB_PART_NAME, "stm32_onchip", FAL_FDB_START_ADDR, FAL_FDB_PART_SIZE, 0},             \
+        {FAL_PART_MAGIC_WORD, FAL_FAC_BL_PART_NAME, "norflash0", FAL_FAC_BL_START_ADDR, FAL_FAC_BL_PART_SIZE, 0},       \
+        {FAL_PART_MAGIC_WORD, FAL_FAC_APP1_PART_NAME, "norflash0", FAL_FAC_APP1_START_ADDR, FAL_FAC_APP1_PART_SIZE, 0}, \
+        {FAL_PART_MAGIC_WORD, FAL_FAC_APP2_PART_NAME, "norflash0", FAL_FAC_APP2_START_ADDR, FAL_FAC_APP2_PART_SIZE, 0}, \
+        {FAL_PART_MAGIC_WORD, FAL_FONT_PART_NAME, "norflash0", FAL_FONT_START_ADDR, FAL_FONT_PART_SIZE, 0},             \
+        {FAL_PART_MAGIC_WORD, FAL_LFS_PART_NAME, "norflash0", FAL_LFS_START_ADDR, FAL_LFS_PART_SIZE, 0},                \
     }
 #endif /* FAL_PART_HAS_TABLE_CFG */
 /*

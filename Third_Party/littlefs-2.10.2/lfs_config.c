@@ -1,7 +1,8 @@
 #include "lfs_config.h"
-
+#include "fal.h"
+#include "app.h"
 #define W25Qxx_SECTOR_SIZE W25Q128_SECTOR_SIZE
-#define W25Qxx_SECTOR_NUM 256 * 8 // 使用256个扇区做为littlefs的存储空间 8 * 256 * 4096 = 8MB
+#define W25Qxx_SECTOR_NUM (256 * 8) // 使用256个扇区做为littlefs的存储空间 8 * 256 * 4096 = 8MB
 int lfs_spi_flash_init(struct lfs_config *cfg);
 int lfs_spi_flash_read(const struct lfs_config *cfg, lfs_block_t block, lfs_off_t off, void *buffer, lfs_size_t size);
 int lfs_spi_flash_prog(const struct lfs_config *cfg, lfs_block_t block, lfs_off_t off, const void *buffer, lfs_size_t size);
@@ -52,12 +53,13 @@ int lfs_spi_flash_init(struct lfs_config *cfg)
 int lfs_spi_flash_read(const struct lfs_config *cfg, lfs_block_t block, lfs_off_t off, void *buffer, lfs_size_t size)
 {
     // check if read is valid
-    // LFS_ASSERT(off % cfg->read_size == 0);
-    // LFS_ASSERT(size % cfg->read_size == 0);
-    // LFS_ASSERT(block < cfg->block_count);
-    uint32_t addr = block * cfg->block_size + off;
-    const sfud_flash *flash = sfud_get_device(0u);
-    sfud_read(flash, addr, size, (uint8_t *)buffer);
+    LFS_ASSERT(off % cfg->read_size == 0);
+    LFS_ASSERT(size % cfg->read_size == 0);
+    LFS_ASSERT(block < cfg->block_count);
+    // uint32_t addr = block * cfg->block_size + off;
+    // const sfud_flash *flash = sfud_get_device(0u);
+    // sfud_read(flash, addr, size, (uint8_t *)buffer);
+    fal_partition_read(fal_little_fs_partition, block * cfg->block_size + off, (uint8_t *)buffer, size);
     return LFS_ERR_OK;
 }
 
@@ -73,13 +75,13 @@ int lfs_spi_flash_read(const struct lfs_config *cfg, lfs_block_t block, lfs_off_
 int lfs_spi_flash_prog(const struct lfs_config *cfg, lfs_block_t block, lfs_off_t off, const void *buffer, lfs_size_t size)
 {
     // check if write is valid
-    // LFS_ASSERT(off % cfg->prog_size == 0);
-    // LFS_ASSERT(size % cfg->prog_size == 0);
-    // LFS_ASSERT(block < cfg->block_count);
-
-    uint32_t addr = block * cfg->block_size + off;
-    const sfud_flash *flash = sfud_get_device(0u);
-    sfud_write(flash, addr, size, (uint8_t *)buffer);
+    LFS_ASSERT(off % cfg->prog_size == 0);
+    LFS_ASSERT(size % cfg->prog_size == 0);
+    LFS_ASSERT(block < cfg->block_count);
+    // uint32_t addr = block * cfg->block_size + off;
+    // const sfud_flash *flash = sfud_get_device(0u);
+    // sfud_write(flash, addr, size, (uint8_t *)buffer);
+    fal_partition_write(fal_little_fs_partition, block * cfg->block_size + off, (const uint8_t *)buffer, size);
     return LFS_ERR_OK;
 }
 
@@ -93,8 +95,9 @@ int lfs_spi_flash_erase(const struct lfs_config *cfg, lfs_block_t block)
 {
     // check if erase is valid
     LFS_ASSERT(block < cfg->block_count);
-    const sfud_flash *flash = sfud_get_device(0u);
-    sfud_erase(flash, block * cfg->block_size, cfg->block_size);
+    // const sfud_flash *flash = sfud_get_device(0u);
+    // sfud_erase(flash, block * cfg->block_size, cfg->block_size);
+    fal_partition_erase(fal_little_fs_partition, block * cfg->block_size, cfg->block_size);
     return LFS_ERR_OK;
 }
 

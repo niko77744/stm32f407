@@ -2,6 +2,7 @@
 
 #include "w25qxx.h"
 #include "elog.h"
+#include "shell.h"
 
 w25qxx_device_t w25q32_dev = {0};
 
@@ -142,7 +143,7 @@ void user_lfs_init(void)
         int err = lfs_spi_flash_init(&cfg);
         if (err)
         {
-            log_i("lfs_spi_flash_init() failed");
+            log_i("lfs_spi_flash_init() failed"); 
         }
 
         // mount the filesystem
@@ -176,3 +177,397 @@ void user_lfs_init(void)
         log_i("boot_count: %d", boot_count);
     }
 }
+
+#if 1
+// fal probe fdb
+// fal read 0 64
+// fal write 0 01 02 03 04 05 06 07
+// fal erase 64
+// fal bench 512 yes
+#include "fal.h"
+static void fal(uint8_t argc, char **argv)
+{
+
+#define __is_print(ch) ((unsigned int)((ch) - ' ') < 127u - ' ')
+#define HEXDUMP_WIDTH 16
+#define CMD_PROBE_INDEX 0
+#define CMD_READ_INDEX 1
+#define CMD_WRITE_INDEX 2
+#define CMD_ERASE_INDEX 3
+#define CMD_BENCH_INDEX 4
+
+    int result = 0;
+    static const struct fal_flash_dev *flash_dev = NULL;
+    static const struct fal_partition *part_dev = NULL;
+    size_t i = 0, j = 0;
+
+    const char *help_info[] =
+        {
+            [CMD_PROBE_INDEX] = "fal probe [dev_name|part_name]   - probe flash device or partition by given name",
+            [CMD_READ_INDEX] = "fal read addr size               - read 'size' bytes starting at 'addr'",
+            [CMD_WRITE_INDEX] = "fal write addr data1 ... dataN   - write some bytes 'data' starting at 'addr'",
+            [CMD_ERASE_INDEX] = "fal erase addr size              - erase 'size' bytes starting at 'addr'",
+            [CMD_BENCH_INDEX] = "fal bench <blk_size>             - benchmark test with per block size",
+        };
+
+    if (fal_init_check() != 1)
+    {
+        printf("\n[Warning] FAL is not initialized or failed to initialize!\n\n");
+        return;
+    }
+
+    if (argc < 2)
+    {
+        printf("Usage:\n");
+        for (i = 0; i < sizeof(help_info) / sizeof(char *); i++)
+        {
+            printf("%s\n", help_info[i]);
+        }
+        printf("\n");
+    }
+    else
+    {
+        const char *operator = argv[1];
+        uint32_t addr = 0, size = 0;
+
+        if (!strcmp(operator, "probe"))
+        {
+            if (argc >= 3)
+            {
+                char *dev_name = argv[2];
+                if ((flash_dev = fal_flash_device_find(dev_name)) != NULL)
+                {
+                    part_dev = NULL;
+                }
+                else if ((part_dev = fal_partition_find(dev_name)) != NULL)
+                {
+                    flash_dev = NULL;
+                }
+                else
+                {
+                    printf("Device %s NOT found. Probe failed.\n", dev_name);
+                    flash_dev = NULL;
+                    part_dev = NULL;
+                }
+            }
+
+            if (flash_dev)
+            {
+                printf("Probed a flash device | %s | addr: %ld | len: %d |.\n", flash_dev->name,
+                       flash_dev->addr, flash_dev->len);
+            }
+            else if (part_dev)
+            {
+                printf("Probed a flash partition | %s | flash_dev: %s | offset: %ld | len: %d |.\n",
+                       part_dev->name, part_dev->flash_name, part_dev->offset, part_dev->len);
+            }
+            else
+            {
+                printf("No flash device or partition was probed.\n");
+                printf("Usage: %s.\n", help_info[CMD_PROBE_INDEX]);
+                fal_show_part_table();  
+            }
+        }
+        else
+        {
+            if (!flash_dev && !part_dev)
+            {
+                printf("No flash device or partition was probed. Please run 'fal probe'.\n");
+                return;
+            }
+            if (!strcmp(operator, "read"))
+            {
+                if (argc < 4)
+                {
+                    printf("Usage: %s.\n", help_info[CMD_READ_INDEX]);
+                    return;
+                }
+                else
+                {
+                    addr = strtol(argv[2], NULL, 0);
+                    size = strtol(argv[3], NULL, 0);
+                    uint8_t *data = malloc(size);
+                    if (data)
+                    {
+                        if (flash_dev)
+                        {
+                            result = flash_dev->ops.read(addr, data, size);
+                        }
+                        else if (part_dev)
+                        {
+                            result = fal_partition_read(part_dev, addr, data, size);
+                        }
+                        if (result >= 0)
+                        {
+                            printf("Read data success. Start from 0x%08X, size is %ld. The data is:\n", addr, size);
+                            printf("Offset (h) 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F\n");
+                            for (i = 0; i < size; i += HEXDUMP_WIDTH)
+                            {
+                                printf("[%08X] ", addr + i);
+                                /* dump hex */
+                                for (j = 0; j < HEXDUMP_WIDTH; j++)
+                                {
+                                    if (i + j < size)
+                                    {
+                                        printf("%02X ", data[i + j]);
+                                    }
+                                    else
+                                    {
+                                        printf("   ");
+                                    }
+                                }
+                                /* dump char for hex */
+                                for (j = 0; j < HEXDUMP_WIDTH; j++)
+                                {
+                                    if (i + j < size)
+                                    {
+                                        printf("%c", __is_print(data[i + j]) ? data[i + j] : '.');
+                                    }
+                                }
+                                printf("\n");
+                            }
+                            printf("\n");
+                        }
+                        free(data);
+                    }
+                    else
+                    {
+                        printf("Low memory!\n");
+                    }
+                }
+            }
+            else if (!strcmp(operator, "write"))
+            {
+                if (argc < 4)
+                {
+                    printf("Usage: %s.\n", help_info[CMD_WRITE_INDEX]);
+                    return;
+                }
+                else
+                {
+                    addr = strtol(argv[2], NULL, 0);
+                    size = argc - 3;
+                    uint8_t *data = malloc(size);
+                    if (data)
+                    {
+                        for (i = 0; i < size; i++)
+                        {
+                            data[i] = strtol(argv[3 + i], NULL, 0);
+                        }
+                        if (flash_dev)
+                        {
+                            result = flash_dev->ops.write(addr, data, size);
+                        }
+                        else if (part_dev)
+                        {
+                            result = fal_partition_write(part_dev, addr, data, size);
+                        }
+                        if (result >= 0)
+                        {
+                            printf("Write data success. Start from 0x%08X, size is %ld.\n", addr, size);
+                            printf("Write data: ");
+                            for (i = 0; i < size; i++)
+                            {
+                                printf("%d ", data[i]);
+                            }
+                            printf(".\n");
+                        }
+                        free(data);
+                    }
+                    else
+                    {
+                        printf("Low memory!\n");
+                    }
+                }
+            }
+            else if (!strcmp(operator, "erase"))
+            {
+                if (argc < 4)
+                {
+                    printf("Usage: %s.\n", help_info[CMD_ERASE_INDEX]);
+                    return;
+                }
+                else
+                {
+                    addr = strtol(argv[2], NULL, 0);
+                    size = strtol(argv[3], NULL, 0);
+                    if (flash_dev)
+                    {
+                        result = flash_dev->ops.erase(addr, size);
+                    }
+                    else if (part_dev)
+                    {
+                        result = fal_partition_erase(part_dev, addr, size);
+                    }
+                    if (result >= 0)
+                    {
+                        printf("Erase data success. Start from 0x%08X, size is %ld.\n", addr, size);
+                    }
+                }
+            }
+            else if (!strcmp(operator, "bench"))
+            {
+                if (argc < 3)
+                {
+                    printf("Usage: %s.\n", help_info[CMD_BENCH_INDEX]);
+                    return;
+                }
+                else if ((argc > 3 && strcmp(argv[3], "yes")) || argc < 4)
+                {
+                    printf("DANGER: It will erase full chip or partition! Please run 'fal bench %d yes'.\n", strtol(argv[2], NULL, 0));
+                    return;
+                }
+                /* full chip benchmark test */
+                uint32_t start_time, time_cast;
+                size_t write_size = strtol(argv[2], NULL, 0), read_size = strtol(argv[2], NULL, 0), cur_op_size;
+                uint8_t *write_data = (uint8_t *)malloc(write_size), *read_data = (uint8_t *)malloc(read_size);
+
+                if (write_data && read_data)
+                {
+                    for (i = 0; i < write_size; i++)
+                    {
+                        write_data[i] = i & 0xFF;
+                    }
+                    if (flash_dev)
+                    {
+                        size = flash_dev->len;
+                    }
+                    else if (part_dev)
+                    {
+                        size = part_dev->len;
+                    }
+                    /* benchmark testing */
+                    printf("Erasing %ld bytes data, waiting...\n", size);
+                    start_time = HAL_GetTick();
+                    if (flash_dev)
+                    {
+                        result = flash_dev->ops.erase(0, size);
+                    }
+                    else if (part_dev)
+                    {
+                        result = fal_partition_erase(part_dev, 0, size);
+                    }
+                    if (result >= 0)
+                    {
+                        time_cast = HAL_GetTick() - start_time;
+                        printf("Erase benchmark success, total time: %d.%03dS.\n", time_cast / 1000,
+                               time_cast % 1000);
+                    }
+                    else
+                    {
+                        printf("Erase benchmark has an error. Error code: %d.\n", result);
+                    }
+                    /* write test */
+                    printf("Writing %ld bytes data, waiting...\n", size);
+                    start_time = HAL_GetTick();
+                    for (i = 0; i < size; i += write_size)
+                    {
+                        if (i + write_size <= size)
+                        {
+                            cur_op_size = write_size;
+                        }
+                        else
+                        {
+                            cur_op_size = size - i;
+                        }
+                        if (flash_dev)
+                        {
+                            result = flash_dev->ops.write(i, write_data, cur_op_size);
+                        }
+                        else if (part_dev)
+                        {
+                            result = fal_partition_write(part_dev, i, write_data, cur_op_size);
+                        }
+                        if (result < 0)
+                        {
+                            break;
+                        }
+                    }
+                    if (result >= 0)
+                    {
+                        time_cast = HAL_GetTick() - start_time;
+                        printf("Write benchmark success, total time: %d.%03dS.\n", time_cast / 1000,
+                               time_cast % 1000);
+                    }
+                    else
+                    {
+                        printf("Write benchmark has an error. Error code: %d.\n", result);
+                    }
+                    /* read test */
+                    printf("Reading %ld bytes data, waiting...\n", size);
+                    start_time = HAL_GetTick();
+                    for (i = 0; i < size; i += read_size)
+                    {
+                        if (i + read_size <= size)
+                        {
+                            cur_op_size = read_size;
+                        }
+                        else
+                        {
+                            cur_op_size = size - i;
+                        }
+                        if (flash_dev)
+                        {
+                            result = flash_dev->ops.read(i, read_data, cur_op_size);
+                        }
+                        else if (part_dev)
+                        {
+                            result = fal_partition_read(part_dev, i, read_data, cur_op_size);
+                        }
+                        /* data check */
+                        for (size_t index = 0; index < cur_op_size; index++)
+                        {
+                            if (write_data[index] != read_data[index])
+                            {
+                                printf("%d %d %02x %02x.\n", i, index, write_data[index], read_data[index]);
+                            }
+                        }
+
+                        if (memcmp(write_data, read_data, cur_op_size))
+                        {
+                            result = -1;
+                            printf("Data check ERROR! Please check you flash by other command.\n");
+                        }
+                        /* has an error */
+                        if (result < 0)
+                        {
+                            break;
+                        }
+                    }
+                    if (result >= 0)
+                    {
+                        time_cast = HAL_GetTick() - start_time;
+                        printf("Read benchmark success, total time: %d.%03dS.\n", time_cast / 1000,
+                               time_cast % 1000);
+                    }
+                    else
+                    {
+                        printf("Read benchmark has an error. Error code: %d.\n", result);
+                    }
+                }
+                else
+                {
+                    printf("Low memory!\n");
+                }
+                free(write_data);
+                free(read_data);
+            }
+            else
+            {
+                printf("Usage:\n");
+                for (i = 0; i < sizeof(help_info) / sizeof(char *); i++)
+                {
+                    printf("%s\n", help_info[i]);
+                }
+                printf("\n");
+                return;
+            }
+            if (result < 0)
+            {
+                printf("This operate has an error. Error code: %d.\n", result);
+            }
+        }
+    }
+}
+SHELL_EXPORT_CMD(SHELL_CMD_PERMISSION(0) | SHELL_CMD_TYPE(SHELL_TYPE_CMD_MAIN), fal, fal, fal to probe read write erase bench);
+#endif

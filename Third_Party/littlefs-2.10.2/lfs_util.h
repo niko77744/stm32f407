@@ -45,7 +45,7 @@
 #include <inttypes.h>
 #include "lfs_config.h"
 
-#define LFS_NO_ASSERT
+// #define LFS_NO_ASSERT
 
 #ifndef LFS_NO_MALLOC
 #include <stdlib.h>
