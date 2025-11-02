@@ -3,6 +3,8 @@
 #include "w25qxx.h"
 #include "elog.h"
 #include "shell.h"
+#include "FreeRTOS.h"
+#include "fal_cfg.h"
 
 w25qxx_device_t w25q32_dev = {0};
 
@@ -54,131 +56,69 @@ uint16_t w25qxx_read_id(void)
 //[SFUD](../Lib_SFUD/src/sfud.c：861) 闪存设备复位成功。
 //[SFUD]W25Q128BV 闪存设备初始化成功。
 
-#if 0
-/**
- * @brief 自检程序
- *
- * @param addr
- * @param size
- * @param data
- */
-DEPRECATED static void sfud_w25qxx_self_inspection(uint32_t addr, uint32_t size, uint8_t *data)
-{
-    sfud_err result = SFUD_SUCCESS;
-    const sfud_flash *flash = sfud_get_device_table() + 0;
-    uint32_t i;
-    /* prepare write data */
-    for (i = 0; i < size; i++)
-    {
-        data[i] = i;
-    }
-    /* erase test */
-    result = sfud_erase(flash, addr, size);
-    if (result == SFUD_SUCCESS)
-    {
-        log_i("Erase the %s flash data finish. Start from 0x%08X, size is %d.", flash->name, addr, size);
-    }
-    else
-    {
-        log_e("Erase the %s flash data failed.", flash->name);
-        return;
-    }
-    /* write test */
-    result = sfud_write(flash, addr, size, data);
-    if (result == SFUD_SUCCESS)
-    {
-        log_i("Write the %s flash data finish. Start from 0x%08X, size is %d.", flash->name, addr, size);
-    }
-    else
-    {
-        log_e("Write the %s flash data failed.", flash->name);
-        return;
-    }
-    /* read test */
-    result = sfud_read(flash, addr, size, data);
-    if (result == SFUD_SUCCESS)
-    {
-        log_i("Read the %s flash data success. Start from 0x%08X, size is %d.", flash->name, addr, size);
-    }
-    else
-    {
-        log_e("Read the %s flash data failed.", flash->name);
-    }
-    /* data check */
-    for (i = 0; i < size; i++)
-    {
-        if (data[i] != i % 256)
-        {
-            log_e("Read and check write data has an error. Write the %s flash data failed.", flash->name);
-            break;
-        }
-    }
-    if (i == size)
-    {
-        log_i("The %s flash test is success.", flash->name);
-    }
-}
-
-#define SFUD_BUFFER_SIZE 1024
-uint8_t sfud_buf[SFUD_BUFFER_SIZE];
-
-DEPRECATED void sfud_w25qxx_init(void)
-{
-    if (sfud_init() == SFUD_SUCCESS)
-    {
-        sfud_w25qxx_self_inspection(0, sizeof(sfud_buf), sfud_buf);
-    }
-}
-#endif
-
 lfs_t lfs;
 lfs_file_t file;
 struct lfs_config cfg;
+const struct fal_flash_dev *fal_little_fs;
+const struct fal_partition *fal_little_fs_partition;
+extern int fal_init(void);
+extern const struct fal_flash_dev *fal_flash_device_find(const char *name);
+extern const struct fal_partition *fal_partition_find(const char *name);
 
 void user_lfs_init(void)
 {
-    if (sfud_init() == SFUD_SUCCESS)
+    fal_little_fs = fal_flash_device_find("norflash0");
+    if (fal_little_fs == NULL)
     {
-        extern int lfs_spi_flash_init(struct lfs_config * cfg);
-        int err = lfs_spi_flash_init(&cfg);
-        if (err)
-        {
-            log_i("lfs_spi_flash_init() failed"); 
-        }
-
-        // mount the filesystem
-        err = lfs_mount(&lfs, &cfg);
-
-        // reformat if we can't mount the filesystem
-        // this should only happen on the first boot
-        if (err)
-        {
-            lfs_format(&lfs, &cfg);
-            lfs_mount(&lfs, &cfg);
-        }
-
-        // read current count
-        uint32_t boot_count = 0;
-        lfs_file_open(&lfs, &file, "boot_count", LFS_O_RDWR | LFS_O_CREAT);
-        lfs_file_read(&lfs, &file, &boot_count, sizeof(boot_count));
-
-        // update boot count
-        boot_count += 1;
-        lfs_file_rewind(&lfs, &file);
-        lfs_file_write(&lfs, &file, &boot_count, sizeof(boot_count));
-
-        // remember the storage is not updated until the file is closed successfully
-        lfs_file_close(&lfs, &file);
-
-        // release any resources we were using
-        lfs_unmount(&lfs);
-
-        // print the boot count
-        log_i("boot_count: %d", boot_count);
+        log_e("Error: Flash Device (norflash0) not found.");
+        return;
     }
+    fal_little_fs_partition = fal_partition_find(FAL_LFS_PART_NAME);
+    if (fal_little_fs_partition == NULL)
+    {
+        log_e("Error: Partition (%s) not found.", FAL_LFS_PART_NAME);
+        return;
+    }
+
+    extern int lfs_spi_flash_init(struct lfs_config * cfg);
+    int err = lfs_spi_flash_init(&cfg);
+    if (err)
+    {
+        log_e("lfs_spi_flash_init() failed");
+    }
+
+    // mount the filesystem
+    err = lfs_mount(&lfs, &cfg);
+
+    // reformat if we can't mount the filesystem
+    // this should only happen on the first boot
+    if (err)
+    {
+        lfs_format(&lfs, &cfg);
+        lfs_mount(&lfs, &cfg);
+        log_e("err: lfs_format & lfs_mount");
+    }
+
+    // read current count
+    uint32_t boot_count = 0;
+    lfs_file_open(&lfs, &file, "boot_count", LFS_O_RDWR | LFS_O_CREAT);
+    lfs_file_read(&lfs, &file, &boot_count, sizeof(boot_count));
+
+    // update boot count
+    boot_count += 1;
+    lfs_file_rewind(&lfs, &file);
+    lfs_file_write(&lfs, &file, &boot_count, sizeof(boot_count));
+
+    // remember the storage is not updated until the file is closed successfully
+    lfs_file_close(&lfs, &file);
+
+    // release any resources we were using
+    lfs_unmount(&lfs);
+
+    // print the boot count
+    log_i("boot_count: %d", boot_count);
 }
 
-#if 1
 // fal probe fdb
 // fal read 0 64
 // fal write 0 01 02 03 04 05 06 07
@@ -265,7 +205,7 @@ static void fal(uint8_t argc, char **argv)
             {
                 printf("No flash device or partition was probed.\n");
                 printf("Usage: %s.\n", help_info[CMD_PROBE_INDEX]);
-                fal_show_part_table();  
+                fal_show_part_table();
             }
         }
         else
@@ -286,7 +226,7 @@ static void fal(uint8_t argc, char **argv)
                 {
                     addr = strtol(argv[2], NULL, 0);
                     size = strtol(argv[3], NULL, 0);
-                    uint8_t *data = malloc(size);
+                    uint8_t *data = pvPortMalloc(size);
                     if (data)
                     {
                         if (flash_dev)
@@ -328,7 +268,7 @@ static void fal(uint8_t argc, char **argv)
                             }
                             printf("\n");
                         }
-                        free(data);
+                        vPortFree(data);
                     }
                     else
                     {
@@ -347,7 +287,7 @@ static void fal(uint8_t argc, char **argv)
                 {
                     addr = strtol(argv[2], NULL, 0);
                     size = argc - 3;
-                    uint8_t *data = malloc(size);
+                    uint8_t *data = pvPortMalloc(size);
                     if (data)
                     {
                         for (i = 0; i < size; i++)
@@ -372,7 +312,7 @@ static void fal(uint8_t argc, char **argv)
                             }
                             printf(".\n");
                         }
-                        free(data);
+                        vPortFree(data);
                     }
                     else
                     {
@@ -420,7 +360,7 @@ static void fal(uint8_t argc, char **argv)
                 /* full chip benchmark test */
                 uint32_t start_time, time_cast;
                 size_t write_size = strtol(argv[2], NULL, 0), read_size = strtol(argv[2], NULL, 0), cur_op_size;
-                uint8_t *write_data = (uint8_t *)malloc(write_size), *read_data = (uint8_t *)malloc(read_size);
+                uint8_t *write_data = (uint8_t *)pvPortMalloc(write_size), *read_data = (uint8_t *)pvPortMalloc(read_size);
 
                 if (write_data && read_data)
                 {
@@ -549,8 +489,8 @@ static void fal(uint8_t argc, char **argv)
                 {
                     printf("Low memory!\n");
                 }
-                free(write_data);
-                free(read_data);
+                vPortFree(write_data);
+                vPortFree(read_data);
             }
             else
             {
@@ -570,4 +510,3 @@ static void fal(uint8_t argc, char **argv)
     }
 }
 SHELL_EXPORT_CMD(SHELL_CMD_PERMISSION(0) | SHELL_CMD_TYPE(SHELL_TYPE_CMD_MAIN), fal, fal, fal to probe read write erase bench);
-#endif

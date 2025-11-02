@@ -20,13 +20,11 @@ GPIO_PinState get_ble_device_state(void)
 void ble_connect_callback(void)
 {
     log_i("BLE connected");
-    beep_start(beep_long);
 }
 
 void ble_disconnect_callback(void)
 {
     log_i("BLE disconnected");
-    beep_start(beep_short);
 }
 
 static void ble_ticks_callback(MultiTimer *timer, void *userData)

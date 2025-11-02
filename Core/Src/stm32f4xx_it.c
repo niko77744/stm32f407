@@ -94,9 +94,9 @@ void NMI_Handler(void)
 
   /* USER CODE END NonMaskableInt_IRQn 0 */
   /* USER CODE BEGIN NonMaskableInt_IRQn 1 */
-    while (1)
-    {
-    }
+  while (1)
+  {
+  }
   /* USER CODE END NonMaskableInt_IRQn 1 */
 }
 
@@ -183,10 +183,10 @@ void SysTick_Handler(void)
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
   /* USER CODE BEGIN SysTick_IRQn 1 */
-    if (xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED)
-    {
-        xPortSysTickHandler();
-    }
+  if (xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED)
+  {
+    xPortSysTickHandler();
+  }
   /* USER CODE END SysTick_IRQn 1 */
 }
 
@@ -443,16 +443,16 @@ void vApplicationIdleHook(void)
 void vApplicationStackOverflowHook(TaskHandle_t pxTask,
                                    char *pcTaskName)
 {
-    (void)pcTaskName;
-    (void)pxTask;
+  (void)pcTaskName;
+  (void)pxTask;
 
-    /* Run time stack overflow checking is performed if
-     * configCHECK_FOR_STACK_OVERFLOW is defined to 1 or 2.  This hook
-     * function is called if a stack overflow is detected. */
-    log_e("stack overflow %s", pcTaskName);
-    for (;;)
-    {
-    }
+  /* Run time stack overflow checking is performed if
+   * configCHECK_FOR_STACK_OVERFLOW is defined to 1 or 2.  This hook
+   * function is called if a stack overflow is detected. */
+  log_e("stack overflow %s", pcTaskName);
+  for (;;)
+  {
+  }
 }
 void vApplicationTickHook(void)
 {

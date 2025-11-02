@@ -4,7 +4,8 @@
 #include "lvgl.h"
 #include "shell.h"
 #include "shell_port.h"
-#include "fal_cfg.h"
+#include "ff.h"
+#include "ffconf.h"
 
 #define START_TASK_STACK_SIZE 1024
 #define START_TASK_PRIORITY 15
@@ -33,6 +34,7 @@ void iap_task(void *pvParameters);
 
 #define SHELL_TASK_STACK_SIZE 2048
 #define SHELL_TASK_PRIORITY 5
+TaskHandle_t shell_task_handle = NULL;
 
 static SemaphoreHandle_t Fatfs_Mutex_Semaphore = NULL;
 
@@ -40,7 +42,9 @@ void start_task(void *pvParameters)
 {
     taskENTER_CRITICAL();
     Fatfs_Mutex_Semaphore = xSemaphoreCreateMutex();
+#if SUPPORT_SHELL == 1
     userShellInit();
+#endif
     xTaskCreate(
         (TaskFunction_t)app_task,
         (char *)"app_task",
@@ -48,34 +52,36 @@ void start_task(void *pvParameters)
         NULL,
         APP_TASK_PRIORITY,
         &app_task_handle);
-    // xTaskCreate(
-    //     (TaskFunction_t)display_task,
-    //     (char *)"display_task",
-    //     DISPLAY_TASK_STACK_SIZE,
-    //     NULL,
-    //     DISPLAY_TASK_PRIORITY,
-    //     &display_task_handle);
-    // xTaskCreate(
-    //     (TaskFunction_t)communication_task,
-    //     (char *)"communication_task",
-    //     COMMUNICATION_TASK_STACK_SIZE,
-    //     NULL,
-    //     COMMUNICATION_TASK_PRIORITY,
-    //     &communication_task_handle);
-    // xTaskCreate(
-    //     (TaskFunction_t)iap_task,
-    //     (char *)"iap_task",
-    //     IAP_TASK_STACK_SIZE,
-    //     NULL,
-    //     IAP_TASK_PRIORITY,
-    //     &iap_task_handle);
     xTaskCreate(
-        shellTask,
-        "shell",
+        (TaskFunction_t)display_task,
+        (char *)"display_task",
+        DISPLAY_TASK_STACK_SIZE,
+        NULL,
+        DISPLAY_TASK_PRIORITY,
+        &display_task_handle);
+    xTaskCreate(
+        (TaskFunction_t)communication_task,
+        (char *)"communication_task",
+        COMMUNICATION_TASK_STACK_SIZE,
+        NULL,
+        COMMUNICATION_TASK_PRIORITY,
+        &communication_task_handle);
+    xTaskCreate(
+        (TaskFunction_t)iap_task,
+        (char *)"iap_task",
+        IAP_TASK_STACK_SIZE,
+        NULL,
+        IAP_TASK_PRIORITY,
+        &iap_task_handle);
+#if SUPPORT_SHELL == 1
+    xTaskCreate(
+        (TaskFunction_t)shellTask,
+        (char *)"shell",
         SHELL_TASK_STACK_SIZE,
         &shell,
         SHELL_TASK_PRIORITY,
-        NULL);
+        &shell_task_handle);
+#endif
     vTaskDelete(NULL);
     taskEXIT_CRITICAL();
 }
@@ -115,47 +121,61 @@ void communication_task(void *pvParameters)
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
+// static FIL file; // _FS_TINY 在Normal模式下，每个FIL对象都会包含一个缓冲区（大小为_MAX_SS，通常为512字节），因此如果我们在任务栈上定义FIL对象，会占用大量栈空间（至少512字节加上其他局部变量）。而使用静态分配，将FIL对象放在全局数据区，就不会占用任务栈空间。
 void iap_task(void *pvParameters)
 {
+    // FRESULT res;
+    // UINT byteswritten;
+    // const char *text = "Hello, FatFS! This is a test file.";
     while (1)
     {
-        xSemaphoreTake(Fatfs_Mutex_Semaphore, portMAX_DELAY);
-        xSemaphoreGive(Fatfs_Mutex_Semaphore);
-        vTaskDelay(pdMS_TO_TICKS(1));
+        if (xSemaphoreTake(Fatfs_Mutex_Semaphore, portMAX_DELAY) == pdTRUE)
+        {
+            // sd_fatfs_self_inspection();
+            // res = f_open(&file, "test.txt", FA_WRITE | FA_CREATE_ALWAYS);
+            // if (res != FR_OK)
+            // {
+            //     log_e("Error creating file: %d", res);
+            // }
+            // log_i("file opened successfully");
+            // res = f_write(&file, text, strlen(text), &byteswritten);
+            // if (res != FR_OK || byteswritten != strlen(text))
+            // {
+            //     log_e("Error writing to file: %d", res);
+            // }
+            // res = f_close(&file);
+            // if (res != FR_OK)
+            // {
+            //     log_e("Error closing file: %d", res);
+            // }
+            // log_i("file closed successfully");
+            xSemaphoreGive(Fatfs_Mutex_Semaphore);
+        }
+        vTaskDelay(pdMS_TO_TICKS(3000));
     }
 }
 
-const struct fal_flash_dev *fal_little_fs;
-const struct fal_partition *fal_little_fs_partition;
-extern int fal_init(void);
-extern const struct fal_flash_dev *fal_flash_device_find(const char *name);
-extern const struct fal_partition *fal_partition_find(const char *name);
 void app_init(void)
 {
     Memory_Init(INSRAM);
-    // sw_time_init();
+    sw_time_init();
+#if SUPPORT_LOG == 1
     log_init();
+#endif
+    message_queue_init();
+    ring_buf_init();
+    fal_init();
     sd_fatfs_init();
     // nvs_flash_init();
-    fal_init();
-    // fal_little_fs = fal_flash_device_find("norflash0");
-    // if (fal_little_fs == NULL)
-    //     log_i("Error: Flash Device (norflash0) not found.");
-    // fal_little_fs_partition = fal_partition_find(FAL_LFS_PART_NAME);
-    // if (fal_little_fs_partition == NULL)
-    //     log_i("Error: Partition (%s) not found.", FAL_LFS_PART_NAME);
-    // user_lfs_init();
+    user_lfs_init();
 
-    // ring_buf_init();
-    // message_queue_init();
-    // buttons_init();
-    // app_led_init();
+    sys_time_init();
+    buttons_init();
+    app_led_init();
+    ble_init();
     // iap_init(iap_from_uart);
-    // ble_init();
     // esp8266_hw_init();
-    // stmflash_earse(FLASH_APP1_ADDR, 0x1000); // 4096
-    // iap_process();
-    // sys_time_init();
+    // iap_process(); // 先擦除 stmflash_earse(FLASH_APP1_ADDR, 0x1000); // 4096
 #if SUPPORT_LVGL == 1
     lv_init();            /* lvgl系统初始化 */
     lv_port_disp_init();  /* lvgl显示接口初始化,放在lv_init()的后面 */
@@ -163,7 +183,7 @@ void app_init(void)
 #endif
 }
 
-void app_os_start(void)
+void app_run(void)
 {
 #if SUPPORT_OS == 0
     while (1)

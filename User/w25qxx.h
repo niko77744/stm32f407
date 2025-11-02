@@ -41,6 +41,7 @@ typedef struct
     uint16_t id;
 } w25qxx_device_t;
 
+extern const struct fal_partition *fal_little_fs_partition;
 void user_lfs_init(void);
 
 #endif /* __W25QXX_H__ */

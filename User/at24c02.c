@@ -227,7 +227,7 @@ static void eeprom(uint8_t argc, char **argv)
             {
                 addr = strtol(argv[2], NULL, 0);
                 size = strtol(argv[3], NULL, 0);
-                uint8_t *data = malloc(size);
+                uint8_t *data = pvPortMalloc(size);
                 if (data)
                 {
                     result = at24c02_read(addr, data, size);
@@ -262,7 +262,7 @@ static void eeprom(uint8_t argc, char **argv)
                         }
                         printf("\n");
                     }
-                    free(data);
+                    vPortFree(data);
                 }
                 else
                 {
@@ -281,7 +281,7 @@ static void eeprom(uint8_t argc, char **argv)
             {
                 addr = strtol(argv[2], NULL, 0);
                 size = argc - 3;
-                uint8_t *data = malloc(size);
+                uint8_t *data = pvPortMalloc(size);
                 if (data)
                 {
                     for (i = 0; i < size; i++)
@@ -299,7 +299,7 @@ static void eeprom(uint8_t argc, char **argv)
                         }
                         printf(".\n");
                     }
-                    free(data);
+                    vPortFree(data);
                 }
                 else
                 {

@@ -47,9 +47,6 @@ void log_sd_card_info(void)
 void sd_fatfs_init(void)
 {
     FRESULT res;
-    // FATFS *fsTF;
-
-    // fsTF = (FATFS *)Mem_malloc(INSRAM, sizeof(FATFS)); // 为文件系统分配内存
 
     // 1. 挂载文件系统
     res = f_mount(&SDFatFS, "0:", 1);
@@ -62,12 +59,10 @@ void sd_fatfs_init(void)
     log_sd_card_info();
 
     log_i("Filesystem mounted successfully!");
-    // sd_fatsf_self_inspection();
 }
 
-void sd_fatsf_self_inspection(void)
+void sd_fatfs_self_inspection(void)
 {
-#if 1
     FRESULT res;
     FIL file;
     UINT byteswritten, bytesread;
@@ -96,7 +91,7 @@ void sd_fatsf_self_inspection(void)
     }
 
     // 关闭文件
-    f_close(&file);
+    res = f_close(&file);
     log_i("File written successfully! (%d bytes)", byteswritten);
 
     // 3. 读取文件内容
@@ -172,6 +167,4 @@ void sd_fatsf_self_inspection(void)
     // 6. 卸载文件系统
     f_mount(NULL, "", 0);
     log_i("Demo completed successfully!");
-    // Mem_free(INSRAM, fsTF);
-#endif
 }
