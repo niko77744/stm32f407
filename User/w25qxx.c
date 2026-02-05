@@ -128,7 +128,7 @@ void w25qxx_chip_erase(void)
     else
         log_w("w25qxx erase chip err");
 }
-SHELL_EXPORT_CMD(SHELL_CMD_PERMISSION(0) | SHELL_CMD_TYPE(SHELL_TYPE_CMD_MAIN), erase, w25qxx_chip_erase, erase chip);
+SHELL_EXPORT_CMD(SHELL_CMD_PERMISSION(0) | SHELL_CMD_TYPE(SHELL_TYPE_CMD_MAIN), spi_erase, w25qxx_chip_erase, erase chip);
 
 // fal probe fdb
 // fal read 0 64
@@ -138,7 +138,6 @@ SHELL_EXPORT_CMD(SHELL_CMD_PERMISSION(0) | SHELL_CMD_TYPE(SHELL_TYPE_CMD_MAIN), 
 #include "fal.h"
 static void fal(uint8_t argc, char **argv)
 {
-
 #define __is_print(ch) ((unsigned int)((ch) - ' ') < 127u - ' ')
 #define HEXDUMP_WIDTH 16
 #define CMD_PROBE_INDEX 0

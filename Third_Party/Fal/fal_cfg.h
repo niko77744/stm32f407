@@ -14,12 +14,14 @@
 /* ===================== Flash device Configuration ========================= */
 extern const struct fal_flash_dev stm32_onchip_flash;
 extern struct fal_flash_dev nor_flash0;
+extern const struct fal_flash_dev eeprom;
 
 /* flash device table */
 #define FAL_FLASH_DEV_TABLE  \
     {                        \
         &stm32_onchip_flash, \
         &nor_flash0,         \
+        &eeprom,             \
     }
 
 /* ====================== Partition Configuration ========================== */
@@ -47,6 +49,10 @@ extern struct fal_flash_dev nor_flash0;
 #define FAL_DW_START_ADDR (12 * 1024 * 1024)
 #define FAL_DW_PART_SIZE (4 * 1024 * 1024)
 
+#define FAL_PARAM_PART_NAME "param"
+#define FAL_PARAM_START_ADDR (0)
+#define FAL_PARAM_PART_SIZE (256)
+
 #ifdef FAL_PART_HAS_TABLE_CFG
 /* partition table */
 #define FAL_PART_TABLE                                                                                         \
@@ -57,6 +63,7 @@ extern struct fal_flash_dev nor_flash0;
         {FAL_PART_MAGIC_WORD, FAL_LFS_PART_NAME, "norflash0", FAL_LFS_START_ADDR, FAL_LFS_PART_SIZE, 0},       \
         {FAL_PART_MAGIC_WORD, FAL_FONT_PART_NAME, "norflash0", FAL_FONT_START_ADDR, FAL_FONT_PART_SIZE, 0},    \
         {FAL_PART_MAGIC_WORD, FAL_DW_PART_NAME, "norflash0", FAL_DW_START_ADDR, FAL_DW_PART_SIZE, 0},          \
+        {FAL_PART_MAGIC_WORD, FAL_PARAM_PART_NAME, "eeprom", FAL_PARAM_START_ADDR, FAL_PARAM_PART_SIZE, 0},    \
     }
 #endif /* FAL_PART_HAS_TABLE_CFG */
 /*

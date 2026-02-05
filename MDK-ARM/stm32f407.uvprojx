@@ -3854,6 +3854,21 @@
           <GroupName>Third_Party/FAL</GroupName>
           <Files>
             <File>
+              <FileName>fal.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\Fal\fal.h</FilePath>
+            </File>
+            <File>
+              <FileName>fal_def.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\Fal\fal_def.h</FilePath>
+            </File>
+            <File>
+              <FileName>fal_cfg.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\Fal\fal_cfg.h</FilePath>
+            </File>
+            <File>
               <FileName>fal.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Third_Party\Fal\fal.c</FilePath>
@@ -3862,6 +3877,11 @@
               <FileName>fal_flash.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Third_Party\Fal\fal_flash.c</FilePath>
+            </File>
+            <File>
+              <FileName>fal_partition.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\Fal\fal_partition.c</FilePath>
             </File>
             <File>
               <FileName>fal_flash_sfud_port.c</FileName>
@@ -3874,24 +3894,9 @@
               <FilePath>..\Third_Party\Fal\fal_flash_stm32f4.c</FilePath>
             </File>
             <File>
-              <FileName>fal_partition.c</FileName>
+              <FileName>fal_flash_eeprom.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Third_Party\Fal\fal_partition.c</FilePath>
-            </File>
-            <File>
-              <FileName>fal.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Third_Party\Fal\fal.h</FilePath>
-            </File>
-            <File>
-              <FileName>fal_cfg.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Third_Party\Fal\fal_cfg.h</FilePath>
-            </File>
-            <File>
-              <FileName>fal_def.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Third_Party\Fal\fal_def.h</FilePath>
+              <FilePath>..\Third_Party\Fal\fal_flash_eeprom.c</FilePath>
             </File>
           </Files>
         </Group>
