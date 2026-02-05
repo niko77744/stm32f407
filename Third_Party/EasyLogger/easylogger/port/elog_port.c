@@ -48,7 +48,7 @@ ElogErrCode elog_port_init(void)
  */
 void elog_port_deinit(void)
 {
-    HAL_UART_DeInit(&huart6);
+    HAL_UART_DeInit(&huart1);
     /* add your code here */
 }
 

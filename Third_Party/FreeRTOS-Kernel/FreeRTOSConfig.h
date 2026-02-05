@@ -72,6 +72,7 @@ extern uint32_t SystemCoreClock;
 #define configUSE_TIME_SLICING 1                       /* 1: 使能时间片调度, 默认: 1 */
 #define configUSE_NEWLIB_REENTRANT 0                   /* 1: 任务创建时分配Newlib的重入结构体, 默认: 0 */
 #define configENABLE_BACKWARD_COMPATIBILITY 0          /* 1: 使能兼容老版本, 默认: 1 */
+#define configUSE_STATS_FORMATTING_FUNCTIONS 1
 #define configUSE_APPLICATION_TASK_TAG 0               /* */
 
 /* 内存分配相关定义 */

@@ -7,6 +7,7 @@
 #include "queue.h"
 #include "semphr.h"
 #include "timers.h"
+#include "list.h"
 
 #define SUPPORT_OS 1
 #define SUPPORT_LVGL 0

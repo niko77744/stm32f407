@@ -1,10 +1,5 @@
 #include "nvs_flash.h"
-#include "easyflash.h"
 #include "elog.h"
-#include "flashdb.h"
-
-// 移植: https://zhuanlan.zhihu.com/p/136168426
-// EasyFlash V4.0 ENV 功能设计与实现: https://mculover666.blog.csdn.net/article/details/105715982
 
 /* 主存储器块，分为 4 个 16 KB 扇区、1 个 64 KB 扇区和 7 个 128 KB 扇区
  块 名称 块基址 大小 主存储器
@@ -65,7 +60,7 @@ uint32_t stm32_get_sector(uint32_t address)
 
 uint32_t stm32_get_sector_size(uint32_t sector)
 {
-    EF_ASSERT(IS_FLASH_SECTOR(sector));
+    // EF_ASSERT(IS_FLASH_SECTOR(sector));
     switch (sector)
     {
     case FLASH_SECTOR_0:
@@ -127,59 +122,6 @@ uint8_t stmflash_get_flash_sector(uint32_t addr)
     else if (addr < ADDR_FLASH_SECTOR_11)
         return FLASH_SECTOR_10;
     return FLASH_SECTOR_11;
-}
-
-static uint32_t boot_count = 0;
-static time_t boot_time[10] = {0, 1, 2, 3};
-/* KVDB object */
-static struct fdb_kvdb kvdb = {0};
-/* default KV nodes */
-static struct fdb_default_kv_node default_kv_table[] = {
-    {"username", "armink", 0},                       /* string KV */
-    {"password", "123456", 0},                       /* string KV */
-    {"boot_count", &boot_count, sizeof(boot_count)}, /* int type KV */
-    {"boot_time", &boot_time, sizeof(boot_time)},    /* int array type KV */
-};
-
-extern void kvdb_basic_sample(fdb_kvdb_t kvdb);
-
-static void lock(fdb_db_t db)
-{
-    __disable_irq();
-}
-
-static void unlock(fdb_db_t db)
-{
-    __enable_irq();
-}
-
-void nvs_flash_init(void)
-{
-    struct fdb_default_kv default_kv;
-    fdb_err_t result;
-
-    default_kv.kvs = default_kv_table;
-    default_kv.num = sizeof(default_kv_table) / sizeof(default_kv_table[0]);
-    /* set the lock and unlock function if you want */
-    fdb_kvdb_control(&kvdb, FDB_KVDB_CTRL_SET_LOCK, (void *)lock);
-    fdb_kvdb_control(&kvdb, FDB_KVDB_CTRL_SET_UNLOCK, (void *)unlock);
-    /* Key-Value database initialization
-     *
-     *       &kvdb: database object
-     *       "env": database name
-     * "fdb_kvdb1": The flash partition name base on FAL. Please make sure it's in FAL partition table.
-     *              Please change to YOUR partition name.
-     * &default_kv: The default KV nodes. It will auto add to KVDB when first initialize successfully.
-     *        NULL: The user data if you need, now is empty.
-     */
-
-    result = fdb_kvdb_init(&kvdb, "env", "fdb", &default_kv, NULL);
-    // result = fdb_kvdb_init(&kvdb, "env", "easyflash", &default_kv, NULL);
-
-    if (result != FDB_NO_ERR)
-        return;
-
-    kvdb_basic_sample(&kvdb);
 }
 
 /**

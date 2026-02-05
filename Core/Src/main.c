@@ -106,6 +106,7 @@ int main(void)
   MX_I2C1_Init();
   MX_FSMC_Init();
   MX_RTC_Init();
+  MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
   app_init();
   app_run();

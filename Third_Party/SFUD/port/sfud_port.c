@@ -49,7 +49,7 @@ void sfud_log_debug(const char *file, const long line, const char *format, ...);
  */
 static sfud_err spi_write_read(const sfud_spi *spi, const uint8_t *write_buf, size_t write_size, uint8_t *read_buf, size_t read_size)
 {
-#if 0
+#if 1
     sfud_err result = SFUD_SUCCESS;
     uint8_t send_data, read_data;
 
@@ -80,7 +80,7 @@ static sfud_err spi_write_read(const sfud_spi *spi, const uint8_t *write_buf, si
         {
             send_data = SFUD_DUMMY_DATA;
         }
-        if (HAL_SPI_TransmitReceive(spi_dev->hspix, &send_data, &read_data, 1, 1000) != HAL_OK)
+        if (HAL_SPI_TransmitReceive(spi_dev->hspix, &send_data, &read_data, 1, HAL_MAX_DELAY) != HAL_OK)
         {
             result = SFUD_ERR_TIMEOUT;
         }
@@ -115,7 +115,7 @@ static sfud_err spi_write_read(const sfud_spi *spi, const uint8_t *write_buf, si
 
     if (write_size)
     {
-        state = HAL_SPI_Transmit(spi_dev->hspix, (uint8_t *)write_buf, write_size, 1000);
+        state = HAL_SPI_Transmit(spi_dev->hspix, (uint8_t *)write_buf, write_size, HAL_MAX_DELAY);
         while (HAL_SPI_GetState(spi_dev->hspix) != HAL_SPI_STATE_READY)
             ;
     }
@@ -128,7 +128,7 @@ static sfud_err spi_write_read(const sfud_spi *spi, const uint8_t *write_buf, si
     if (read_size)
     {
         memset((uint8_t *)read_buf, 0xFF, read_size);
-        state = HAL_SPI_Receive(spi_dev->hspix, read_buf, read_size, 1000);
+        state = HAL_SPI_Receive(spi_dev->hspix, read_buf, read_size, HAL_MAX_DELAY);
         while (HAL_SPI_GetState(spi_dev->hspix) != HAL_SPI_STATE_READY)
             ;
     }
@@ -161,9 +161,7 @@ static sfud_err qspi_read(const struct __sfud_spi *spi, uint32_t addr, sfud_qspi
 /* about 100 microsecond delay */
 static void retry_delay_100us(void)
 {
-    uint32_t delay = 120;
-    while (delay--)
-        ;
+    delay_us(100);
 }
 
 static void spi_lock(const sfud_spi *spi)
@@ -201,7 +199,7 @@ sfud_err sfud_spi_port_init(sfud_flash *flash)
     /* about 100 microsecond delay */
     flash->retry.delay = retry_delay_100us;
     /* adout 60 seconds timeout */
-    flash->retry.times = 60 * 10000;
+    flash->retry.times = 120 * 10000;
 
     return result;
 }

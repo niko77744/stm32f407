@@ -16,9 +16,6 @@
 #define AT24C256 32767 /*!< AT24C256 size: 32K bytes */
 #define AT24C512 65535 /*!< AT24C512 size: 64K bytes */
 
-/* EEPROM type selection - Using AT24C512, modify EE_TYPE for other types */
-#define EE_TYPE AT24C02
-
 // 原理图接地
 #define AT24C02_A0 0
 #define AT24C02_A1 0
@@ -26,7 +23,6 @@
 #define AT24C02_ADDRESS (0x0A << 4 | (AT24C02_A2 << 3) | (AT24C02_A1 << 2) | (AT24C02_A0 << 1)) // 0xA0
 
 #define AT24C02_DEFAULT_ERASE_VALUE 0xFF
-#define AT24C02_DEFAULT_MAGIC 0x55
 #define AT24C02_SIZE 256     // 24c02容量256字节 256*8=2048位=2Kbit
 #define AT24C02_PAGE_SIZE 16 // 24c02页大小16字节
 #define AT24C02_DELAY_TIME 5 // 24c02写入延时5ms
@@ -35,34 +31,13 @@ typedef struct
 {
     uint8_t device_write_addr;
     uint8_t device_read_addr;
-    uint8_t magic;
-    uint8_t data[AT24C02_SIZE];
-} at24c02_t;
+} at24c02_addr_t;
 
-at24c02_t at24c02 = {
+at24c02_addr_t at24c02 = {
     .device_write_addr = AT24C02_ADDRESS,
     .device_read_addr = AT24C02_ADDRESS + 1,
-    .magic = AT24C02_DEFAULT_MAGIC,
 };
 extern I2C_HandleTypeDef hi2c1;
-uint8_t data_buf[AT24C02_SIZE] = {0};
-
-void at24c02_read_byte(uint8_t addr, uint8_t *data)
-{
-    HAL_I2C_Mem_Read(&hi2c1, at24c02.device_read_addr, addr, I2C_MEMADD_SIZE_8BIT, data, 1, 1000);
-}
-
-void at24c02_write_byte(uint8_t addr, uint8_t *data)
-{
-    HAL_I2C_Mem_Write(&hi2c1, at24c02.device_write_addr, addr, I2C_MEMADD_SIZE_8BIT, data, 1, 1000);
-    vTaskDelay(AT24C02_DELAY_TIME); // 写入需要时间
-}
-
-void at24c02_erase_byte(uint8_t addr)
-{
-    uint8_t data = AT24C02_DEFAULT_ERASE_VALUE;
-    at24c02_write_byte(addr, &data);
-}
 
 uint16_t at24c02_read(uint8_t addr, uint8_t *data, uint16_t len)
 {

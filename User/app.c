@@ -7,32 +7,27 @@
 #include "ff.h"
 #include "ffconf.h"
 
-#define START_TASK_STACK_SIZE 1024
+#define START_TASK_STACK_SIZE (1024 / 4)
 #define START_TASK_PRIORITY 15
 TaskHandle_t start_task_handle = NULL;
 void start_task(void *pvParameters);
 
-#define APP_TASK_STACK_SIZE 512
+#define APP_TASK_STACK_SIZE (512 / 4)
 #define APP_TASK_PRIORITY 5 // 低优先级 越大越高
 TaskHandle_t app_task_handle = NULL;
 void app_task(void *pvParameters);
 
-#define DISPLAY_TASK_STACK_SIZE 8192
+#define DISPLAY_TASK_STACK_SIZE (8192 / 4)
 #define DISPLAY_TASK_PRIORITY 5
 TaskHandle_t display_task_handle = NULL;
 void display_task(void *pvParameters);
 
-#define COMMUNICATION_TASK_STACK_SIZE 512
-#define COMMUNICATION_TASK_PRIORITY 5
-TaskHandle_t communication_task_handle = NULL;
-void communication_task(void *pvParameters);
-
-#define IAP_TASK_STACK_SIZE 4096
-#define IAP_TASK_PRIORITY 6
+#define IAP_TASK_STACK_SIZE (512 / 4)
+#define IAP_TASK_PRIORITY 5
 TaskHandle_t iap_task_handle = NULL;
 void iap_task(void *pvParameters);
 
-#define SHELL_TASK_STACK_SIZE 2048
+#define SHELL_TASK_STACK_SIZE (1024 / 4)
 #define SHELL_TASK_PRIORITY 5
 TaskHandle_t shell_task_handle = NULL;
 
@@ -59,13 +54,6 @@ void start_task(void *pvParameters)
         NULL,
         DISPLAY_TASK_PRIORITY,
         &display_task_handle);
-    xTaskCreate(
-        (TaskFunction_t)communication_task,
-        (char *)"communication_task",
-        COMMUNICATION_TASK_STACK_SIZE,
-        NULL,
-        COMMUNICATION_TASK_PRIORITY,
-        &communication_task_handle);
     xTaskCreate(
         (TaskFunction_t)iap_task,
         (char *)"iap_task",
@@ -101,26 +89,16 @@ void display_task(void *pvParameters)
     create_clickable_button();
     // lv_demo_stress(); /* 测试的demo */
     // lv_demo_music();  /* 测试的demo */
-    while (1)
-    {
-        lv_timer_handler(); /* LVGL计时器 */
-        vTaskDelay(pdMS_TO_TICKS(5));
-    }
-#else
-    while (1)
-    {
-        vTaskDelay(pdMS_TO_TICKS(5));
-    }
 #endif
+    while (1)
+    {
+#if SUPPORT_LVGL == 1
+        lv_timer_handler(); /* LVGL计时器 */
+#endif
+        vTaskDelay(pdMS_TO_TICKS(5));
+    }
 }
 
-void communication_task(void *pvParameters)
-{
-    while (1)
-    {
-        vTaskDelay(pdMS_TO_TICKS(1000));
-    }
-}
 // static FIL file; // _FS_TINY 在Normal模式下，每个FIL对象都会包含一个缓冲区（大小为_MAX_SS，通常为512字节），因此如果我们在任务栈上定义FIL对象，会占用大量栈空间（至少512字节加上其他局部变量）。而使用静态分配，将FIL对象放在全局数据区，就不会占用任务栈空间。
 void iap_task(void *pvParameters)
 {
@@ -154,7 +132,6 @@ void iap_task(void *pvParameters)
         vTaskDelay(pdMS_TO_TICKS(3000));
     }
 }
-
 void app_init(void)
 {
     Memory_Init(INSRAM);
@@ -162,17 +139,15 @@ void app_init(void)
 #if SUPPORT_LOG == 1
     log_init();
 #endif
-    message_queue_init();
-    ring_buf_init();
     fal_init();
     sd_fatfs_init();
-    // nvs_flash_init();
-    user_lfs_init();
+    // user_lfs_init();
 
     sys_time_init();
     buttons_init();
     app_led_init();
-    ble_init();
+
+    // ble_init();
     // iap_init(iap_from_uart);
     // esp8266_hw_init();
     // iap_process(); // 先擦除 stmflash_earse(FLASH_APP1_ADDR, 0x1000); // 4096
@@ -189,7 +164,6 @@ void app_run(void)
     while (1)
     {
         sw_timer_loop();
-        // iap_uart_proceess();
     }
 #else
     xTaskCreate(

@@ -2,11 +2,7 @@
 #include "ring_buf.h"
 #include "elog.h"
 #include "lwrb.h"
-
-/*
-https://blog.csdn.net/qq_36075612/article/details/116144349
-https://docs.majerle.eu/projects/lwrb/en/latest/api-reference/lwrb.html
-*/
+#include "ring_buffer.h"
 
 static lwrb_t buff;
 static uint8_t buff_data[8 + 1]; // 数组容器。可容纳8字节。环形队列需多留1个字节。

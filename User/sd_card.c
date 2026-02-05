@@ -60,7 +60,10 @@ void sd_fatfs_init(void)
 
     log_i("Filesystem mounted successfully!");
 }
-
+/**
+ * SD卡FatFS文件系统自检函数
+ * 创建测试文件并写入数据，然后读取验证
+ */
 void sd_fatfs_self_inspection(void)
 {
     FRESULT res;

@@ -3,6 +3,7 @@
 #include "w25qxx.h"
 #include "elog.h"
 #include "shell.h"
+#include "shell_port.h"
 #include "FreeRTOS.h"
 #include "fal_cfg.h"
 
@@ -118,11 +119,21 @@ void user_lfs_init(void)
     // print the boot count
     log_i("boot_count: %d", boot_count);
 }
+void w25qxx_chip_erase(void)
+{
+    extern sfud_flash sfud_norflash0;
+    sfud_err err = sfud_chip_erase(&sfud_norflash0);
+    if (err == SFUD_SUCCESS)
+        log_i("w25qxx erase chip success");
+    else
+        log_w("w25qxx erase chip err");
+}
+SHELL_EXPORT_CMD(SHELL_CMD_PERMISSION(0) | SHELL_CMD_TYPE(SHELL_TYPE_CMD_MAIN), erase, w25qxx_chip_erase, erase chip);
 
 // fal probe fdb
 // fal read 0 64
-// fal write 0 01 02 03 04 05 06 07
-// fal erase 64
+// fal write 0 0x01 0x02 0x03 0x04 0x05 0x06 0x07
+// fal erase 0 64
 // fal bench 512 yes
 #include "fal.h"
 static void fal(uint8_t argc, char **argv)
@@ -152,18 +163,18 @@ static void fal(uint8_t argc, char **argv)
 
     if (fal_init_check() != 1)
     {
-        printf("\n[Warning] FAL is not initialized or failed to initialize!\n\n");
+        shellPrint(&shell, "\n[Warning] FAL is not initialized or failed to initialize!\n\n");
         return;
     }
 
     if (argc < 2)
     {
-        printf("Usage:\n");
+        shellPrint(&shell, "Usage:\n");
         for (i = 0; i < sizeof(help_info) / sizeof(char *); i++)
         {
-            printf("%s\n", help_info[i]);
+            shellPrint(&shell, "%s\n", help_info[i]);
         }
-        printf("\n");
+        shellPrint(&shell, "\n");
     }
     else
     {
@@ -185,7 +196,7 @@ static void fal(uint8_t argc, char **argv)
                 }
                 else
                 {
-                    printf("Device %s NOT found. Probe failed.\n", dev_name);
+                    shellPrint(&shell, "Device %s NOT found. Probe failed.\n", dev_name);
                     flash_dev = NULL;
                     part_dev = NULL;
                 }
@@ -193,18 +204,18 @@ static void fal(uint8_t argc, char **argv)
 
             if (flash_dev)
             {
-                printf("Probed a flash device | %s | addr: %ld | len: %d |.\n", flash_dev->name,
-                       flash_dev->addr, flash_dev->len);
+                shellPrint(&shell, "Probed a flash device | %s | addr: %ld | len: %d |.\n", flash_dev->name,
+                           flash_dev->addr, flash_dev->len);
             }
             else if (part_dev)
             {
-                printf("Probed a flash partition | %s | flash_dev: %s | offset: %ld | len: %d |.\n",
-                       part_dev->name, part_dev->flash_name, part_dev->offset, part_dev->len);
+                shellPrint(&shell, "Probed a flash partition | %s | flash_dev: %s | offset: %ld | len: %d |.\n",
+                           part_dev->name, part_dev->flash_name, part_dev->offset, part_dev->len);
             }
             else
             {
-                printf("No flash device or partition was probed.\n");
-                printf("Usage: %s.\n", help_info[CMD_PROBE_INDEX]);
+                shellPrint(&shell, "No flash device or partition was probed.\n");
+                shellPrint(&shell, "Usage: %s.\n", help_info[CMD_PROBE_INDEX]);
                 fal_show_part_table();
             }
         }
@@ -212,14 +223,14 @@ static void fal(uint8_t argc, char **argv)
         {
             if (!flash_dev && !part_dev)
             {
-                printf("No flash device or partition was probed. Please run 'fal probe'.\n");
+                shellPrint(&shell, "No flash device or partition was probed. Please run 'fal probe'.\n");
                 return;
             }
             if (!strcmp(operator, "read"))
             {
                 if (argc < 4)
                 {
-                    printf("Usage: %s.\n", help_info[CMD_READ_INDEX]);
+                    shellPrint(&shell, "Usage: %s.\n", help_info[CMD_READ_INDEX]);
                     return;
                 }
                 else
@@ -239,21 +250,21 @@ static void fal(uint8_t argc, char **argv)
                         }
                         if (result >= 0)
                         {
-                            printf("Read data success. Start from 0x%08X, size is %ld. The data is:\n", addr, size);
-                            printf("Offset (h) 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F\n");
+                            shellPrint(&shell, "Read data success. Start from 0x%08X, size is %ld. The data is:\n", addr, size);
+                            shellPrint(&shell, "Offset (h) 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F\n");
                             for (i = 0; i < size; i += HEXDUMP_WIDTH)
                             {
-                                printf("[%08X] ", addr + i);
+                                shellPrint(&shell, "[%08X] ", addr + i);
                                 /* dump hex */
                                 for (j = 0; j < HEXDUMP_WIDTH; j++)
                                 {
                                     if (i + j < size)
                                     {
-                                        printf("%02X ", data[i + j]);
+                                        shellPrint(&shell, "%02X ", data[i + j]);
                                     }
                                     else
                                     {
-                                        printf("   ");
+                                        shellPrint(&shell, "   ");
                                     }
                                 }
                                 /* dump char for hex */
@@ -261,18 +272,18 @@ static void fal(uint8_t argc, char **argv)
                                 {
                                     if (i + j < size)
                                     {
-                                        printf("%c", __is_print(data[i + j]) ? data[i + j] : '.');
+                                        shellPrint(&shell, "%c", __is_print(data[i + j]) ? data[i + j] : '.');
                                     }
                                 }
-                                printf("\n");
+                                shellPrint(&shell, "\n");
                             }
-                            printf("\n");
+                            shellPrint(&shell, "\n");
                         }
                         vPortFree(data);
                     }
                     else
                     {
-                        printf("Low memory!\n");
+                        shellPrint(&shell, "Low memory!\n");
                     }
                 }
             }
@@ -280,7 +291,7 @@ static void fal(uint8_t argc, char **argv)
             {
                 if (argc < 4)
                 {
-                    printf("Usage: %s.\n", help_info[CMD_WRITE_INDEX]);
+                    shellPrint(&shell, "Usage: %s.\n", help_info[CMD_WRITE_INDEX]);
                     return;
                 }
                 else
@@ -304,19 +315,19 @@ static void fal(uint8_t argc, char **argv)
                         }
                         if (result >= 0)
                         {
-                            printf("Write data success. Start from 0x%08X, size is %ld.\n", addr, size);
-                            printf("Write data: ");
+                            shellPrint(&shell, "Write data success. Start from 0x%08X, size is %ld.\n", addr, size);
+                            shellPrint(&shell, "Write data: ");
                             for (i = 0; i < size; i++)
                             {
-                                printf("%d ", data[i]);
+                                shellPrint(&shell, "%d ", data[i]);
                             }
-                            printf(".\n");
+                            shellPrint(&shell, ".\n");
                         }
                         vPortFree(data);
                     }
                     else
                     {
-                        printf("Low memory!\n");
+                        shellPrint(&shell, "Low memory!\n");
                     }
                 }
             }
@@ -324,7 +335,7 @@ static void fal(uint8_t argc, char **argv)
             {
                 if (argc < 4)
                 {
-                    printf("Usage: %s.\n", help_info[CMD_ERASE_INDEX]);
+                    shellPrint(&shell, "Usage: %s.\n", help_info[CMD_ERASE_INDEX]);
                     return;
                 }
                 else
@@ -341,7 +352,7 @@ static void fal(uint8_t argc, char **argv)
                     }
                     if (result >= 0)
                     {
-                        printf("Erase data success. Start from 0x%08X, size is %ld.\n", addr, size);
+                        shellPrint(&shell, "Erase data success. Start from 0x%08X, size is %ld.\n", addr, size);
                     }
                 }
             }
@@ -349,12 +360,12 @@ static void fal(uint8_t argc, char **argv)
             {
                 if (argc < 3)
                 {
-                    printf("Usage: %s.\n", help_info[CMD_BENCH_INDEX]);
+                    shellPrint(&shell, "Usage: %s.\n", help_info[CMD_BENCH_INDEX]);
                     return;
                 }
                 else if ((argc > 3 && strcmp(argv[3], "yes")) || argc < 4)
                 {
-                    printf("DANGER: It will erase full chip or partition! Please run 'fal bench %d yes'.\n", strtol(argv[2], NULL, 0));
+                    shellPrint(&shell, "DANGER: It will erase full chip or partition! Please run 'fal bench %d yes'.\n", strtol(argv[2], NULL, 0));
                     return;
                 }
                 /* full chip benchmark test */
@@ -377,7 +388,7 @@ static void fal(uint8_t argc, char **argv)
                         size = part_dev->len;
                     }
                     /* benchmark testing */
-                    printf("Erasing %ld bytes data, waiting...\n", size);
+                    shellPrint(&shell, "Erasing %ld bytes data, waiting...\n", size);
                     start_time = HAL_GetTick();
                     if (flash_dev)
                     {
@@ -390,15 +401,15 @@ static void fal(uint8_t argc, char **argv)
                     if (result >= 0)
                     {
                         time_cast = HAL_GetTick() - start_time;
-                        printf("Erase benchmark success, total time: %d.%03dS.\n", time_cast / 1000,
-                               time_cast % 1000);
+                        shellPrint(&shell, "Erase benchmark success, total time: %d.%03dS.\n", time_cast / 1000,
+                                   time_cast % 1000);
                     }
                     else
                     {
-                        printf("Erase benchmark has an error. Error code: %d.\n", result);
+                        shellPrint(&shell, "Erase benchmark has an error. Error code: %d.\n", result);
                     }
                     /* write test */
-                    printf("Writing %ld bytes data, waiting...\n", size);
+                    shellPrint(&shell, "Writing %ld bytes data, waiting...\n", size);
                     start_time = HAL_GetTick();
                     for (i = 0; i < size; i += write_size)
                     {
@@ -426,15 +437,15 @@ static void fal(uint8_t argc, char **argv)
                     if (result >= 0)
                     {
                         time_cast = HAL_GetTick() - start_time;
-                        printf("Write benchmark success, total time: %d.%03dS.\n", time_cast / 1000,
-                               time_cast % 1000);
+                        shellPrint(&shell, "Write benchmark success, total time: %d.%03dS.\n", time_cast / 1000,
+                                   time_cast % 1000);
                     }
                     else
                     {
-                        printf("Write benchmark has an error. Error code: %d.\n", result);
+                        shellPrint(&shell, "Write benchmark has an error. Error code: %d.\n", result);
                     }
                     /* read test */
-                    printf("Reading %ld bytes data, waiting...\n", size);
+                    shellPrint(&shell, "Reading %ld bytes data, waiting...\n", size);
                     start_time = HAL_GetTick();
                     for (i = 0; i < size; i += read_size)
                     {
@@ -459,14 +470,14 @@ static void fal(uint8_t argc, char **argv)
                         {
                             if (write_data[index] != read_data[index])
                             {
-                                printf("%d %d %02x %02x.\n", i, index, write_data[index], read_data[index]);
+                                shellPrint(&shell, "%d %d %02x %02x.\n", i, index, write_data[index], read_data[index]);
                             }
                         }
 
                         if (memcmp(write_data, read_data, cur_op_size))
                         {
                             result = -1;
-                            printf("Data check ERROR! Please check you flash by other command.\n");
+                            shellPrint(&shell, "Data check ERROR! Please check you flash by other command.\n");
                         }
                         /* has an error */
                         if (result < 0)
@@ -477,34 +488,34 @@ static void fal(uint8_t argc, char **argv)
                     if (result >= 0)
                     {
                         time_cast = HAL_GetTick() - start_time;
-                        printf("Read benchmark success, total time: %d.%03dS.\n", time_cast / 1000,
-                               time_cast % 1000);
+                        shellPrint(&shell, "Read benchmark success, total time: %d.%03dS.\n", time_cast / 1000,
+                                   time_cast % 1000);
                     }
                     else
                     {
-                        printf("Read benchmark has an error. Error code: %d.\n", result);
+                        shellPrint(&shell, "Read benchmark has an error. Error code: %d.\n", result);
                     }
                 }
                 else
                 {
-                    printf("Low memory!\n");
+                    shellPrint(&shell, "Low memory!\n");
                 }
                 vPortFree(write_data);
                 vPortFree(read_data);
             }
             else
             {
-                printf("Usage:\n");
+                shellPrint(&shell, "Usage:\n");
                 for (i = 0; i < sizeof(help_info) / sizeof(char *); i++)
                 {
-                    printf("%s\n", help_info[i]);
+                    shellPrint(&shell, "%s\n", help_info[i]);
                 }
-                printf("\n");
+                shellPrint(&shell, "\n");
                 return;
             }
             if (result < 0)
             {
-                printf("This operate has an error. Error code: %d.\n", result);
+                shellPrint(&shell, "This operate has an error. Error code: %d.\n", result);
             }
         }
     }

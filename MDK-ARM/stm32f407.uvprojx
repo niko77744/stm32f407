@@ -81,7 +81,7 @@
           </BeforeMake>
           <AfterMake>
             <RunUserProg1>0</RunUserProg1>
-            <RunUserProg2>0</RunUserProg2>
+            <RunUserProg2>1</RunUserProg2>
             <UserProg1Name></UserProg1Name>
             <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
@@ -277,7 +277,7 @@
               <OCR_RVCT4>
                 <Type>1</Type>
                 <StartAddress>0x8000000</StartAddress>
-                <Size>0x100000</Size>
+                <Size>0x80000</Size>
               </OCR_RVCT4>
               <OCR_RVCT5>
                 <Type>1</Type>
@@ -340,7 +340,7 @@
               <MiscControls>--diag_suppress=68 --diag_suppress=111 --diag_suppress=188 --diag_suppress=223 --diag_suppress=546  --diag_suppress=1295</MiscControls>
               <Define>USE_HAL_DRIVER,STM32F407xx,LV_CONF_INCLUDE_SIMPLE</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include;../User;../Third_Party/SFUD/inc;../Third_Party/EasyLogger/easylogger/inc;../Third_Party/EasyFlash/easyflash/inc;../Third_Party/EasyFlash/easyflash/plugins/types;../Third_Party/EasyLogger/easylogger/plugins/file;../Third_Party/EasyLogger/easylogger/plugins/flash;../Third_Party/EasyFlash/easyflash/plugins/types/struct2json/inc;../Third_Party/MultiTimer;../Third_Party/lwrb/lwrb/src/include/lwrb;../FATFS/Target;../FATFS/App;../Middlewares/Third_Party/FatFs/src;../Third_Party/MultiButton;../Third_Party/lwevt/lwevt/src/include/lwevt;../Third_Party/FlashDB;../Third_Party/FreeRTOS-Kernel/include;../Third_Party/FreeRTOS-Kernel;../Third_Party/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F;../Third_Party/littlefs-2.10.2;../Third_Party/lvgl-release-v8.4.0;../Third_Party/lvgl-release-v8.4.0/src;../Third_Party/lvgl-release-v8.4.0/porting;../Third_Party/letter-shell/src;../Third_Party/letter-shell/demo/stm32-freertos</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include;../User;../Third_Party/SFUD/inc;../Third_Party/EasyLogger/easylogger/inc;../Third_Party/MultiTimer;../FATFS/Target;../FATFS/App;../Middlewares/Third_Party/FatFs/src;../Third_Party/MultiButton;../Third_Party/FreeRTOS-Kernel/include;../Third_Party/FreeRTOS-Kernel;../Third_Party/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F;../Third_Party/littlefs-2.10.2;../Third_Party/lvgl-release-v8.4.0;../Third_Party/lvgl-release-v8.4.0/src;../Third_Party/lvgl-release-v8.4.0/porting;../Third_Party/letter-shell/src;../Third_Party/letter-shell/demo/stm32-freertos;..\Third_Party\zephyr_smf;..\Third_Party\RingBuffer\lwrb-develop\lwrb;..\Third_Party\RingBuffer\zephyr_ringbuf;..\Third_Party\Fal</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1753,251 +1753,6 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Third_Party/Easy_Log/File</GroupName>
-          <Files>
-            <File>
-              <FileName>elog_file.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Third_Party\EasyLogger\easylogger\plugins\file\elog_file.c</FilePath>
-            </File>
-            <File>
-              <FileName>elog_file_port.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Third_Party\EasyLogger\easylogger\plugins\file\elog_file_port.c</FilePath>
-            </File>
-            <File>
-              <FileName>elog_file.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Third_Party\EasyLogger\easylogger\plugins\file\elog_file.h</FilePath>
-            </File>
-            <File>
-              <FileName>elog_file_cfg.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Third_Party\EasyLogger\easylogger\plugins\file\elog_file_cfg.h</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Third_Party/Easy_Log/Flash</GroupName>
-          <Files>
-            <File>
-              <FileName>elog_flash.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Third_Party\EasyLogger\easylogger\plugins\flash\elog_flash.c</FilePath>
-            </File>
-            <File>
-              <FileName>elog_flash_port.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Third_Party\EasyLogger\easylogger\plugins\flash\elog_flash_port.c</FilePath>
-            </File>
-            <File>
-              <FileName>elog_flash.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Third_Party\EasyLogger\easylogger\plugins\flash\elog_flash.h</FilePath>
-            </File>
-            <File>
-              <FileName>elog_flash_cfg.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Third_Party\EasyLogger\easylogger\plugins\flash\elog_flash_cfg.h</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Third_Party/Easy_Flash</GroupName>
-          <Files>
-            <File>
-              <FileName>easyflash.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Third_Party\EasyFlash\easyflash\inc\easyflash.h</FilePath>
-            </File>
-            <File>
-              <FileName>ef_cfg.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Third_Party\EasyFlash\easyflash\inc\ef_cfg.h</FilePath>
-            </File>
-            <File>
-              <FileName>ef_def.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Third_Party\EasyFlash\easyflash\inc\ef_def.h</FilePath>
-            </File>
-            <File>
-              <FileName>ef_port.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Third_Party\EasyFlash\easyflash\port\ef_port.c</FilePath>
-            </File>
-            <File>
-              <FileName>easyflash.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Third_Party\EasyFlash\easyflash\src\easyflash.c</FilePath>
-            </File>
-            <File>
-              <FileName>ef_env.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Third_Party\EasyFlash\easyflash\src\ef_env.c</FilePath>
-            </File>
-            <File>
-              <FileName>ef_env_legacy.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Third_Party\EasyFlash\easyflash\src\ef_env_legacy.c</FilePath>
-            </File>
-            <File>
-              <FileName>ef_env_legacy_wl.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Third_Party\EasyFlash\easyflash\src\ef_env_legacy_wl.c</FilePath>
-            </File>
-            <File>
-              <FileName>ef_iap.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Third_Party\EasyFlash\easyflash\src\ef_iap.c</FilePath>
-            </File>
-            <File>
-              <FileName>ef_log.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Third_Party\EasyFlash\easyflash\src\ef_log.c</FilePath>
-            </File>
-            <File>
-              <FileName>ef_utils.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Third_Party\EasyFlash\easyflash\src\ef_utils.c</FilePath>
-            </File>
-            <File>
-              <FileName>ef_types.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Third_Party\EasyFlash\easyflash\plugins\types\ef_types.c</FilePath>
-            </File>
-            <File>
-              <FileName>ef_types.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Third_Party\EasyFlash\easyflash\plugins\types\ef_types.h</FilePath>
-            </File>
-            <File>
-              <FileName>cJSON.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Third_Party\EasyFlash\easyflash\plugins\types\struct2json\src\cJSON.c</FilePath>
-            </File>
-            <File>
-              <FileName>s2j.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Third_Party\EasyFlash\easyflash\plugins\types\struct2json\src\s2j.c</FilePath>
-            </File>
-            <File>
-              <FileName>api.md</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Third_Party\EasyFlash\docs\zh\api.md</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Third_Party/FlashDB</GroupName>
-          <Files>
-            <File>
-              <FileName>fdb_cfg.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Third_Party\FlashDB\fdb_cfg.h</FilePath>
-            </File>
-            <File>
-              <FileName>fal_cfg.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Third_Party\FlashDB\fal_cfg.h</FilePath>
-            </File>
-            <File>
-              <FileName>fal.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Third_Party\FlashDB\fal.h</FilePath>
-            </File>
-            <File>
-              <FileName>fal_def.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Third_Party\FlashDB\fal_def.h</FilePath>
-            </File>
-            <File>
-              <FileName>fdb_def.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Third_Party\FlashDB\fdb_def.h</FilePath>
-            </File>
-            <File>
-              <FileName>fdb_low_lvl.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Third_Party\FlashDB\fdb_low_lvl.h</FilePath>
-            </File>
-            <File>
-              <FileName>flashdb.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Third_Party\FlashDB\flashdb.h</FilePath>
-            </File>
-            <File>
-              <FileName>fal.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Third_Party\FlashDB\fal\fal.c</FilePath>
-            </File>
-            <File>
-              <FileName>fal_flash.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Third_Party\FlashDB\fal\fal_flash.c</FilePath>
-            </File>
-            <File>
-              <FileName>fal_flash_stm32f4.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Third_Party\FlashDB\fal\fal_flash_stm32f4.c</FilePath>
-            </File>
-            <File>
-              <FileName>fal_flash_sfud_port.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Third_Party\FlashDB\fal\fal_flash_sfud_port.c</FilePath>
-            </File>
-            <File>
-              <FileName>fal_partition.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Third_Party\FlashDB\fal\fal_partition.c</FilePath>
-            </File>
-            <File>
-              <FileName>fdb.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Third_Party\FlashDB\fdb\fdb.c</FilePath>
-            </File>
-            <File>
-              <FileName>fdb_file.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Third_Party\FlashDB\fdb\fdb_file.c</FilePath>
-            </File>
-            <File>
-              <FileName>fdb_kvdb.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Third_Party\FlashDB\fdb\fdb_kvdb.c</FilePath>
-            </File>
-            <File>
-              <FileName>fdb_tsdb.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Third_Party\FlashDB\fdb\fdb_tsdb.c</FilePath>
-            </File>
-            <File>
-              <FileName>fdb_utils.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Third_Party\FlashDB\fdb\fdb_utils.c</FilePath>
-            </File>
-            <File>
-              <FileName>kvdb_basic_sample.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Third_Party\FlashDB\samples\kvdb_basic_sample.c</FilePath>
-            </File>
-            <File>
-              <FileName>kvdb_type_blob_sample.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Third_Party\FlashDB\samples\kvdb_type_blob_sample.c</FilePath>
-            </File>
-            <File>
-              <FileName>kvdb_type_string_sample.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Third_Party\FlashDB\samples\kvdb_type_string_sample.c</FilePath>
-            </File>
-            <File>
-              <FileName>tsdb_sample.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Third_Party\FlashDB\samples\tsdb_sample.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>Third_Party/MultiTimer</GroupName>
           <Files>
             <File>
@@ -2009,61 +1764,6 @@
               <FileName>MultiTimer.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\Third_Party\MultiTimer\MultiTimer.h</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Third_Party/Lwrb_RingBuf</GroupName>
-          <Files>
-            <File>
-              <FileName>lwrb.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Third_Party\lwrb\lwrb\src\lwrb\lwrb.c</FilePath>
-            </File>
-            <File>
-              <FileName>lwrb_ex.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Third_Party\lwrb\lwrb\src\lwrb\lwrb_ex.c</FilePath>
-            </File>
-            <File>
-              <FileName>lwrb.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Third_Party\lwrb\lwrb\src\include\lwrb\lwrb.h</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Third_Party/Lwevt</GroupName>
-          <Files>
-            <File>
-              <FileName>lwevt.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Third_Party\lwevt\lwevt\src\include\lwevt\lwevt.h</FilePath>
-            </File>
-            <File>
-              <FileName>lwevt_opt.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Third_Party\lwevt\lwevt\src\include\lwevt\lwevt_opt.h</FilePath>
-            </File>
-            <File>
-              <FileName>lwevt_type.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Third_Party\lwevt\lwevt\src\include\lwevt\lwevt_type.h</FilePath>
-            </File>
-            <File>
-              <FileName>lwevt_opts.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Third_Party\lwevt\lwevt\src\include\lwevt\lwevt_opts.h</FilePath>
-            </File>
-            <File>
-              <FileName>lwevt_types.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Third_Party\lwevt\lwevt\src\include\lwevt\lwevt_types.h</FilePath>
-            </File>
-            <File>
-              <FileName>lwevt.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Third_Party\lwevt\lwevt\src\lwevt\lwevt.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -4121,6 +3821,81 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>Third_Party/SMF</GroupName>
+          <Files>
+            <File>
+              <FileName>smf.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\zephyr_smf\smf.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Third_Party/RingBuffer</GroupName>
+          <Files>
+            <File>
+              <FileName>ring_buffer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\RingBuffer\zephyr_ringbuf\ring_buffer.c</FilePath>
+            </File>
+            <File>
+              <FileName>lwrb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\RingBuffer\lwrb-develop\lwrb\lwrb.c</FilePath>
+            </File>
+            <File>
+              <FileName>lwrb_ex.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\RingBuffer\lwrb-develop\lwrb\lwrb_ex.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Third_Party/FAL</GroupName>
+          <Files>
+            <File>
+              <FileName>fal.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\Fal\fal.c</FilePath>
+            </File>
+            <File>
+              <FileName>fal_flash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\Fal\fal_flash.c</FilePath>
+            </File>
+            <File>
+              <FileName>fal_flash_sfud_port.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\Fal\fal_flash_sfud_port.c</FilePath>
+            </File>
+            <File>
+              <FileName>fal_flash_stm32f4.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\Fal\fal_flash_stm32f4.c</FilePath>
+            </File>
+            <File>
+              <FileName>fal_partition.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Third_Party\Fal\fal_partition.c</FilePath>
+            </File>
+            <File>
+              <FileName>fal.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\Fal\fal.h</FilePath>
+            </File>
+            <File>
+              <FileName>fal_cfg.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\Fal\fal_cfg.h</FilePath>
+            </File>
+            <File>
+              <FileName>fal_def.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Third_Party\Fal\fal_def.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>User</GroupName>
           <Files>
             <File>
@@ -4142,11 +3917,6 @@
               <FileName>nvs_flash.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\User\nvs_flash.c</FilePath>
-            </File>
-            <File>
-              <FileName>ring_buf.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\User\ring_buf.c</FilePath>
             </File>
             <File>
               <FileName>sd_card.c</FileName>
@@ -4182,11 +3952,6 @@
               <FileName>iap.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\User\iap.c</FilePath>
-            </File>
-            <File>
-              <FileName>msg_queue.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\User\msg_queue.c</FilePath>
             </File>
             <File>
               <FileName>eth.c</FileName>
