@@ -55,7 +55,6 @@ extern "C" {
 #include "iap.h"
 #include "eth.h"
 #include "msg_queue.h"
-#include "ring_buf.h"
 #include "led.h"
 #include "buzzer.h"
 #include "button.h"

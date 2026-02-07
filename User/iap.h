@@ -63,35 +63,74 @@ typedef enum
     IMG_PENDING_VERIFY, // 不会选取，状态变为 IMG_ABORTED
 } img_status_e;
 
+// 差分算法枚举
+typedef enum
+{
+    DIFF_ALGO_BSDIFF = 0,   // bsdiff算法
+    DIFF_ALGO_XDELTA = 1,   // xdelta算法
+    DIFF_ALGO_HDIFF = 2,    // hdiff算法
+    DIFF_ALGO_ZDIFF = 3,    // zdelta算法
+    DIFF_ALGO_CUSTOM = 255, // 自定义算法
+} diff_algorithm_e;
+
 #pragma pack(push) // 保存当前对齐状态
 #pragma pack(1)    // 设置为1字节对齐
 typedef struct
 {
-    uint8_t running_partition;  // 当前运行的分区 (1 或 2)
+    // 控制标志
+    uint8_t running_partition;  // 当前运行的分区 (0 或 1)
     uint8_t ota_in_progress;    // OTA升级进行中标志
-    uint8_t boot_attempts;      // 启动尝试次数（用于防止启动循环）
     uint8_t rollback_requested; // 请求回滚到之前版本
+    uint8_t factory_reset;      // 恢复出厂设置标志
+    uint8_t last_boot_success;  // 上次启动是否成功
 
-    uint32_t app1_addr; // 应用程序分区1的起始地址
-    uint32_t app1_size; // 分区1的固件大小
-    uint32_t app2_addr; // 应用程序分区2的起始地址
-    uint32_t app2_size; // 分区2的固件大小
+    // 分区信息
+    struct
+    {
+        img_status_e img_status;   // 状态码
+        uint32_t original_size;    // 原始大小
+        uint32_t compressed_size;  // 压缩后大小
+        uint32_t crc32;            // CRC32校验
+        uint16_t version_major;    // 主版本
+        uint16_t version_minor;    // 次版本
+        uint16_t version_patch;    // 修订版本
+        uint32_t timestamp;        // 更新时间
+        uint8_t aes_secret_iv[16]; // aes解密密钥
+        uint8_t hash_sha256[32];   // SHA-256哈希
+    } partition[2];                // 两个分区
 
-    // 分区状态管理
-    img_status_e app1_status; // 分区1的状态
-    img_status_e app2_status; // 分区2的状态
+    // 诊断
+    uint32_t boot_count; // 启动次数
+    uint8_t boot_mode;   // 启动模式：0=正常，1=安全模式，2=恢复模式
+    uint8_t error_code;  // 最近一次错误代码
 
-    uint32_t crc32;  // 整个结构体的CRC32校验值
-} iap_information_t; // __attribute__((packed))
-#pragma pack(pop)    // 恢复之前的对齐状态
+    // OTA传输
+    uint32_t packet_count;     // app总包数
+    uint32_t received_packets; // 已接收包数
+    uint32_t total_size;       // 总固件大小
+    uint32_t received_bytes;   // 已接收字节数
+    uint32_t packet_size;      // 每个包的大小（字节）
+    uint8_t encrypt;           // 是否加密
+    uint8_t lz;                // 是否压缩
+    uint8_t delta_update;      // 升级类型：0=全量升级，1=差分升级
+    uint16_t retry_count;      // 重试次数
 
-#define FLASH_APP1_ADDR 0x08010000 /* 第一个应用程序起始地址(存放在内部FLASH)              \
-                                    * 保留 0x08000000~0x0800FFFF 的空间为 Bootloader 使用(共64KB) \
-                                    */
-void iap_init(iap_source_t source);
-void log_rx_event_callback(uint16_t Size);
-void iap_write_appbin(uint32_t appxaddr, uint8_t *appbuf, uint32_t appsize);
-void iap_load_app(uint32_t appxaddr);
-void iap_process(void);
+    // 安全验证
+    uint8_t signature_ecdsa[64]; // 数字签名 secp256r1 (NIST P-256) 64字节 128位 最常见，推荐
+    uint32_t magic;              // 魔数标识，固定为IAP_MAGIC_NUMBER
+
+    uint32_t stuct_crc32; // 整个结构体的CRC32校验值
+} iap_information_t;
+#pragma pack(pop) // 恢复之前的对齐状态
+
+#define CRC16_CCITT 0x1021    // 最常用，用于XMODEM、YMODEM
+#define CRC32_IEEE 0x04C11DB7 // 最常用，ZIP、PNG、以太网
+#define IAP_INFO_SIZE (sizeof(iap_information_t))
+#define IAP_RX_LEN 256
+extern uint8_t iap_dma_rx_buf[IAP_RX_LEN] __attribute__((aligned(4))); // 禁止编译器优化，对齐4字节;
+void iap_init(void);
+void iap_rx_event_callback(uint32_t Size);
+void JumpToApp(void);
 void iap_uart_proceess(void);
+
 #endif /* __IAP_H__ */

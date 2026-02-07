@@ -10,7 +10,7 @@
 #include "list.h"
 
 #define SUPPORT_OS 1
-#define SUPPORT_LVGL 0
+#define SUPPORT_LVGL 1
 #define SUPPORT_SHELL 1
 #define SUPPORT_LOG 1
 

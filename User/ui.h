@@ -4,6 +4,6 @@
 #include "main.h"
 #include "lvgl.h"
 
-void create_clickable_button(void);
-
+void create_jump_button(void);
+void create_erase_button(void);
 #endif /* __UI_H__ */

@@ -65,6 +65,8 @@ const struct fal_partition *fal_little_fs_partition;
 extern int fal_init(void);
 extern const struct fal_flash_dev *fal_flash_device_find(const char *name);
 extern const struct fal_partition *fal_partition_find(const char *name);
+static uint32_t boot_count = 0;
+SHELL_EXPORT_VAR(SHELL_CMD_PERMISSION(0) | SHELL_CMD_TYPE(SHELL_TYPE_VAR_INT), boot_count, &boot_count, boot_count);
 
 void user_lfs_init(void)
 {
@@ -101,7 +103,7 @@ void user_lfs_init(void)
     }
 
     // read current count
-    uint32_t boot_count = 0;
+
     lfs_file_open(&lfs, &file, "boot_count", LFS_O_RDWR | LFS_O_CREAT);
     lfs_file_read(&lfs, &file, &boot_count, sizeof(boot_count));
 

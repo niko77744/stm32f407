@@ -6,6 +6,7 @@
 #include "shell_port.h"
 #include "ff.h"
 #include "ffconf.h"
+#include "fal.h"
 
 #define START_TASK_STACK_SIZE (1024 / 4)
 #define START_TASK_PRIORITY 15
@@ -79,6 +80,7 @@ void app_task(void *pvParameters)
     while (1)
     {
         sw_timer_loop();
+        iap_uart_proceess();
         vTaskDelay(pdMS_TO_TICKS(1));
     }
 }
@@ -86,7 +88,8 @@ void app_task(void *pvParameters)
 void display_task(void *pvParameters)
 {
 #if SUPPORT_LVGL == 1
-    create_clickable_button();
+    create_jump_button();
+    create_erase_button();
     // lv_demo_stress(); /* 测试的demo */
     // lv_demo_music();  /* 测试的demo */
 #endif
@@ -141,11 +144,12 @@ void app_init(void)
 #endif
     fal_init();
     sd_fatfs_init();
-    // user_lfs_init();
+    user_lfs_init();
 
     sys_time_init();
     buttons_init();
     app_led_init();
+    iap_init();
 
     // ble_init();
     // iap_init(iap_from_uart);
@@ -180,7 +184,23 @@ void app_run(void)
 // 不定长数据接收完成回调函数
 void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
-    if (huart->Instance == USART3) // ble
+    if (huart->Instance == USART1)
+    {
+        extern DMA_HandleTypeDef hdma_usart1_rx;
+        // switch (huart->RxEventType)
+        // {
+        // case HAL_UART_RXEVENT_TC:
+        //     break;
+        // case HAL_UART_RXEVENT_HT:
+        //     break;
+        // case HAL_UART_RXEVENT_IDLE:
+        //     break;
+        // }
+        iap_rx_event_callback(Size);
+        HAL_UARTEx_ReceiveToIdle_DMA(&huart1, iap_dma_rx_buf, sizeof(iap_dma_rx_buf));
+        __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
+    }
+    else if (huart->Instance == USART3) // ble
     {
         ble_rx_event_callback(Size);
     }
@@ -188,9 +208,13 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
     {
         wifi_rx_event_callback(Size);
     }
-    else if (huart->Instance == USART6) // log
+}
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+    if (huart->Instance == USART6) // shell
     {
-        // log_rx_event_callback(Size);
+        shell_recv_byte();
     }
 }
 
@@ -208,5 +232,10 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
     {
         __HAL_UART_CLEAR_FEFLAG(huart);
         HAL_UARTEx_ReceiveToIdle_DMA(&huart4, esp8266_buf, sizeof(esp8266_buf));
+    }
+    else if (huart->Instance == USART1)
+    {
+        __HAL_UART_CLEAR_FEFLAG(huart);
+        HAL_UARTEx_ReceiveToIdle_DMA(&huart1, iap_dma_rx_buf, sizeof(iap_dma_rx_buf));
     }
 }

@@ -18,11 +18,15 @@
 #include "log.h"
 #include "elog.h"
 #include "semphr.h"
+#include "ring_buffer.h"
 
 Shell shell;
 char shellBuffer[512];
 
 static SemaphoreHandle_t shellMutex;
+static uint8_t rx_byte = 0;
+
+RING_BUF_DECLARE(shellRxBuffer, 128);
 
 /**
  * @brief 用户shell写
@@ -48,7 +52,12 @@ short userShellWrite(char *data, unsigned short len)
  */
 short userShellRead(char *data, unsigned short len)
 {
-    if (HAL_UART_Receive(&huart6, (uint8_t *)data, len, 0x1FF) != HAL_OK)
+    // if (HAL_UART_Receive(&huart6, (uint8_t *)data, len, 0x1FF) != HAL_OK)
+    //     return 0;
+    // else
+    //     return 1;
+
+    if (ring_buf_get(&shellRxBuffer, (uint8_t *)data, len) != len)
         return 0;
     else
         return 1;
@@ -79,6 +88,12 @@ int userShellUnlock(Shell *shell)
     return 0;
 }
 
+void shell_recv_byte(void)
+{
+    ring_buf_put(&shellRxBuffer, &rx_byte, 1);
+    HAL_UART_Receive_IT(&huart6, &rx_byte, 1);
+}
+
 /**
  * @brief 用户shell初始化
  *
@@ -91,6 +106,6 @@ void userShellInit(void)
     shell.read = userShellRead;
     shell.lock = userShellLock;
     shell.unlock = userShellUnlock;
+    HAL_UART_Receive_IT(&huart6, &rx_byte, 1);
     shellInit(&shell, shellBuffer, 512);
 }
-// CEVENT_EXPORT(EVENT_INIT_STAGE2, userShellInit);

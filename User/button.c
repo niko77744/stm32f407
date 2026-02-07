@@ -50,8 +50,6 @@ void buttons_callback_handler(Button *btn)
     {
     case BTN_SINGLE_CLICK:
         on_single_click(btn);
-        log_i("jump to app1: 0x%x", FLASH_APP1_ADDR);
-        iap_load_app(FLASH_APP1_ADDR);
         break;
     case BTN_DOUBLE_CLICK:
         on_double_click(btn);

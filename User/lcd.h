@@ -84,8 +84,8 @@ extern uint16_t BACK_COLOR;  // 背景颜色.默认为白色
 #define CMD_BASE ((uint32_t)(0x6C000000 | 0x00001FFE))
 #define DATA_BASE ((uint32_t)(0x6C000000 | 0x00002000))
 
-#define LCD_CMD (*(uint16_t *)CMD_BASE)
-#define LCD_DATA (*(uint16_t *)DATA_BASE)
+#define LCD_CMD (*(__IO uint16_t *)CMD_BASE)
+#define LCD_DATA (*(__IO uint16_t *)DATA_BASE)
 
 // 扫描方向定义
 #define L2R_U2D 0 // 从左到右,从上到下
