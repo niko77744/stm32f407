@@ -172,6 +172,8 @@ void Error_Handler(void);
 #define Buzzer_GPIO_Port GPIOG
 #define W25Qxx_CS_Pin GPIO_PIN_8
 #define W25Qxx_CS_GPIO_Port GPIOG
+#define RF433_Pin GPIO_PIN_8
+#define RF433_GPIO_Port GPIOA
 #define LED_2_Pin GPIO_PIN_9
 #define LED_2_GPIO_Port GPIOG
 
