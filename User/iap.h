@@ -2,6 +2,7 @@
 #define __IAP_H__
 
 #include "main.h"
+#include <stm32f407xx.h>
 
 typedef enum
 {
@@ -87,38 +88,24 @@ typedef struct
     // 分区信息
     struct
     {
-        img_status_e img_status;   // 状态码
-        uint32_t original_size;    // 原始大小
-        uint32_t compressed_size;  // 压缩后大小
+        uint32_t img_status; // 状态码
+        uint32_t timestamp;  // 更新时间
+
+        uint32_t original_size;   // 原始固件大小
+        uint32_t compressed_size; // 压缩后固件大小
+        uint32_t diff_size;       // 差分固件大小
+        uint32_t received_bytes;  // 已接收字节数
+
+        uint16_t version_major; // 主版本
+        uint16_t version_minor; // 次版本
+        uint16_t version_patch; // 修订版本
+
         uint32_t crc32;            // CRC32校验
-        uint16_t version_major;    // 主版本
-        uint16_t version_minor;    // 次版本
-        uint16_t version_patch;    // 修订版本
-        uint32_t timestamp;        // 更新时间
         uint8_t aes_secret_iv[16]; // aes解密密钥
         uint8_t hash_sha256[32];   // SHA-256哈希
     } partition[2];                // 两个分区
 
-    // 诊断
-    uint32_t boot_count; // 启动次数
-    uint8_t boot_mode;   // 启动模式：0=正常，1=安全模式，2=恢复模式
-    uint8_t error_code;  // 最近一次错误代码
-
-    // OTA传输
-    uint32_t packet_count;     // app总包数
-    uint32_t received_packets; // 已接收包数
-    uint32_t total_size;       // 总固件大小
-    uint32_t received_bytes;   // 已接收字节数
-    uint32_t packet_size;      // 每个包的大小（字节）
-    uint8_t encrypt;           // 是否加密
-    uint8_t lz;                // 是否压缩
-    uint8_t delta_update;      // 升级类型：0=全量升级，1=差分升级
-    uint16_t retry_count;      // 重试次数
-
-    // 安全验证
-    uint8_t signature_ecdsa[64]; // 数字签名 secp256r1 (NIST P-256) 64字节 128位 最常见，推荐
-    uint32_t magic;              // 魔数标识，固定为IAP_MAGIC_NUMBER
-
+    uint32_t magic;       // 魔数标识，固定为IAP_MAGIC_NUMBER
     uint32_t stuct_crc32; // 整个结构体的CRC32校验值
 } iap_information_t;
 #pragma pack(pop) // 恢复之前的对齐状态

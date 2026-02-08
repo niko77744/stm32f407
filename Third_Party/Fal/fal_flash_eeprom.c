@@ -31,4 +31,4 @@ const struct fal_flash_dev eeprom =
         .len = 256,
         .blk_size = 16,
         .ops = {NULL, read, write, erase},
-        .write_gran = 8};
+        .write_gran = 1};

@@ -6,6 +6,7 @@
 #include "shell_port.h"
 #include "FreeRTOS.h"
 #include "fal_cfg.h"
+#include "fal.h"
 
 w25qxx_device_t w25q32_dev = {0};
 
@@ -121,23 +122,23 @@ void user_lfs_init(void)
     // print the boot count
     log_i("boot_count: %d", boot_count);
 }
-void w25qxx_chip_erase(void)
+void w25qxx_chip_erase_quickly(void)
 {
     extern sfud_flash sfud_norflash0;
+    // 使用大块擦除指令 不是小块循环擦除
     sfud_err err = sfud_chip_erase(&sfud_norflash0);
     if (err == SFUD_SUCCESS)
-        log_i("w25qxx erase chip success");
+        shellPrint(&shell, "w25qxx erase chip success\n");
     else
-        log_w("w25qxx erase chip err");
+        shellPrint(&shell, "w25qxx erase chip error\n");
 }
-SHELL_EXPORT_CMD(SHELL_CMD_PERMISSION(0) | SHELL_CMD_TYPE(SHELL_TYPE_CMD_MAIN), spi_erase, w25qxx_chip_erase, erase chip);
+SHELL_EXPORT_CMD(SHELL_CMD_PERMISSION(0) | SHELL_CMD_TYPE(SHELL_TYPE_CMD_MAIN), spi_erase, w25qxx_chip_erase_quickly, quickly erase chip);
 
 // fal probe fdb
 // fal read 0 64
 // fal write 0 0x01 0x02 0x03 0x04 0x05 0x06 0x07
 // fal erase 0 64
 // fal bench 512 yes
-#include "fal.h"
 static void fal(uint8_t argc, char **argv)
 {
 #define __is_print(ch) ((unsigned int)((ch) - ' ') < 127u - ' ')
@@ -146,7 +147,8 @@ static void fal(uint8_t argc, char **argv)
 #define CMD_READ_INDEX 1
 #define CMD_WRITE_INDEX 2
 #define CMD_ERASE_INDEX 3
-#define CMD_BENCH_INDEX 4
+#define CMD_ERASEALL_INDEX 4
+#define CMD_BENCH_INDEX 5
 
     int result = 0;
     static const struct fal_flash_dev *flash_dev = NULL;
@@ -159,6 +161,7 @@ static void fal(uint8_t argc, char **argv)
             [CMD_READ_INDEX] = "fal read addr size               - read 'size' bytes starting at 'addr'",
             [CMD_WRITE_INDEX] = "fal write addr data1 ... dataN   - write some bytes 'data' starting at 'addr'",
             [CMD_ERASE_INDEX] = "fal erase addr size              - erase 'size' bytes starting at 'addr'",
+            [CMD_ERASE_INDEX] = "fal eraseall                     - erase all",
             [CMD_BENCH_INDEX] = "fal bench <blk_size>             - benchmark test with per block size",
         };
 
@@ -350,6 +353,27 @@ static void fal(uint8_t argc, char **argv)
                     else if (part_dev)
                     {
                         result = fal_partition_erase(part_dev, addr, size);
+                    }
+                    if (result >= 0)
+                    {
+                        shellPrint(&shell, "Erase data success. Start from 0x%08X, size is %ld.\n", addr, size);
+                    }
+                }
+            }
+            else if (!strcmp(operator, "eraseall"))
+            {
+                if (argc != 2)
+                {
+                    shellPrint(&shell, "Usage: %s.\n", help_info[CMD_ERASEALL_INDEX]);
+                    return;
+                }
+                else
+                {
+                    addr = strtol(argv[2], NULL, 0);
+                    size = strtol(argv[3], NULL, 0);
+                    if (part_dev)
+                    {
+                        result = fal_partition_erase_all(part_dev);
                     }
                     if (result >= 0)
                     {

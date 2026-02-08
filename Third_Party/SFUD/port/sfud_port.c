@@ -166,12 +166,10 @@ static void retry_delay_100us(void)
 
 static void spi_lock(const sfud_spi *spi)
 {
-    __disable_irq();
 }
 
 static void spi_unlock(const sfud_spi *spi)
 {
-    __enable_irq();
 }
 
 sfud_err sfud_spi_port_init(sfud_flash *flash)

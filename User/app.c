@@ -13,7 +13,7 @@
 TaskHandle_t start_task_handle = NULL;
 void start_task(void *pvParameters);
 
-#define APP_TASK_STACK_SIZE (512 / 4)
+#define APP_TASK_STACK_SIZE (1024 / 4)
 #define APP_TASK_PRIORITY 5 // 低优先级 越大越高
 TaskHandle_t app_task_handle = NULL;
 void app_task(void *pvParameters);
@@ -23,21 +23,16 @@ void app_task(void *pvParameters);
 TaskHandle_t display_task_handle = NULL;
 void display_task(void *pvParameters);
 
-#define IAP_TASK_STACK_SIZE (512 / 4)
-#define IAP_TASK_PRIORITY 5
-TaskHandle_t iap_task_handle = NULL;
-void iap_task(void *pvParameters);
-
 #define SHELL_TASK_STACK_SIZE (1024 / 4)
 #define SHELL_TASK_PRIORITY 5
 TaskHandle_t shell_task_handle = NULL;
 
-static SemaphoreHandle_t Fatfs_Mutex_Semaphore = NULL;
+// static SemaphoreHandle_t Fatfs_Mutex_Semaphore = NULL;
 
 void start_task(void *pvParameters)
 {
     taskENTER_CRITICAL();
-    Fatfs_Mutex_Semaphore = xSemaphoreCreateMutex();
+    // Fatfs_Mutex_Semaphore = xSemaphoreCreateMutex();
 #if SUPPORT_SHELL == 1
     userShellInit();
 #endif
@@ -55,13 +50,6 @@ void start_task(void *pvParameters)
         NULL,
         DISPLAY_TASK_PRIORITY,
         &display_task_handle);
-    xTaskCreate(
-        (TaskFunction_t)iap_task,
-        (char *)"iap_task",
-        IAP_TASK_STACK_SIZE,
-        NULL,
-        IAP_TASK_PRIORITY,
-        &iap_task_handle);
 #if SUPPORT_SHELL == 1
     xTaskCreate(
         (TaskFunction_t)shellTask,
@@ -103,38 +91,38 @@ void display_task(void *pvParameters)
 }
 
 // static FIL file; // _FS_TINY 在Normal模式下，每个FIL对象都会包含一个缓冲区（大小为_MAX_SS，通常为512字节），因此如果我们在任务栈上定义FIL对象，会占用大量栈空间（至少512字节加上其他局部变量）。而使用静态分配，将FIL对象放在全局数据区，就不会占用任务栈空间。
-void iap_task(void *pvParameters)
-{
-    // FRESULT res;
-    // UINT byteswritten;
-    // const char *text = "Hello, FatFS! This is a test file.";
-    while (1)
-    {
-        if (xSemaphoreTake(Fatfs_Mutex_Semaphore, portMAX_DELAY) == pdTRUE)
-        {
-            // sd_fatfs_self_inspection();
-            // res = f_open(&file, "test.txt", FA_WRITE | FA_CREATE_ALWAYS);
-            // if (res != FR_OK)
-            // {
-            //     log_e("Error creating file: %d", res);
-            // }
-            // log_i("file opened successfully");
-            // res = f_write(&file, text, strlen(text), &byteswritten);
-            // if (res != FR_OK || byteswritten != strlen(text))
-            // {
-            //     log_e("Error writing to file: %d", res);
-            // }
-            // res = f_close(&file);
-            // if (res != FR_OK)
-            // {
-            //     log_e("Error closing file: %d", res);
-            // }
-            // log_i("file closed successfully");
-            xSemaphoreGive(Fatfs_Mutex_Semaphore);
-        }
-        vTaskDelay(pdMS_TO_TICKS(3000));
-    }
-}
+// void iap_task(void *pvParameters)
+// {
+//     FRESULT res;
+//     UINT byteswritten;
+//     const char *text = "Hello, FatFS! This is a test file.";
+//     while (1)
+//     {
+//         if (xSemaphoreTake(Fatfs_Mutex_Semaphore, portMAX_DELAY) == pdTRUE)
+//         {
+//             sd_fatfs_self_inspection();
+//             res = f_open(&file, "test.txt", FA_WRITE | FA_CREATE_ALWAYS);
+//             if (res != FR_OK)
+//             {
+//                 log_e("Error creating file: %d", res);
+//             }
+//             log_i("file opened successfully");
+//             res = f_write(&file, text, strlen(text), &byteswritten);
+//             if (res != FR_OK || byteswritten != strlen(text))
+//             {
+//                 log_e("Error writing to file: %d", res);
+//             }
+//             res = f_close(&file);
+//             if (res != FR_OK)
+//             {
+//                 log_e("Error closing file: %d", res);
+//             }
+//             log_i("file closed successfully");
+//             xSemaphoreGive(Fatfs_Mutex_Semaphore);
+//         }
+//         vTaskDelay(pdMS_TO_TICKS(3000));
+//     }
+// }
 void app_init(void)
 {
     Memory_Init(INSRAM);
@@ -144,7 +132,7 @@ void app_init(void)
 #endif
     fal_init();
     sd_fatfs_init();
-    user_lfs_init();
+    // user_lfs_init();
 
     sys_time_init();
     buttons_init();

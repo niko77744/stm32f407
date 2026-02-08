@@ -148,9 +148,3 @@ uint16_t at24c02_erase(uint16_t addr, uint16_t len, uint8_t erase_value)
 
     return total_len;
 }
-
-void at24c02_erase_chip(void)
-{
-    at24c02_erase(0, AT24C02_SIZE, AT24C02_DEFAULT_ERASE_VALUE);
-}
-SHELL_EXPORT_CMD(SHELL_CMD_PERMISSION(0) | SHELL_CMD_TYPE(SHELL_TYPE_CMD_MAIN), eeprom_erase, at24c02_erase_chip, erase chip);

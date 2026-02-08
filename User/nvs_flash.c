@@ -1,5 +1,8 @@
 #include "nvs_flash.h"
 #include "elog.h"
+#include "shell.h"
+#include "shell_port.h"
+#include "fal.h"
 
 /* 主存储器块，分为 4 个 16 KB 扇区、1 个 64 KB 扇区和 7 个 128 KB 扇区
  块 名称 块基址 大小 主存储器

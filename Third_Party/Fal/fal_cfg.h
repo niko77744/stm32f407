@@ -39,15 +39,19 @@ extern const struct fal_flash_dev eeprom;
 
 #define FAL_LFS_PART_NAME "littlefs"
 #define FAL_LFS_START_ADDR (0 * 1024 * 1024)
-#define FAL_LFS_PART_SIZE (8 * 1024 * 1024)
+#define FAL_LFS_PART_SIZE (10 * 1024 * 1024)
 
 #define FAL_FONT_PART_NAME "font"
-#define FAL_FONT_START_ADDR (8 * 1024 * 1024)
+#define FAL_FONT_START_ADDR (10 * 1024 * 1024)
 #define FAL_FONT_PART_SIZE (4 * 1024 * 1024)
 
 #define FAL_DW_PART_NAME "download"
-#define FAL_DW_START_ADDR (12 * 1024 * 1024)
-#define FAL_DW_PART_SIZE (4 * 1024 * 1024)
+#define FAL_DW_START_ADDR (14 * 1024 * 1024)
+#define FAL_DW_PART_SIZE (1 * 1024 * 1024)
+
+#define FAL_NEW_PART_NAME "new"
+#define FAL_NEW_START_ADDR (15 * 1024 * 1024)
+#define FAL_NEW_PART_SIZE (1 * 1024 * 1024)
 
 #define FAL_PARAM_PART_NAME "param"
 #define FAL_PARAM_START_ADDR (0)
@@ -63,6 +67,7 @@ extern const struct fal_flash_dev eeprom;
         {FAL_PART_MAGIC_WORD, FAL_LFS_PART_NAME, "norflash0", FAL_LFS_START_ADDR, FAL_LFS_PART_SIZE, 0},       \
         {FAL_PART_MAGIC_WORD, FAL_FONT_PART_NAME, "norflash0", FAL_FONT_START_ADDR, FAL_FONT_PART_SIZE, 0},    \
         {FAL_PART_MAGIC_WORD, FAL_DW_PART_NAME, "norflash0", FAL_DW_START_ADDR, FAL_DW_PART_SIZE, 0},          \
+        {FAL_PART_MAGIC_WORD, FAL_NEW_PART_NAME, "norflash0", FAL_NEW_START_ADDR, FAL_NEW_PART_SIZE, 0},       \
         {FAL_PART_MAGIC_WORD, FAL_PARAM_PART_NAME, "eeprom", FAL_PARAM_START_ADDR, FAL_PARAM_PART_SIZE, 0},    \
     }
 #endif /* FAL_PART_HAS_TABLE_CFG */
