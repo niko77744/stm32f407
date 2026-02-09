@@ -114,7 +114,7 @@ typedef struct
 #define CRC32_IEEE 0x04C11DB7 // 最常用，ZIP、PNG、以太网
 #define IAP_INFO_SIZE (sizeof(iap_information_t))
 #define IAP_RX_LEN 256
-extern uint8_t iap_dma_rx_buf[IAP_RX_LEN] __attribute__((aligned(4))); // 禁止编译器优化，对齐4字节;
+extern uint8_t iap_dma_rx_buffer[IAP_RX_LEN] __attribute__((aligned(4))); // 禁止编译器优化，对齐4字节;
 void iap_init(void);
 void iap_rx_event_callback(uint32_t Size);
 void JumpToApp(void);

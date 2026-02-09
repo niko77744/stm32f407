@@ -3,11 +3,8 @@
 #include "elog.h"
 #pragma diag_suppress 550 // 抑制本文件中的 550 警告 -- 忽略未使用的函数警告
 
-#define BLE_BUFFER_SIZE 128
-uint8_t ble_rx_buffer[BLE_BUFFER_SIZE] = {0};
-uint8_t ble_tx_buffer[BLE_BUFFER_SIZE] = {0};
+uint8_t ble_dma_rx_buffer[BLE_BUFFER_SIZE] __attribute__((aligned(4)));
 uint8_t ble_rx_len = 0;
-uint8_t ble_tx_len = 0;
 MultiTimer ble_timer;
 
 GPIO_PinState get_ble_device_state(void)
@@ -34,14 +31,7 @@ static void ble_ticks_callback(MultiTimer *timer, void *userData)
 void ble_rx_event_callback(uint16_t Size)
 {
     // 使用DMA将接收到的数据发送回去
-    HAL_UART_Transmit(&huart3, ble_rx_buffer, Size, 1000);
-    memset(ble_rx_buffer, 0, sizeof(ble_rx_buffer));
-    memset(ble_tx_buffer, 0, sizeof(ble_tx_buffer));
-    ble_rx_len = ble_tx_len = 0;
-    // 重新启动接收，使用Ex函数，接收不定长数据
-    HAL_UARTEx_ReceiveToIdle_DMA(&huart3, ble_rx_buffer, sizeof(ble_rx_buffer));
-    // 关闭DMA传输过半中断（HAL库默认开启，但我们只需要接收完成中断）
-    __HAL_DMA_DISABLE_IT(huart3.hdmarx, DMA_IT_HT);
+    HAL_UART_Transmit(&huart3, ble_dma_rx_buffer, Size, 1000);
 }
 
 void ble_init(void)
@@ -49,7 +39,7 @@ void ble_init(void)
     multiTimerStart(&ble_timer, 10, ble_ticks_callback, NULL);
 
     // 使用Ex函数，接收不定长数据
-    HAL_UARTEx_ReceiveToIdle_DMA(&huart3, ble_rx_buffer, sizeof(ble_rx_buffer));
+    HAL_UARTEx_ReceiveToIdle_DMA(&huart3, ble_dma_rx_buffer, sizeof(ble_dma_rx_buffer));
     // 关闭DMA传输过半中断（HAL库默认开启，但我们只需要接收完成中断）
     __HAL_DMA_DISABLE_IT(huart3.hdmarx, DMA_IT_HT);
 }

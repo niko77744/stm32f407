@@ -34,9 +34,7 @@ void start_task(void *pvParameters)
 {
     taskENTER_CRITICAL();
     // Fatfs_Mutex_Semaphore = xSemaphoreCreateMutex();
-#if SUPPORT_SHELL == 1
     userShellInit();
-#endif
     xTaskCreate(
         (TaskFunction_t)app_task,
         (char *)"app_task",
@@ -51,7 +49,6 @@ void start_task(void *pvParameters)
         NULL,
         DISPLAY_TASK_PRIORITY,
         &display_task_handle);
-#if SUPPORT_SHELL == 1
     xTaskCreate(
         (TaskFunction_t)shellTask,
         (char *)"shell",
@@ -59,7 +56,6 @@ void start_task(void *pvParameters)
         &shell,
         SHELL_TASK_PRIORITY,
         &shell_task_handle);
-#endif
     vTaskDelete(NULL);
     taskEXIT_CRITICAL();
 }
@@ -124,13 +120,12 @@ void display_task(void *pvParameters)
 //         vTaskDelay(pdMS_TO_TICKS(3000));
 //     }
 // }
+
 void app_init(void)
 {
     Memory_Init(INSRAM);
     sw_time_init();
-#if SUPPORT_LOG == 1
     log_init();
-#endif
     fal_init();
     sd_fatfs_init();
     // user_lfs_init();
@@ -139,15 +134,10 @@ void app_init(void)
     buttons_init();
     app_led_init();
     iap_init();
+    ble_init();
+    esp8266_hw_init();
+    rf433_init();
 
-    __HAL_TIM_ENABLE_IT(&htim1, TIM_IT_CC1 | TIM_IT_CC2);
-    HAL_TIM_IC_Start_IT(&htim1, TIM_CHANNEL_1);
-    HAL_TIM_IC_Start_IT(&htim1, TIM_CHANNEL_2);
-
-    // ble_init();
-    // iap_init(iap_from_uart);
-    // esp8266_hw_init();
-    // iap_process(); // 先擦除 stmflash_earse(FLASH_APP1_ADDR, 0x1000); // 4096
 #if SUPPORT_LVGL == 1
     lv_init();            /* lvgl系统初始化 */
     lv_port_disp_init();  /* lvgl显示接口初始化,放在lv_init()的后面 */
@@ -157,12 +147,6 @@ void app_init(void)
 
 void app_run(void)
 {
-#if SUPPORT_OS == 0
-    while (1)
-    {
-        sw_timer_loop();
-    }
-#else
     xTaskCreate(
         (TaskFunction_t)start_task,
         "start_task",
@@ -171,7 +155,6 @@ void app_run(void)
         START_TASK_PRIORITY,
         &start_task_handle);
     vTaskStartScheduler();
-#endif
 }
 
 // 不定长数据接收完成回调函数
@@ -179,44 +162,39 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
     if (huart->Instance == USART1)
     {
+        // huart->RxEventType  HAL_UART_RXEVENT_TC  HAL_UART_RXEVENT_HT  HAL_UART_RXEVENT_IDLE
         extern DMA_HandleTypeDef hdma_usart1_rx;
-        // switch (huart->RxEventType)
-        // {
-        // case HAL_UART_RXEVENT_TC:
-        //     break;
-        // case HAL_UART_RXEVENT_HT:
-        //     break;
-        // case HAL_UART_RXEVENT_IDLE:
-        //     break;
-        // }
         iap_rx_event_callback(Size);
-        HAL_UARTEx_ReceiveToIdle_DMA(&huart1, iap_dma_rx_buf, sizeof(iap_dma_rx_buf));
+        HAL_UARTEx_ReceiveToIdle_DMA(&huart1, iap_dma_rx_buffer, sizeof(iap_dma_rx_buffer));
         __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
     }
     else if (huart->Instance == USART3) // ble
     {
         ble_rx_event_callback(Size);
+        HAL_UARTEx_ReceiveToIdle_DMA(&huart3, ble_dma_rx_buffer, sizeof(ble_dma_rx_buffer));
+        __HAL_DMA_DISABLE_IT(huart3.hdmarx, DMA_IT_HT);
     }
     else if (huart->Instance == UART4) // wifi
     {
         wifi_rx_event_callback(Size);
+        HAL_UARTEx_ReceiveToIdle_DMA(&huart4, esp8266_dma_rx_buffer, sizeof(esp8266_dma_rx_buffer));
+        __HAL_DMA_DISABLE_IT(huart4.hdmarx, DMA_IT_HT);
+    }
+    else if (huart->Instance == USART6) // shell
+    {
+        extern DMA_HandleTypeDef hdma_usart6_rx;
+        shell_rx_event_callback(Size);
+        HAL_UARTEx_ReceiveToIdle_DMA(&huart6, shell_dma_rx_buffer, sizeof(shell_dma_rx_buffer));
+        __HAL_DMA_DISABLE_IT(&hdma_usart6_rx, DMA_IT_HT);
     }
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-    if (huart->Instance == USART6) // shell
-    {
-        shell_recv_byte();
-    }
 }
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
-    if (huart->Instance == USART3) // ble
-    {
-        log_i("BLE data send over");
-    }
 }
 
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
@@ -224,128 +202,11 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
     if (huart->Instance == UART4) // wifi
     {
         __HAL_UART_CLEAR_FEFLAG(huart);
-        HAL_UARTEx_ReceiveToIdle_DMA(&huart4, esp8266_buf, sizeof(esp8266_buf));
+        HAL_UARTEx_ReceiveToIdle_DMA(&huart4, esp8266_dma_rx_buffer, sizeof(esp8266_dma_rx_buffer));
     }
     else if (huart->Instance == USART1)
     {
         __HAL_UART_CLEAR_FEFLAG(huart);
-        HAL_UARTEx_ReceiveToIdle_DMA(&huart1, iap_dma_rx_buf, sizeof(iap_dma_rx_buf));
-    }
-}
-
-// 1代表100us
-#define RF433_MS(n) ((uint32_t)((n) * 10.0f))
-// 时间检查辅助宏
-#define TIME_IN_RANGE(t, min, max) ((t) >= (min) && (t) <= (max))
-#define NEC_DATA_BITS_TOTAL (32) // NEC协议总位数
-#define NEC_BITS_PER_BYTE (8)    // 每字节位数
-// 接收状态
-typedef enum
-{
-    STATE_WAIT_LEADER = 0,
-    STATE_RECEIVE_DATA,
-    STATE_COMPLETE
-} nec_recv_state_e;
-
-// 接收数据结构
-typedef struct
-{
-    uint8_t addr;
-    uint8_t cmd;
-} nec_data_t;
-
-// 全局变量
-struct
-{
-    nec_recv_state_e state;
-    uint8_t bit_cnt;
-    uint32_t raw_data;
-    uint32_t low_time;  // 低电平时间
-    uint32_t high_time; // 高电平时间
-    nec_data_t result;
-} nec_recv = {0};
-
-// NEC数据校验
-static uint8_t nec_check(uint8_t addr, uint8_t addr_inv, uint8_t cmd, uint8_t cmd_inv)
-{
-    return ((uint8_t)~addr == addr_inv) && ((uint8_t)~cmd == cmd_inv);
-}
-
-// 中断回调函数 - 简洁版
-void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
-{
-    if (htim->Instance != TIM1)
-        return;
-
-    // 上升沿捕获（低电平结束）
-    if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1)
-    {
-        nec_recv.low_time = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
-        __HAL_TIM_SET_COUNTER(htim, 0);
-    }
-    // 下降沿捕获（高电平结束）
-    else if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2)
-    {
-        nec_recv.high_time = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2);
-        __HAL_TIM_SET_COUNTER(htim, 0);
-
-        switch (nec_recv.state)
-        {
-        case STATE_WAIT_LEADER:
-            // 检查引导码
-            if (TIME_IN_RANGE(nec_recv.low_time, RF433_MS(8.0f), RF433_MS(10.0f)) &&
-                TIME_IN_RANGE(nec_recv.high_time, RF433_MS(4.0f), RF433_MS(5.0f)))
-            {
-                nec_recv.state = STATE_RECEIVE_DATA;
-                nec_recv.bit_cnt = 0;
-                nec_recv.raw_data = 0;
-            }
-            break;
-
-        case STATE_RECEIVE_DATA:
-            if (!TIME_IN_RANGE(nec_recv.low_time, RF433_MS(0.4f), RF433_MS(0.9f)) ||
-                !TIME_IN_RANGE(nec_recv.high_time, RF433_MS(0.4f), RF433_MS(1.9f)))
-            {
-                nec_recv.state = STATE_COMPLETE;
-                break;
-            }
-
-            // 解析数据位
-            nec_recv.raw_data <<= 1;
-            if (nec_recv.high_time >= RF433_MS(1.0f))
-            {
-                nec_recv.raw_data |= 1; // 逻辑1
-            }
-
-            nec_recv.bit_cnt++;
-            // 检查是否接收完32位
-            if (nec_recv.bit_cnt >= NEC_DATA_BITS_TOTAL)
-            {
-                nec_recv.state = STATE_COMPLETE;
-            }
-            break;
-        }
-
-        // 接收完成，解析数据
-        if (nec_recv.state == STATE_COMPLETE)
-        {
-            // 按接收顺序：地址->地址反码->命令->命令反码
-            uint8_t *p = (uint8_t *)&nec_recv.raw_data;
-            uint8_t addr = p[3];
-            uint8_t addr_inv = p[2];
-            uint8_t cmd = p[1];
-            uint8_t cmd_inv = p[0];
-
-            uint8_t result = nec_check(addr, addr_inv, cmd, cmd_inv);
-            if (result)
-            {
-                nec_recv.result.addr = addr;
-                nec_recv.result.cmd = cmd;
-                beep_start(beep_short);
-            }
-
-            // 重置状态，等待下一帧
-            nec_recv.state = STATE_WAIT_LEADER;
-        }
+        HAL_UARTEx_ReceiveToIdle_DMA(&huart1, iap_dma_rx_buffer, sizeof(iap_dma_rx_buffer));
     }
 }

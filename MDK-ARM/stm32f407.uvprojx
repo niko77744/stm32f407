@@ -4161,6 +4161,11 @@
               <FileType>1</FileType>
               <FilePath>..\User\xtp_2046.c</FilePath>
             </File>
+            <File>
+              <FileName>rf433.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\rf433.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

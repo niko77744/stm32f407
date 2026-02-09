@@ -11,8 +11,6 @@
 
 #define SUPPORT_OS 1
 #define SUPPORT_LVGL 0
-#define SUPPORT_SHELL 1
-#define SUPPORT_LOG 1
 
 #if SUPPORT_OS == 1
 #define ff_malloc pvPortMalloc

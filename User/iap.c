@@ -38,11 +38,11 @@ typedef struct
     uint32_t patch_addr; /**< 差分数据缓冲区指针 */
 } patch_reader_context;
 
-RING_BUF_DECLARE(iap_ring_buffer, (IAP_RX_LEN * 4));            // _ring_buffer_data_iap_ring_buffer 串口接收环形缓冲区
-static uint8_t iap_write_buffer[IAP_RX_LEN];                    // 从ring_buf中读取写入flash的缓冲区
-uint8_t iap_dma_rx_buf[IAP_RX_LEN] __attribute__((aligned(4))); // 禁止编译器优化，对齐4字节; 串口dma接收缓冲区
-static uint32_t iap_dma_rx_size = 0;                            // 串口接收到数据的大小
-static uint32_t app_write_flash_addr = 0;                       // 写入app的falsh的地址 相对偏移一个boot
+RING_BUF_DECLARE(iap_ring_buffer, (IAP_RX_LEN * 4));               // _ring_buffer_data_iap_ring_buffer 串口接收环形缓冲区
+static uint8_t iap_write_buffer[IAP_RX_LEN];                       // 从ring_buf中读取写入flash的缓冲区
+uint8_t iap_dma_rx_buffer[IAP_RX_LEN] __attribute__((aligned(4))); // 禁止编译器优化，对齐4字节; 串口dma接收缓冲区
+static uint32_t iap_dma_rx_size = 0;                               // 串口接收到数据的大小
+static uint32_t app_write_flash_addr = 0;                          // 写入app的falsh的地址 相对偏移一个boot
 static iap_ringbuffer_t iap_rb = {.buf = &iap_ring_buffer};
 static iapfun jump2app = NULL;
 static patch_reader_context reader_context = {0};
@@ -134,7 +134,7 @@ static void iap_write_appbin(uint32_t appxaddr, uint8_t *appbuf, uint32_t appsiz
 void iap_rx_event_callback(uint32_t Size)
 {
     iap_dma_rx_size += Size;
-    ring_buf_put(iap_rb.buf, iap_dma_rx_buf, Size);
+    ring_buf_put(iap_rb.buf, iap_dma_rx_buffer, Size);
 }
 
 static int read_patch(const struct bspatch_stream *stream, void *buffer, int length)
@@ -153,13 +153,13 @@ void iap_init(void)
 {
     extern DMA_HandleTypeDef hdma_usart1_rx;
     ring_buf_reset(iap_rb.buf);
-    memset(iap_dma_rx_buf, 0, IAP_RX_LEN);
+    memset(iap_dma_rx_buffer, 0, IAP_RX_LEN);
     memset(iap_write_buffer, 0, IAP_RX_LEN);
     app_write_flash_addr = 0;
     iap_dma_rx_size = 0;
     __HAL_DMA_ENABLE_IT(&hdma_usart1_rx, DMA_IT_TE); // 开启传输错误中断(必加，容错)
 
-    HAL_UARTEx_ReceiveToIdle_DMA(&huart1, iap_dma_rx_buf, sizeof(iap_dma_rx_buf));
+    HAL_UARTEx_ReceiveToIdle_DMA(&huart1, iap_dma_rx_buffer, sizeof(iap_dma_rx_buffer));
     __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
 }
 

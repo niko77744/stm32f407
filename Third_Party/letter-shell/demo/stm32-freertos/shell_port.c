@@ -19,14 +19,15 @@
 #include "elog.h"
 #include "semphr.h"
 #include "ring_buffer.h"
+#include "shell_port.h"
 
 Shell shell;
 char shellBuffer[512];
 
 static SemaphoreHandle_t shellMutex;
-static uint8_t rx_byte = 0;
+uint8_t shell_dma_rx_buffer[SHELL_RX_LEN] __attribute__((aligned(4)));
 
-RING_BUF_DECLARE(shellRxBuffer, 128);
+RING_BUF_DECLARE(shellRxBuffer, (SHELL_RX_LEN * 2));
 
 /**
  * @brief 用户shell写
@@ -88,10 +89,9 @@ int userShellUnlock(Shell *shell)
     return 0;
 }
 
-void shell_recv_byte(void)
+void shell_rx_event_callback(uint32_t Size)
 {
-    ring_buf_put(&shellRxBuffer, &rx_byte, 1);
-    HAL_UART_Receive_IT(&huart6, &rx_byte, 1);
+    ring_buf_put(&shellRxBuffer, shell_dma_rx_buffer, Size);
 }
 
 /**
@@ -106,6 +106,8 @@ void userShellInit(void)
     shell.read = userShellRead;
     shell.lock = userShellLock;
     shell.unlock = userShellUnlock;
-    HAL_UART_Receive_IT(&huart6, &rx_byte, 1);
+    extern DMA_HandleTypeDef hdma_usart6_rx;
+    HAL_UARTEx_ReceiveToIdle_DMA(&huart6, shell_dma_rx_buffer, sizeof(shell_dma_rx_buffer));
+    __HAL_DMA_DISABLE_IT(&hdma_usart6_rx, DMA_IT_HT);
     shellInit(&shell, shellBuffer, 512);
 }

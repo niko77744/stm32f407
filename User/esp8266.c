@@ -27,7 +27,7 @@ typedef enum
     ESP8266_STATE_ERROR,
 } ESP8266_State;
 
-uint8_t esp8266_buf[256];
+uint8_t esp8266_dma_rx_buffer[ESP_RX_LEN] __attribute__((aligned(4)));
 #define ESP8266_RESET_EVENT_BIT (1 << 0)
 #define ESP8266_SET_MODE_EVENT_BIT (1 << 1)
 #define ESP8266_INIT_EVENT_BIT (1 << 2)
@@ -76,8 +76,6 @@ void esp8266_enable(void)
 
 void esp8266_hw_init(void)
 {
-    // 使用Ex函数，接收不定长数据
-    HAL_UARTEx_ReceiveToIdle_DMA(&huart4, esp8266_buf, sizeof(esp8266_buf));
     esp8266.mode = ESP8266_STA_AP_MODE;
     esp8266.ssid = "LAPTOP-V9C029E4";
     esp8266.password = "83B9i4/9";
@@ -88,25 +86,26 @@ void esp8266_hw_init(void)
     esp8266.tcp_port = 8080;
     esp8266.cip_mux = 0; // 单连接
 
-    // esp8266_enable();
-    // esp_delay;
-    // HAL_UART_Transmit(&huart4, esp_ap_sta_mode, sizeof(esp_ap_sta_mode) - 1, 1000);
-    // esp_delay;
-    // HAL_UART_Transmit(&huart4, esp_reset, sizeof(esp_reset) - 1, 1000);
-    // esp_delay;
-    // HAL_UART_Transmit(&huart4, esp_connect, sizeof(esp_connect) - 1, 5000);
-    // esp_delay;
-    // esp_delay;
-    // HAL_UART_Transmit(&huart4, esp_get_ip, sizeof(esp_get_ip) - 1, 1000);
-    // esp_delay;
+    // 使用Ex函数，接收不定长数据
+    HAL_UARTEx_ReceiveToIdle_DMA(&huart4, esp8266_dma_rx_buffer, sizeof(esp8266_dma_rx_buffer));
+    __HAL_DMA_DISABLE_IT(huart4.hdmarx, DMA_IT_HT);
 }
 
+// esp8266_enable();
+// esp_delay;
+// HAL_UART_Transmit(&huart4, esp_ap_sta_mode, sizeof(esp_ap_sta_mode) - 1, 1000);
+// esp_delay;
+// HAL_UART_Transmit(&huart4, esp_reset, sizeof(esp_reset) - 1, 1000);
+// esp_delay;
+// HAL_UART_Transmit(&huart4, esp_connect, sizeof(esp_connect) - 1, 5000);
+// esp_delay;
+// esp_delay;
+// HAL_UART_Transmit(&huart4, esp_get_ip, sizeof(esp_get_ip) - 1, 1000);
+// esp_delay;
 void wifi_rx_event_callback(uint16_t Size)
 {
-    log_i("%s", esp8266_buf);
-    memset(esp8266_buf, 0, sizeof(esp8266_buf));
-    // 重新启动接收，使用Ex函数，接收不定长数据
-    HAL_UARTEx_ReceiveToIdle_DMA(&huart4, esp8266_buf, sizeof(esp8266_buf));
+    log_i("%s", esp8266_dma_rx_buffer);
+    memset(esp8266_dma_rx_buffer, 0, sizeof(esp8266_dma_rx_buffer));
 }
 
 uint8_t esp8266_send_command(const char *cmd)

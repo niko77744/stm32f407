@@ -13,9 +13,9 @@
 #define __SHELL_PORT_H__
 
 #include "shell.h"
-
+#define SHELL_RX_LEN 32
 extern Shell shell;
-
+extern uint8_t shell_dma_rx_buffer[SHELL_RX_LEN] __attribute__((aligned(4)));
 void userShellInit(void);
-void shell_recv_byte(void);
+void shell_rx_event_callback(uint32_t Size);
 #endif
